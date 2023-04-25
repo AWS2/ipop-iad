@@ -1,6 +1,6 @@
-package com.mygdx.ipop_game;
+package com.mygdx.ipop_game.utils;
 
-public class Game {
+public class GameUtils {
 
     public static final int SCR_HEIGHT = 480;
     public static final int SCR_WIDTH = 800;

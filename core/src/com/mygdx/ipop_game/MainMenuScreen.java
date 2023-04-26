@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -35,20 +36,45 @@ public class MainMenuScreen implements Screen {
         game.batch.setProjectionMatrix(camera.combined);
 
         game.batch.begin();
-        game.font.draw(game.batch, "IPOP Game", SCR_WIDTH / 2f - 100, SCR_HEIGHT / 2f + 100);
         background = new Texture(Gdx.files.internal("Mansion.png"));
         button = new Texture(Gdx.files.internal("button.png"));
 
-        TextButton _button = new TextButton("Iniciar juego", new TextButton.TextButtonStyle(
-                new TextureRegionDrawable(button),
-                null,
-                null,
-                game.font
-        ));
-        _button.setPosition(100, 100);
-
-
-
+        Texture _button = new Texture(Gdx.files.internal("button.png"));
+        game.batch.draw(
+                background,
+                0,
+                0,
+                0, 100,
+                SCR_WIDTH,SCR_HEIGHT
+        );
+        game.batch.draw(
+                _button,
+                SCR_WIDTH / 2f - _button.getWidth() / 2f,
+                50,
+                0, 0,
+                300, 80
+        );
+        game.batch.draw(
+                _button,
+                SCR_WIDTH / 2f - _button.getWidth() / 2f,
+                150,
+                0, 0,
+                300, 80
+        );
+        game.batch.draw(
+                _button,
+                SCR_WIDTH / 2f - _button.getWidth() / 2f,
+                250,
+                0, 0,
+                300, 80
+        );
+        game.setSubtitle();
+        game.font.draw(
+                game.batch,
+                "IPOP Game",
+                SCR_WIDTH / 2f - 125,
+                SCR_HEIGHT - 50
+        );
         game.batch.end();
 
         if (Gdx.input.isTouched()) {

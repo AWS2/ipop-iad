@@ -23,7 +23,7 @@ public class DegreeSelector {
     String address = "localhost";
     int port = 8888;
     Float stateTime = 0.0f;
-    public Rectangle player,pokemon;
+    public Rectangle degreeSelect;
     String direction = "",currentDirection = direction;
 
     Rectangle upPad, downPad, leftPad, rightPad;
@@ -41,16 +41,11 @@ public class DegreeSelector {
         //Canviar la variable de la feature segons la posicio de la flecha
         img = new Texture("goldSprite.jpg");
         //img = new Texture("sprite-animation4.jpg");
-        player = new Rectangle();
-        player.width = 64;
-        player.height = 64;
-        player.x = 800 / 2 - 64 / 2;
-        player.y = 20;
-        pokemon = new Rectangle();
-        pokemon.width = 64;
-        pokemon.height = 64;
-        pokemon.x = (800 / 2-64)   - 64 / 2;
-        pokemon.y = 20;
+        degreeSelect = new Rectangle();
+        degreeSelect.width = 64;
+        degreeSelect.height = 64;
+        degreeSelect.x = SCR_WIDTH / 2 - SCR_HEIGHT / 2;
+        degreeSelect.y = 20;
         direction = "right";
         currentDirection = "right";
         // per cada frame cal indicar x,y,amplada,alçada
@@ -67,20 +62,19 @@ public class DegreeSelector {
     }
 
     public void render () {
-        //ScreenUtils.clear(1, 0, 0, 1);
         camera.update();
         batch.setProjectionMatrix(camera.combined);
         //socket.send(direction);
 
+
+
         batch.begin();
 
-        //Calcular la direccio
+
 
 // si volem invertir el sentit, ho podem fer amb el paràmetre scaleX=-1
         batch.draw(background,0,0);
-        /*batch.draw(frame, player.x, player.y, 0, 0,
-                frame.getRegionWidth(),frame.getRegionHeight(),1,1,0);
-        batch.draw(framePoke,pokemon.x,pokemon.y,0,0, framePoke.getRegionWidth(),framePoke.getRegionHeight(),1,1,0);*/
+        batch.draw(img, degreeSelect.x, degreeSelect.y, 0, 0);
         batch.end();
     }
 
@@ -113,4 +107,3 @@ public class DegreeSelector {
     }
 }
 
-}

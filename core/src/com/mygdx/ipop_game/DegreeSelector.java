@@ -17,13 +17,11 @@ import static com.mygdx.ipop_game.utils.WebSocketsUtils.PORT;
 
 public class DegreeSelector {
     SpriteBatch batch;
-    Texture img,background,typhlosion;
+    Texture img,background;
     private static OrthographicCamera camera;
     WebSocket socket;
     String address = "localhost";
     int port = 8888;
-    Animation<TextureRegion> gold;
-    Animation<TextureRegion> typhlosionRegion;
     Float stateTime = 0.0f;
     public Rectangle player,pokemon;
     String direction = "",currentDirection = direction;
@@ -40,6 +38,7 @@ public class DegreeSelector {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, SCR_WIDTH, SCR_HEIGHT);
         batch = new SpriteBatch();
+        //Canviar la variable de la feature segons la posicio de la flecha
         img = new Texture("goldSprite.jpg");
         //img = new Texture("sprite-animation4.jpg");
         player = new Rectangle();
@@ -89,7 +88,6 @@ public class DegreeSelector {
         background.dispose();
         batch.dispose();
         img.dispose();
-        typhlosion.dispose();
     }
 
 

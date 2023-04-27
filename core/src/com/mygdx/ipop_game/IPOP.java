@@ -14,7 +14,7 @@ public class IPOP extends Game {
     public void create() {
         batch = new SpriteBatch();
         font = new BitmapFont();
-        this.setScreen(new MainMenuScreen(this));
+        this.setScreen(new GameRankingScreen(this));
     }
 
     public void render() {

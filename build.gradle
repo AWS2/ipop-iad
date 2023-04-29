@@ -11,7 +11,7 @@ buildscript {
     dependencies {
         classpath 'org.wisepersist:gwt-gradle-plugin:1.1.16'
         classpath 'org.gretty:gretty:3.0.7'
-        classpath 'com.android.tools.build:gradle:7.2.2'
+        classpath 'com.android.tools.build:gradle:7.4.2'
         classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.16'
         
 
@@ -70,21 +70,6 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64"
         api "com.github.MrStahlfelge.gdx-websockets:common:$wsVersion"
 
-    }
-}
-
-project(":ios") {
-    apply plugin: "java-library"
-    apply plugin: "robovm"
-
-
-    dependencies {
-        implementation project(":core")
-        api "com.mobidevelop.robovm:robovm-rt:$roboVMVersion"
-        api "com.mobidevelop.robovm:robovm-cocoatouch:$roboVMVersion"
-        api "com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion"
-        api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"
-        
     }
 }
 

@@ -11,6 +11,6 @@ public class DesktopLauncher {
 		config.setForegroundFPS(60);
 		config.setTitle("Animation");
 		CommonWebSockets.initiate();
-		new Lwjgl3Application(new GameScreen(), config);
+		new Lwjgl3Application(new IPOP(), config);
 	}
 }

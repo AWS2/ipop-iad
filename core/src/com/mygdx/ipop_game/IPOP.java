@@ -1,6 +1,7 @@
 package com.mygdx.ipop_game;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -9,12 +10,24 @@ public class IPOP extends Game {
 
     public SpriteBatch batch;
     public BitmapFont font;
-    ;
+
+    private static IPOP instancia = null;
+
+    public static IPOP obtenerInstancia() {
+        if (instancia == null) {
+            instancia = new IPOP();
+        }
+        return instancia;
+    }
+
+    public IPOP() {
+
+    }
 
     public void create() {
         batch = new SpriteBatch();
         font = new BitmapFont();
-        this.setScreen(new GameRankingScreen(this));
+        this.setScreen(new MainMenuScreen());
     }
 
     public void render() {

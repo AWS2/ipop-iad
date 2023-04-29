@@ -14,12 +14,14 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 public class MainMenuScreen implements Screen {
 
-    final IPOP game;
+    //final IPOP game;
+    DegreeSelector game;
     OrthographicCamera camera;
 
     Texture background, button;
 
-    public MainMenuScreen(final IPOP game) {
+    public MainMenuScreen(DegreeSelector game) {
+        //this.game = game;
         this.game = game;
         camera = new OrthographicCamera();
         camera.setToOrtho(false, SCR_WIDTH, SCR_HEIGHT);
@@ -33,7 +35,7 @@ public class MainMenuScreen implements Screen {
         ScreenUtils.clear(0, 0, 0.2f, 1);
 
         camera.update();
-        game.batch.setProjectionMatrix(camera.combined);
+        //game.batch.setProjectionMatrix(camera.combined);
 
         game.batch.begin();
         background = new Texture(Gdx.files.internal("Mansion.png"));
@@ -68,19 +70,19 @@ public class MainMenuScreen implements Screen {
                 0, 0,
                 300, 80
         );
-        game.setSubtitle();
+        /*game.setSubtitle();
         game.font.draw(
                 game.batch,
                 "IPOP Game",
                 SCR_WIDTH / 2f - 125,
                 SCR_HEIGHT - 50
-        );
+        );*/
         game.batch.end();
 
-        if (Gdx.input.isTouched()) {
+        /*if (Gdx.input.isTouched()) {
             game.setScreen(new GameScreen());
             dispose();
-        }
+        }*/
     }
 
     @Override

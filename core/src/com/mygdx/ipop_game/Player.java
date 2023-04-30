@@ -9,5 +9,5 @@ public class Player {
     public static int[] transform = {100, 100};
     public static int speed = 2;
     public static Texture sprite;
-    public static Animation<TextureRegion> player_left, player_right, player_down, player_front;
+    public static Animation<TextureRegion> player_left, player_right, player_up, player_down;
 }

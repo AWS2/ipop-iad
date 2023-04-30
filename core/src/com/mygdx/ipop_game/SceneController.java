@@ -37,7 +37,7 @@ public class SceneController {
 
     public static void goToSelectName() {
         Gdx.input.setInputProcessor(selectNamePlayerStage);
-        scene = 1;
+        SceneController.scene = 10;
     }
 
     public static void goToSinglePlayer() {
@@ -71,14 +71,16 @@ public class SceneController {
         } else if (scene == 3) {
             return singlePlayerStage;
         } else if (scene == 4) {
-            return multiPlayerStage;
+            return rankginsStage;
         } else if (scene == 5) {
             return selectNamePlayerStage;
         } else if (scene == 6) {
             return selectCharacterPlayerStage;
         } else if (scene == 7) {
             return selectGradePlayerStage;
-        }  else {
+        } else if (scene == 8) {
+            return mainMenuStage;
+        }else {
             return mainMenuStage;
         }
     }

@@ -41,7 +41,7 @@ public class GameScreen implements ApplicationListener, Screen {
 
 		game.batch.begin();
 		game.font.draw(game.batch, "DROP GAME", 100, 150);
-		game.font.draw(game.batch, "Tap the screen to start playinh", 100, 100);
+		game.font.draw(game.batch, "Tap the screen to start playing", 100, 100);
 		game.batch.end();
 
 		if (Gdx.input.isTouched()) {
@@ -67,7 +67,7 @@ public class GameScreen implements ApplicationListener, Screen {
 
 		game.batch.begin();
 		game.font.draw(game.batch, "DROP GAME", 100, 150);
-		game.font.draw(game.batch, "Tap the screen to start playinh", 100, 100);
+		game.font.draw(game.batch, "Tap the screen to start playing", 100, 100);
 		game.batch.end();
 
 		if (Gdx.input.isTouched()) {

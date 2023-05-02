@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+import java.util.ArrayList;
+
 public class IPOP extends Game {
 
     public SpriteBatch batch;
@@ -64,6 +66,17 @@ public class IPOP extends Game {
         this.font = new BitmapFont();
     }
 
+    static ArrayList<String> families = new ArrayList<>();
+    static ArrayList<Texture> imgFamilies = new ArrayList<>();
+    static ArrayList<String> familiaInformatica = new ArrayList<>();
+    static ArrayList<String> familiaAdministratiu = new ArrayList<>();
+    static ArrayList<String> familiaAutomocio = new ArrayList<>();
+    static ArrayList<String> familiaProduccio = new ArrayList<>();
+    static ArrayList<String> familiaMecanica = new ArrayList<>();
+    static ArrayList<String>  familiaAigua = new ArrayList<>();
+
+    static ArrayList<Texture> familia_imagenes = new ArrayList<>();
+
     public static void loadResources() {
 
         Player.sprite = new Texture(Gdx.files.internal("IPOP-Walking.png"));
@@ -73,6 +86,8 @@ public class IPOP extends Game {
         TextureRegion[] player_right = new TextureRegion[4];
         TextureRegion[] player_down = new TextureRegion[4];
         TextureRegion[] player_show_room = new TextureRegion[16];
+
+
 
         player_front[0] = new TextureRegion(Player.sprite, 7, 3, 33, 45);
         player_front[1] = new TextureRegion(Player.sprite, 55, 1, 33, 47);
@@ -98,6 +113,33 @@ public class IPOP extends Game {
         Player.player_up = new Animation<>(0.25f, player_down);
         Player.player_left = new Animation<>(0.25f, player_left);
         Player.player_right = new Animation<>(0.25f, player_right);
+
+        families.add("Informatica");
+        families.add("Administratiu");
+        families.add("Automocio");
+        families.add("Manteniment i serveis a la produccio");
+        families.add("Fabricacio Mecanica");
+        families.add("Aigues");
+
+        familiaInformatica.add("Sistemes microinformatics i xarxes");
+        familiaInformatica.add("Administracio de sistemes informatics en xarxa");
+        familiaInformatica.add("Desenvolupament d aplicacions multiplataforma");
+        familiaInformatica.add("Desenvolupament d aplicacions web");
+
+        familiaAdministratiu.add("Gestio administrativa");
+        familiaAdministratiu.add("Administracio i finances");
+        familiaAdministratiu.add("Assistencia a la direccio");
+
+        familiaAutomocio.add("Electromecanica de vehicles automobils");
+        familiaAutomocio.add("Automocio");
+
+        familiaMecanica.add("Mecanitzacio");
+        familiaMecanica.add("Programacio en produccio fabricacio mecanica");
+
+        familiaProduccio.add("Manteniment electromecanics");
+        familiaProduccio.add("Mecatronica industrial");
+
+        familiaAigua.add("Gestió de l aigua");
 
     }
 

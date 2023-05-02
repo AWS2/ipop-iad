@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -53,7 +54,6 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
     ArrayList<String> familiaMecanica = new ArrayList<>();
     ArrayList<String> familiaAigua = new ArrayList<>();
     String selectedDegree = "Selecciona un cicle";
-
     @Override
     public void show() {
 
@@ -104,7 +104,6 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
     }
 
     private Stage loadDegreeSelector() {
-        System.out.println("Hola");
         //Integer number = 0;
         OrthographicCamera camera;
         SpriteBatch batch;
@@ -425,7 +424,7 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
                 dropSound.play();
                 selectCharacter.setText("¡Hizo clic en el botón!");
                 System.out.println("pressed!");
-                SceneController.scene = 1;
+                SceneController.scene = 2;
                 actualStage = loadCharacterSelector();
             }
         });
@@ -499,8 +498,9 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
     }
 
     int stateTime = 0;
-
+    int pasada = 0;
     private Stage loadCharacterSelector() {
+        System.out.println("Inside");
         final int[] direction = {0};
         actualStage.clear();
         actualStage = SceneController.getStageActual();
@@ -544,7 +544,56 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
         });
         actualStage.addActor(goBack);
 
-        up = new Rectangle(0, SCR_HEIGHT * 2 / 3f, SCR_WIDTH, SCR_HEIGHT / 3f);
+        Rectangle player = new Rectangle();
+        player.width = 50;
+        player.height = 50;
+        player.x = SCR_WIDTH / 2;
+        player.y = SCR_HEIGHT / 2;
+        player.setPosition(player.x, player.y);
+
+        TextureRegion up[] = new TextureRegion[4];
+        TextureRegion down[] = new TextureRegion[4];
+        TextureRegion left[] = new TextureRegion[4];
+        TextureRegion right[] = new TextureRegion[4];
+
+        Texture playerTexture = new Texture("IPOP-Walking.png");
+        down[0] = new TextureRegion(playerTexture,0,0,50,50);
+        down[1] = new TextureRegion(playerTexture,50,0,50,50);
+        down[2] = new TextureRegion(playerTexture,100,0,50,50);
+        down[3] = new TextureRegion(playerTexture,150,0,50,50);
+
+        left[0] = new TextureRegion(playerTexture,0,50,50,50);
+        left[1] = new TextureRegion(playerTexture,50,50,50,50);
+        left[2] = new TextureRegion(playerTexture,100,50,50,50);
+        left[3] = new TextureRegion(playerTexture,150,50,50,50);
+
+        right[0] = new TextureRegion(playerTexture,0,100,50,50);
+        right[1] = new TextureRegion(playerTexture,50,100,50,50);
+        right[2] = new TextureRegion(playerTexture,100,100,50,50);
+        right[3] = new TextureRegion(playerTexture,150,100,50,50);
+
+        up[0] = new TextureRegion(playerTexture,0,150,50,50);
+        up[1] = new TextureRegion(playerTexture,50,150,50,50);
+        up[2] = new TextureRegion(playerTexture,100,150,50,50);
+        up[3] = new TextureRegion(playerTexture,150,150,50,50);
+
+        Animation<TextureRegion> playerAnimation = new Animation<TextureRegion>(0.25f,right);
+        stateTime += Gdx.graphics.getDeltaTime();
+        TextureRegion frame = playerAnimation.getKeyFrame(stateTime,true);
+        Image rightAnimation = walkAnimation("Right");
+        rightAnimation.setBounds(1025,375,50,50);
+        actualStage.addActor(rightAnimation);
+        Image leftAnimation = walkAnimation("Left");
+        leftAnimation.setBounds(925,375,50,50);
+        actualStage.addActor(leftAnimation);
+        Image downAnimation = walkAnimation("Down");
+        downAnimation.setBounds(1125,375,50,50);
+        actualStage.addActor(downAnimation);
+        Image upAnimation = walkAnimation("Up");
+        upAnimation.setBounds(1225,375,50,50);
+        actualStage.addActor(upAnimation);
+        //actualStage.addActor(frame);
+       /* up = new Rectangle(0, SCR_HEIGHT * 2 / 3f, SCR_WIDTH, SCR_HEIGHT / 3f);
         down = new Rectangle(0, 0, SCR_WIDTH, SCR_HEIGHT / 3f);
         left = new Rectangle(0, 0, SCR_WIDTH / 3f, SCR_HEIGHT);
         right = new Rectangle(SCR_WIDTH * 2 / 3f, 0, SCR_WIDTH / 3f, SCR_HEIGHT);
@@ -595,7 +644,7 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
         shadowImg.setBounds(750,300,750,550);
         actualStage.addActor(shadowImg);
         playerImg.setBounds(1025,375,200,200);
-        actualStage.addActor(playerImg);
+        actualStage.addActor(playerImg);*/
         return actualStage;
     }
 
@@ -615,6 +664,61 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
                 }
             }
         return 4;
+    }
+
+    private Image walkAnimation(String direction) {
+        Image stageFrame;
+        if (direction.equals("Right")) {
+            TextureRegion right[] = new TextureRegion[4];
+            Texture playerTexture = new Texture("IPOP-Walking.png");
+            if(pasada+1 < 3) {
+                pasada++;
+            } else {
+                pasada = 0;
+            }
+
+            //right[0] = new TextureRegion(playerTexture,number*50,100,50,50);
+        /*right[1] = new TextureRegion(playerTexture,50,100,50,50);
+        right[2] = new TextureRegion(playerTexture,100,100,50,50);
+        right[3] = new TextureRegion(playerTexture,150,100,50,50);*/
+            Animation<TextureRegion> playerAnimation = new Animation<TextureRegion>(0.25f,right);
+            stateTime += Gdx.graphics.getDeltaTime();
+            TextureRegion frame = playerAnimation.getKeyFrame(stateTime,true);
+           stageFrame  = new Image( new TextureRegion(playerTexture,pasada*50,100,50,50));
+
+        } else if (direction.equals("Left")) {
+            TextureRegion left[] = new TextureRegion[4];
+            Texture playerTexture = new Texture("IPOP-Walking.png");
+            if(pasada+1 < 3) {
+                pasada++;
+            } else {
+                pasada = 0;
+            }
+
+            stageFrame  = new Image( new TextureRegion(playerTexture,pasada*50,50,50,50));
+        }   else if (direction.equals("Down")) {
+            TextureRegion down[] = new TextureRegion[4];
+            Texture playerTexture = new Texture("IPOP-Walking.png");
+            if(pasada+1 < 3) {
+                pasada++;
+            } else {
+                pasada = 0;
+            }
+
+            stageFrame  = new Image( new TextureRegion(playerTexture,pasada*50,0,50,50));
+        } else {
+            TextureRegion up[] = new TextureRegion[4];
+            Texture playerTexture = new Texture("IPOP-Walking.png");
+            if(pasada+1 < 3) {
+                pasada++;
+            } else {
+                pasada = 0;
+            }
+
+            stageFrame  = new Image( new TextureRegion(playerTexture,pasada*50,100,50,50));
+        }
+        return stageFrame;
+
     }
 
     private Stage loadSinglePlayer() {
@@ -763,7 +867,14 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         actualStage.act(delta);
-        actualStage.draw();
+
+        if (SceneController.scene == 2) {
+            this.loadCharacterSelector();
+            actualStage.draw();
+
+        } else {
+            actualStage.draw();
+        }
     }
 
     @Override

@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+import java.util.ArrayList;
+
 public class IPOP extends Game {
 
     public SpriteBatch batch;
@@ -23,9 +25,7 @@ public class IPOP extends Game {
         return instancia;
     }
 
-    public IPOP() {
-
-    }
+    public IPOP() {  }
 
     public void create() {
         batch = new SpriteBatch();
@@ -64,6 +64,15 @@ public class IPOP extends Game {
         this.font = new BitmapFont();
     }
 
+    static ArrayList<Family> families = new ArrayList<>();
+    static ArrayList<String> informatica = new ArrayList<>();
+    static ArrayList<String> administrativo = new ArrayList<>();
+    static ArrayList<String> automocion = new ArrayList<>();
+    static ArrayList<String> mecanica = new ArrayList<>();
+    static ArrayList<String> produccion = new ArrayList<>();
+    static ArrayList<String> aguas = new ArrayList<>();
+
+
     public static void loadResources() {
 
         Player.sprite = new Texture(Gdx.files.internal("IPOP-Walking.png"));
@@ -98,6 +107,33 @@ public class IPOP extends Game {
         Player.player_up = new Animation<>(0.25f, player_down);
         Player.player_left = new Animation<>(0.25f, player_left);
         Player.player_right = new Animation<>(0.25f, player_right);
+
+        informatica.add("Sistemes microinformatics i xarxes");
+        informatica.add("Administracio de sistemes informatics en xarxa");
+        informatica.add("Desenvolupament d aplicacions multiplataforma");
+        informatica.add("Desenvolupament d aplicacions web");
+
+        administrativo.add("Gestio administrativa");
+        administrativo.add("Administracio i finances");
+        administrativo.add("Assistencia a la direccio");
+
+        automocion.add("Electromecanica de vehicles automobils");
+        automocion.add("Automocio");
+
+        mecanica.add("Mecanitzacio");
+        mecanica.add("Programacio en produccio fabricacio mecanica");
+
+        produccion.add("Manteniment electromecanics");
+        produccion.add("Mecatronica industrial");
+
+        aguas.add("Gestió de l aigua");
+
+        families.add(new Family("Informatica", informatica));
+        families.add(new Family("Administratiu", administrativo));
+        families.add(new Family("Automocio", automocion));
+        families.add(new Family("Manteniment", mecanica));
+        families.add(new Family("Fabricacio Mecanica", produccion));
+        families.add(new Family("Aigues", aguas));
 
     }
 

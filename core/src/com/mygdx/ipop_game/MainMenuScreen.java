@@ -28,7 +28,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
+import java.awt.Font;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.lang.model.type.ArrayType;
 
@@ -39,7 +42,7 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
     final Sound dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
     Rectangle up, down, left, right;
 
-    String player_ocupation = "";
+    String player_ocupation = "Desarrollo de aplicaciones Multiplataforma (DAM)", player_alias = "ItsIvanPsk";
 
     @Override
     public void show() {
@@ -186,6 +189,111 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
         return actualStage;
     }
 
+    private void checkWinGame(String alias, int totemCount, int validTotems, int totemToReach, Instant startInstant, Instant endInstant) {
+        if (validTotems >= totemToReach) {
+             loadFinalScreen(alias, totemCount, validTotems, totemToReach, startInstant, endInstant);
+        }
+    }
+
+    long diffMillis = 0;
+    int validTotems = 0, totemCount = 0;
+    private Stage loadFinalScreen(String alias, int _totemCount, int _validTotems, int totemToReach, Instant startInstant, Instant endInstant) {
+        actualStage = SceneController.getStageActual();
+        actualStage.clear();
+        final TextButton background, titleLabel, aliasLabel, saveScoreLabel, ocupationLabel, validTotemsLabel, invalidTotemsLabel, timeLabel, rankings;
+        Gdx.input.setInputProcessor(actualStage);
+        Skin skin = new Skin();
+        Skin noSkin = new Skin();
+        Skin btnSkin = new Skin();
+        // Crear un estilo para el TextButton
+        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+        TextButton.TextButtonStyle textButtonStyle2 = new TextButton.TextButtonStyle();
+        TextButton.TextButtonStyle textButtonStyle3 = new TextButton.TextButtonStyle();
+        textButtonStyle.font = new BitmapFont();
+        textButtonStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture("panel-background.png")));
+        textButtonStyle3.up = new TextureRegionDrawable(new TextureRegion(new Texture("button-2.png")));
+        textButtonStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture("panel-background.png")));
+        textButtonStyle3.down = new TextureRegionDrawable(new TextureRegion(new Texture("button-2.png")));
+
+        // Asignar el estilo al Skin
+        skin.add("default", textButtonStyle, TextButton.TextButtonStyle.class);
+        noSkin.add("default", textButtonStyle2, TextButton.TextButtonStyle.class);
+        btnSkin.add("default", textButtonStyle3, TextButton.TextButtonStyle.class);
+
+        BitmapFont font = new BitmapFont();
+        font.getData().setScale(4.0f);
+        textButtonStyle.font = font;
+        textButtonStyle2.font = font;
+        textButtonStyle3.font = font;
+
+        titleLabel = new TextButton("IPOP GAME", btnSkin);
+        titleLabel.setBounds(-200,800,2700,100);
+        titleLabel.setStyle(textButtonStyle3);
+        actualStage.addActor(titleLabel);
+
+        background = new TextButton("", skin);
+        background.setBounds(350,175,1500,600);
+        background.setStyle(textButtonStyle);
+        actualStage.addActor(background);
+
+        font = new BitmapFont();
+        font.getData().setScale(4.0f);
+        textButtonStyle.font = font;
+        textButtonStyle2.font = font;
+        textButtonStyle3.font = font;
+
+        Date fechaInicio = Date.from(startInstant);
+        Date fechaFin = Date.from(endInstant);
+
+        diffMillis = fechaFin.getTime() - fechaInicio.getTime();
+
+        aliasLabel = new TextButton("Alias: " + player_alias.toUpperCase(), noSkin);
+        aliasLabel.setBounds(700,650,700,100);
+        aliasLabel.align(0);
+        aliasLabel.setStyle(textButtonStyle2);
+        actualStage.addActor(aliasLabel);
+
+        ocupationLabel = new TextButton("Ocupation: " + player_ocupation.toUpperCase(), noSkin);
+        ocupationLabel.setBounds(750,550,700,100);
+        ocupationLabel.setStyle(textButtonStyle2);
+        actualStage.addActor(ocupationLabel);
+
+        validTotemsLabel = new TextButton("Correct totems: " + validTotems, noSkin);
+        validTotemsLabel.setBounds(700,450,700,100);
+        validTotemsLabel.setStyle(textButtonStyle2);
+        actualStage.addActor(validTotemsLabel);
+
+        invalidTotemsLabel = new TextButton("Incorrect totems: " + (validTotems - totemCount), noSkin);
+        invalidTotemsLabel.setBounds(700,350,700,100);
+        invalidTotemsLabel.setStyle(textButtonStyle2);
+        actualStage.addActor(invalidTotemsLabel);
+
+        timeLabel = new TextButton("Play time: " + (diffMillis/1000) + "s", noSkin);
+        timeLabel.setBounds(700,250,700,100);
+        timeLabel.setStyle(textButtonStyle2);
+        actualStage.addActor(timeLabel);
+
+        font.getData().setScale(2.5f);
+        textButtonStyle3.font = font;
+        saveScoreLabel = new TextButton("Save Score", btnSkin);
+        saveScoreLabel.setBounds(800,20,700,100);
+        saveScoreLabel.setStyle(textButtonStyle3);
+        actualStage.addActor(saveScoreLabel);
+
+        saveScoreLabel.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                dropSound.play();
+                saveScoreWs(player_alias, player_ocupation, ((int) diffMillis/1000), validTotems, totemCount);
+            }
+        });
+        return actualStage;
+    }
+
+    private void saveScoreWs(String alias, String cicle, int time, int validTotems, int totemCount) {
+
+    }
+
     private Stage loadMainMenu() {
         IPOP.loadResources();
         actualStage = SceneController.getStageActual();
@@ -225,8 +333,17 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 dropSound.play();
-                SceneController.scene = 1;
-                actualStage = SceneController.selectNamePlayerStage;
+                try {
+                    Instant i = Instant.now();
+                    Thread.sleep(2239);
+                    Instant i2 = Instant.now();
+                    checkWinGame("", 1,1,1,i, i2);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+                //SceneController.scene = 1;
+                //actualStage = SceneController.selectNamePlayerStage;
             }
         });
 

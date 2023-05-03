@@ -28,8 +28,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Json;
+import com.mygdx.ipop_game.utils.WebSockets;
 
+import org.json.JSONObject;
+
+import java.awt.Font;
+import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.lang.model.type.ArrayType;
 
@@ -39,8 +47,8 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
     Stage actualStage;
     final Sound dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
     Rectangle up, down, left, right;
-
-    String player_ocupation = "";
+    WebSockets ws = new WebSockets();
+    String player_ocupation = "Desarrollo de aplicaciones Multiplataforma (DAM)", player_alias = "ItsIvanPsk";
 
     TestClass testClass = new TestClass();
     final IPOP ipop;
@@ -86,15 +94,16 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
         Gdx.input.setInputProcessor(actualStage);
 
         final TextButton title, subtitle;
-        TextButton family, goBack, goNext;
-        IPOP.loadResources();
+        final TextButton[] family = {null};
+        TextButton goBack;
+        TextButton goNext;
         famMax = IPOP.families.size();
 
-        Skin defaultSkin = new Skin();
+        final Skin defaultSkin = new Skin();
         Skin noSkin = new Skin();
         Skin goBackSkin = new Skin();
         Skin goNextSkin = new Skin();
-        TextButton.TextButtonStyle defaultBtnStyle = new TextButton.TextButtonStyle();
+        final TextButton.TextButtonStyle defaultBtnStyle = new TextButton.TextButtonStyle();
         TextButton.TextButtonStyle noSkinBtnStyle = new TextButton.TextButtonStyle();
         TextButton.TextButtonStyle goBackStyle = new TextButton.TextButtonStyle();
         TextButton.TextButtonStyle goNextStyle = new TextButton.TextButtonStyle();
@@ -139,6 +148,7 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
                 if (famIndex == 0) { famIndex = IPOP.families.size() - 1; }
                 else { famIndex -= 1; }
                 System.out.println(famIndex);
+                loadDegreeSelector();
             }
         });
         actualStage.addActor(goBack);
@@ -150,9 +160,11 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 dropSound.play();
-                if (famIndex == IPOP.families.size()) { famIndex = 0; }
+                if (famIndex == IPOP.families.size() - 1) { famIndex = 0; }
                 else { famIndex += 1; }
                 System.out.println(famIndex);
+
+                loadDegreeSelector();
             }
         });
         actualStage.addActor(goNext);
@@ -160,19 +172,23 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
         font = new BitmapFont();
         font.getData().setScale(2.5f);
         defaultBtnStyle.font = font;
+
         int startX= 800, startY = 650, item_heigth= 100;
+        System.out.println(IPOP.families.get(famIndex).toString());
+        System.out.println(IPOP.families.get(famIndex).getOcupations().size());
+        System.out.println(IPOP.families.get(famIndex).getOcupations().toString());
         for (int i = 0; i < IPOP.families.get(famIndex).getOcupations().size(); i++) {
-            family = new TextButton(IPOP.families.get(famIndex).getOcupations().get(i), defaultSkin);
+            family[0] = new TextButton(IPOP.families.get(famIndex).getOcupations().get(i), defaultSkin);
             if (IPOP.families.get(famIndex).getOcupations().get(i).length() > 30) {
-                family.setBounds(startX-100,startY,900,item_heigth);
-                family.setName(IPOP.families.get(famIndex).getOcupations().get(i));
+                family[0].setBounds(startX-100,startY,900,item_heigth);
+                family[0].setName(IPOP.families.get(famIndex).getOcupations().get(i));
             } else {
-                family.setBounds(startX,startY,700,item_heigth);
-                family.setName(IPOP.families.get(famIndex).getOcupations().get(i));
+                family[0].setBounds(startX,startY,700,item_heigth);
+                family[0].setName(IPOP.families.get(famIndex).getOcupations().get(i));
             }
-            family.setStyle(defaultBtnStyle);
+            family[0].setStyle(defaultBtnStyle);
             startY -= (item_heigth + 25);
-            family.addListener(new ClickListener() {
+            family[0].addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     dropSound.play();
@@ -181,13 +197,129 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
                     actualStage = loadMainMenu();
                 }
             });
-            actualStage.addActor(family);
+            actualStage.addActor(family[0]);
         }
 
         return actualStage;
     }
 
+    private void checkWinGame(String alias, int totemCount, int validTotems, int totemToReach, Instant startInstant, Instant endInstant) {
+        if (validTotems >= totemToReach) {
+             loadFinalScreen(alias, totemCount, validTotems, totemToReach, startInstant, endInstant);
+        }
+    }
+
+    long diffMillis = 0;
+    int validTotems = 0, totemCount = 0;
+    private Stage loadFinalScreen(String alias, int _totemCount, int _validTotems, int totemToReach, Instant startInstant, Instant endInstant) {
+        actualStage = SceneController.getStageActual();
+        actualStage.clear();
+        final TextButton background, titleLabel, aliasLabel, saveScoreLabel, ocupationLabel, validTotemsLabel, invalidTotemsLabel, timeLabel, rankings;
+        Gdx.input.setInputProcessor(actualStage);
+        Skin skin = new Skin();
+        Skin noSkin = new Skin();
+        Skin btnSkin = new Skin();
+        // Crear un estilo para el TextButton
+        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+        TextButton.TextButtonStyle textButtonStyle2 = new TextButton.TextButtonStyle();
+        TextButton.TextButtonStyle textButtonStyle3 = new TextButton.TextButtonStyle();
+        textButtonStyle.font = new BitmapFont();
+        textButtonStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture("panel-background.png")));
+        textButtonStyle3.up = new TextureRegionDrawable(new TextureRegion(new Texture("button-2.png")));
+        textButtonStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture("panel-background.png")));
+        textButtonStyle3.down = new TextureRegionDrawable(new TextureRegion(new Texture("button-2.png")));
+
+        // Asignar el estilo al Skin
+        skin.add("default", textButtonStyle, TextButton.TextButtonStyle.class);
+        noSkin.add("default", textButtonStyle2, TextButton.TextButtonStyle.class);
+        btnSkin.add("default", textButtonStyle3, TextButton.TextButtonStyle.class);
+
+        BitmapFont font = new BitmapFont();
+        font.getData().setScale(4.0f);
+        textButtonStyle.font = font;
+        textButtonStyle2.font = font;
+        textButtonStyle3.font = font;
+
+        titleLabel = new TextButton("IPOP GAME", btnSkin);
+        titleLabel.setBounds(-200,800,2700,100);
+        titleLabel.setStyle(textButtonStyle3);
+        actualStage.addActor(titleLabel);
+
+        background = new TextButton("", skin);
+        background.setBounds(350,175,1500,600);
+        background.setStyle(textButtonStyle);
+        actualStage.addActor(background);
+
+        font = new BitmapFont();
+        font.getData().setScale(4.0f);
+        textButtonStyle.font = font;
+        textButtonStyle2.font = font;
+        textButtonStyle3.font = font;
+
+        Date fechaInicio = Date.from(startInstant);
+        Date fechaFin = Date.from(endInstant);
+
+        diffMillis = fechaFin.getTime() - fechaInicio.getTime();
+
+        aliasLabel = new TextButton("Alias: " + player_alias.toUpperCase(), noSkin);
+        aliasLabel.setBounds(700,650,700,100);
+        aliasLabel.align(0);
+        aliasLabel.setStyle(textButtonStyle2);
+        actualStage.addActor(aliasLabel);
+
+        ocupationLabel = new TextButton("Ocupation: " + player_ocupation.toUpperCase(), noSkin);
+        ocupationLabel.setBounds(750,550,700,100);
+        ocupationLabel.setStyle(textButtonStyle2);
+        actualStage.addActor(ocupationLabel);
+
+        validTotemsLabel = new TextButton("Correct totems: " + validTotems, noSkin);
+        validTotemsLabel.setBounds(700,450,700,100);
+        validTotemsLabel.setStyle(textButtonStyle2);
+        actualStage.addActor(validTotemsLabel);
+
+        invalidTotemsLabel = new TextButton("Incorrect totems: " + (validTotems - totemCount), noSkin);
+        invalidTotemsLabel.setBounds(700,350,700,100);
+        invalidTotemsLabel.setStyle(textButtonStyle2);
+        actualStage.addActor(invalidTotemsLabel);
+
+        timeLabel = new TextButton("Play time: " + (diffMillis/1000) + "s", noSkin);
+        timeLabel.setBounds(700,250,700,100);
+        timeLabel.setStyle(textButtonStyle2);
+        actualStage.addActor(timeLabel);
+
+        font.getData().setScale(2.5f);
+        textButtonStyle3.font = font;
+        saveScoreLabel = new TextButton("Save Score", btnSkin);
+        saveScoreLabel.setBounds(800,20,700,100);
+        saveScoreLabel.setStyle(textButtonStyle3);
+        actualStage.addActor(saveScoreLabel);
+
+        saveScoreLabel.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                dropSound.play();
+                saveScoreWs(player_alias, player_ocupation, ((int) diffMillis/1000), validTotems, totemCount);
+            }
+        });
+        return actualStage;
+    }
+
+    private void saveScoreWs(String alias, String cicle, int time, int validTotems, int totemCount) {
+        try{
+            JSONObject json = new JSONObject();
+            json.put("alias", alias);
+            json.put("cicle", cicle);
+            json.put("time", time);
+            json.put("validTotems", validTotems);
+            json.put("totemCount", totemCount);
+            ws.sendPost("/api/set_ranking", json);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private Stage loadMainMenu() {
+        IPOP.loadResources();
         actualStage = SceneController.getStageActual();
         actualStage.clear();
         final TextButton title, selectName, selectCharacter, selectGrade, singlePlayer, multiplayer, rankings;
@@ -225,8 +357,17 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 dropSound.play();
-                SceneController.scene = 1;
-                actualStage = SceneController.selectNamePlayerStage;
+                try {
+                    Instant i = Instant.now();
+                    Thread.sleep(2239);
+                    Instant i2 = Instant.now();
+                    checkWinGame("", 1,1,1,i, i2);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+                //SceneController.scene = 1;
+                //actualStage = SceneController.selectNamePlayerStage;
             }
         });
 
@@ -478,8 +619,8 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
         // Crear un estilo para el TextButton
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.font = new BitmapFont();
-        textButtonStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture("button.png")));
-        textButtonStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture("button.png")));
+        textButtonStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture("button-2.png")));
+        textButtonStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture("button-2.png")));
 
         // Asignar el estilo al Skin
         skin.add("default", textButtonStyle, TextButton.TextButtonStyle.class);

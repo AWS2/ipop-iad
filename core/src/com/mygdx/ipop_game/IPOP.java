@@ -108,26 +108,34 @@ public class IPOP extends Game {
         Player.player_left = new Animation<>(0.25f, player_left);
         Player.player_right = new Animation<>(0.25f, player_right);
 
+
+        informatica = new ArrayList<>();
         informatica.add("Sistemes microinformatics i xarxes");
         informatica.add("Administracio de sistemes informatics en xarxa");
         informatica.add("Desenvolupament d aplicacions multiplataforma");
         informatica.add("Desenvolupament d aplicacions web");
 
+        administrativo = new ArrayList<>();
         administrativo.add("Gestio administrativa");
         administrativo.add("Administracio i finances");
         administrativo.add("Assistencia a la direccio");
 
+        automocion = new ArrayList<>();
         automocion.add("Electromecanica de vehicles automobils");
         automocion.add("Automocio");
 
+        mecanica = new ArrayList<>();
         mecanica.add("Mecanitzacio");
         mecanica.add("Programacio en produccio fabricacio mecanica");
 
+        produccion = new ArrayList<>();
         produccion.add("Manteniment electromecanics");
         produccion.add("Mecatronica industrial");
 
+        aguas = new ArrayList<>();
         aguas.add("Gestió de l aigua");
 
+        families = new ArrayList<>();
         families.add(new Family("Informatica", informatica));
         families.add(new Family("Administratiu", administrativo));
         families.add(new Family("Automocio", automocion));

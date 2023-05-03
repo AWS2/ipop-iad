@@ -27,8 +27,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Json;
+import com.mygdx.ipop_game.utils.WebSockets;
+
+import org.json.JSONObject;
 
 import java.awt.Font;
+import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,7 +46,7 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
     Stage actualStage;
     final Sound dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
     Rectangle up, down, left, right;
-
+    WebSockets ws = new WebSockets();
     String player_ocupation = "Desarrollo de aplicaciones Multiplataforma (DAM)", player_alias = "ItsIvanPsk";
 
     @Override
@@ -291,7 +296,17 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
     }
 
     private void saveScoreWs(String alias, String cicle, int time, int validTotems, int totemCount) {
-
+        try{
+            JSONObject json = new JSONObject();
+            json.put("alias", alias);
+            json.put("cicle", cicle);
+            json.put("time", time);
+            json.put("validTotems", validTotems);
+            json.put("totemCount", totemCount);
+            ws.sendPost("/api/set_ranking", json);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private Stage loadMainMenu() {
@@ -450,8 +465,8 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
         // Crear un estilo para el TextButton
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.font = new BitmapFont();
-        textButtonStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture("button.png")));
-        textButtonStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture("button.png")));
+        textButtonStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture("button-2.png")));
+        textButtonStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture("button-2.png")));
 
         // Asignar el estilo al Skin
         skin.add("default", textButtonStyle, TextButton.TextButtonStyle.class);

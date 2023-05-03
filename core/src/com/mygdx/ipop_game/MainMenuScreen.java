@@ -77,15 +77,16 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
         Gdx.input.setInputProcessor(actualStage);
 
         final TextButton title, subtitle;
-        TextButton family, goBack, goNext;
-        IPOP.loadResources();
+        final TextButton[] family = {null};
+        TextButton goBack;
+        TextButton goNext;
         famMax = IPOP.families.size();
 
-        Skin defaultSkin = new Skin();
+        final Skin defaultSkin = new Skin();
         Skin noSkin = new Skin();
         Skin goBackSkin = new Skin();
         Skin goNextSkin = new Skin();
-        TextButton.TextButtonStyle defaultBtnStyle = new TextButton.TextButtonStyle();
+        final TextButton.TextButtonStyle defaultBtnStyle = new TextButton.TextButtonStyle();
         TextButton.TextButtonStyle noSkinBtnStyle = new TextButton.TextButtonStyle();
         TextButton.TextButtonStyle goBackStyle = new TextButton.TextButtonStyle();
         TextButton.TextButtonStyle goNextStyle = new TextButton.TextButtonStyle();
@@ -130,6 +131,7 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
                 if (famIndex == 0) { famIndex = IPOP.families.size() - 1; }
                 else { famIndex -= 1; }
                 System.out.println(famIndex);
+                loadDegreeSelector();
             }
         });
         actualStage.addActor(goBack);
@@ -141,9 +143,11 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 dropSound.play();
-                if (famIndex == IPOP.families.size()) { famIndex = 0; }
+                if (famIndex == IPOP.families.size() - 1) { famIndex = 0; }
                 else { famIndex += 1; }
                 System.out.println(famIndex);
+
+                loadDegreeSelector();
             }
         });
         actualStage.addActor(goNext);
@@ -151,19 +155,23 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
         font = new BitmapFont();
         font.getData().setScale(2.5f);
         defaultBtnStyle.font = font;
+
         int startX= 800, startY = 650, item_heigth= 100;
+        System.out.println(IPOP.families.get(famIndex).toString());
+        System.out.println(IPOP.families.get(famIndex).getOcupations().size());
+        System.out.println(IPOP.families.get(famIndex).getOcupations().toString());
         for (int i = 0; i < IPOP.families.get(famIndex).getOcupations().size(); i++) {
-            family = new TextButton(IPOP.families.get(famIndex).getOcupations().get(i), defaultSkin);
+            family[0] = new TextButton(IPOP.families.get(famIndex).getOcupations().get(i), defaultSkin);
             if (IPOP.families.get(famIndex).getOcupations().get(i).length() > 30) {
-                family.setBounds(startX-100,startY,900,item_heigth);
-                family.setName(IPOP.families.get(famIndex).getOcupations().get(i));
+                family[0].setBounds(startX-100,startY,900,item_heigth);
+                family[0].setName(IPOP.families.get(famIndex).getOcupations().get(i));
             } else {
-                family.setBounds(startX,startY,700,item_heigth);
-                family.setName(IPOP.families.get(famIndex).getOcupations().get(i));
+                family[0].setBounds(startX,startY,700,item_heigth);
+                family[0].setName(IPOP.families.get(famIndex).getOcupations().get(i));
             }
-            family.setStyle(defaultBtnStyle);
+            family[0].setStyle(defaultBtnStyle);
             startY -= (item_heigth + 25);
-            family.addListener(new ClickListener() {
+            family[0].addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     dropSound.play();
@@ -172,13 +180,14 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
                     actualStage = loadMainMenu();
                 }
             });
-            actualStage.addActor(family);
+            actualStage.addActor(family[0]);
         }
 
         return actualStage;
     }
 
     private Stage loadMainMenu() {
+        IPOP.loadResources();
         actualStage = SceneController.getStageActual();
         actualStage.clear();
         final TextButton title, selectName, selectCharacter, selectGrade, singlePlayer, multiplayer, rankings;

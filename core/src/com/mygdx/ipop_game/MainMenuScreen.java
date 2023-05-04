@@ -19,6 +19,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -41,6 +42,10 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
 
     String player_ocupation = "";
 
+    TestClass testClass = new TestClass();
+    IPOP ipop = new IPOP();
+
+
     @Override
     public void show() {
         switch (SceneController.scene) {
@@ -48,6 +53,7 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
                 actualStage = this.loadSelectName();
                 break;
             case 2:
+                ipop.setScreen(new TestClass());
                 //actualStage = this.loadCharacterSelector();
                 break;
             case 3:
@@ -230,7 +236,9 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 dropSound.play();
-                SceneController.scene = 2;
+                //SceneController.scene = 2;
+                ipop.setScreen(new TestClass());
+
                 //actualStage = loadCharacterSelector();
             }
         });
@@ -292,6 +300,145 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
     private Stage loadSelectName() {
         actualStage.clear();
         return actualStage;
+    }
+    int stateTime = 0;
+
+    private Stage loadCharacterSelector() {
+        System.out.println("Pepa");
+        final int[] direction = {0};
+        actualStage.clear();
+        actualStage = SceneController.getStageActual();
+        final TextButton title, goBack;
+        IPOP.loadResources();
+        Gdx.input.setInputProcessor(actualStage);
+        Skin skin = new Skin();
+        // Crear un estilo para el TextButton
+        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+        textButtonStyle.font = new BitmapFont();
+        textButtonStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture("button.png")));
+        textButtonStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture("button.png")));
+        Texture sprite = new Texture("IPOP-Walking.png");
+        TextureRegion player_up[] = new TextureRegion[4];
+        TextureRegion player_left[] = new TextureRegion[4];
+        TextureRegion player_right[] = new TextureRegion[4];
+        TextureRegion player_down[] = new TextureRegion[4];
+
+        player_down[0] = new TextureRegion(sprite,0,0,50,50);
+        player_down[1] = new TextureRegion(sprite,50,0,50,50);
+        player_down[2] = new TextureRegion(sprite,100,0,50,50);
+
+        player_left[0] = new TextureRegion(sprite,0,50,50,50);
+        player_left[1] = new TextureRegion(sprite,50,50,50,50);
+        player_left[2] = new TextureRegion(sprite,100,50,50,50);
+
+        player_right[0] = new TextureRegion(sprite,0,100,50,50);
+        player_right[1] = new TextureRegion(sprite,50,100,50,50);
+        player_right[2] = new TextureRegion(sprite,100,100,50,50);
+
+        player_up[0] = new TextureRegion(sprite,0,150,50,50);
+        player_up[1] = new TextureRegion(sprite,50,150,50,50);
+        player_up[2] = new TextureRegion(sprite,100,150,50,50);
+        // Asignar el estilo al Skin
+        skin.add("default", textButtonStyle, TextButton.TextButtonStyle.class);
+
+        BitmapFont font = new BitmapFont();
+        font.getData().setScale(4.0f);
+        textButtonStyle.font = font;
+
+        title = new TextButton("Character Show Room", skin);
+        title.setBounds(-200,800,2700,100);
+        title.setStyle(textButtonStyle);
+        actualStage.addActor(title);
+
+        BitmapFont font1 = new BitmapFont();
+        font1.getData().setScale(2.0f);
+        textButtonStyle.font = font1;
+
+        goBack = new TextButton("Go Back", skin);
+        goBack.setBounds(25,25,300,100);
+        goBack.setStyle(textButtonStyle);
+
+        goBack.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                dropSound.play();
+                SceneController.scene = 8;
+                actualStage = loadMainMenu();
+            }
+        });
+        actualStage.addActor(goBack);
+
+        up = new Rectangle(0, SCR_HEIGHT * 2 / 3f, SCR_WIDTH, SCR_HEIGHT / 3f);
+        down = new Rectangle(0, 0, SCR_WIDTH, SCR_HEIGHT / 3f);
+        left = new Rectangle(0, 0, SCR_WIDTH / 3f, SCR_HEIGHT);
+        right = new Rectangle(SCR_WIDTH * 2 / 3f, 0, SCR_WIDTH / 3f, SCR_HEIGHT);
+
+        actualStage.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                if (up.contains(x, y)) {
+                    direction[0] = 0;
+                    return true;
+                } else if (down.contains(x, y)) {
+                    direction[0] = 1;
+                    return true;
+                } else if (left.contains(x, y)) {
+                    direction[0] = 2;
+                    return true;
+                } else {
+                    direction[0] = 3;
+                    return right.contains(x, y);
+                }
+            }
+        });
+
+        stateTime += Gdx.graphics.getDeltaTime();
+        TextureRegion frame;
+        Texture shadow = new Texture(Gdx.files.internal("Shadow1.png"));
+
+        switch (direction[0]){
+            case 0:
+                frame = Player.player_up.getKeyFrame(stateTime, true);
+                break;
+            case 1:
+                frame = Player.player_down.getKeyFrame(stateTime, true);
+                break;
+            case 2:
+                frame = Player.player_left.getKeyFrame(stateTime, true);
+                break;
+            case 3:
+                frame = Player.player_right.getKeyFrame(stateTime, true);
+                break;
+            default: // IDLE
+                frame = Player.player_down.getKeyFrames()[1];
+                break;
+        }
+
+        Image playerImg = new Image(frame);
+        Image shadowImg = new Image(shadow);
+        shadowImg.setBounds(750,300,750,550);
+        actualStage.addActor(shadowImg);
+        playerImg.setBounds(1025,375,200,200);
+        actualStage.addActor(playerImg);
+        return actualStage;
+    }
+
+    protected int virtual_joystick_control() {
+        for (int i = 0; i < 10; i++)
+            if (Gdx.input.isTouched(i)) {
+                Vector3 touchPos = new Vector3();
+                touchPos.set(Gdx.input.getX(i), Gdx.input.getY(i), 0);
+                if (up.contains(touchPos.x, touchPos.y)) {
+                    return 0;
+                } else if (down.contains(touchPos.x, touchPos.y)) {
+                    return 1;
+                } else if (left.contains(touchPos.x, touchPos.y)) {
+                    return 2;
+                } else if (right.contains(touchPos.x, touchPos.y)) {
+                    return 3;
+                }
+            }
+        return 4;
     }
 
     private Stage loadSinglePlayer() {
@@ -433,7 +580,11 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
 
         return actualStage;
     }
+    //todo
+/*1.Descubrir la forma correcta de cambiar de pantalla per a aconseguir invocar be l'animacio despres
 
+2.Sino descobrir com aplicar lo del delta perque no fagi el render tantes vegades (es pot posar un
+thread, encara que no seria lo millor)*/
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(1, 1, 1, 1);
@@ -441,13 +592,8 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
 
         actualStage.act(delta);
 
-        if (SceneController.scene == 2) {
-            //this.loadCharacterSelector();
-            actualStage.draw();
+        actualStage.draw();
 
-        } else {
-            actualStage.draw();
-        }
     }
 
     @Override

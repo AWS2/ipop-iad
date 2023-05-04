@@ -29,8 +29,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
-
 import java.util.ArrayList;
+
+import javax.lang.model.type.ArrayType;
 
 
 public class MainMenuScreen extends ApplicationAdapter implements Screen {
@@ -39,334 +40,148 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
     final Sound dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
     Rectangle up, down, left, right;
 
-    //Variables que s instancien
-    Integer number = 0;
-    Boolean firstTime = true;
-    Table familia = new Table(),cicles = new Table();
-    TextButton degreeNameBtn,exitBtn,degreeBtn;
-    TextButton.TextButtonStyle selected,exit,currentDegree;
-    ArrayList<String> families = new ArrayList<>();
-    ArrayList<Texture> imgFamilies = new ArrayList<>();
-    ArrayList<String> familiaInformatica = new ArrayList<>();
-    ArrayList<String> familiaAdministratiu = new ArrayList<>();
-    ArrayList<String> familiaAutomocio = new ArrayList<>();
-    ArrayList<String> familiaProduccio = new ArrayList<>();
-    ArrayList<String> familiaMecanica = new ArrayList<>();
-    ArrayList<String> familiaAigua = new ArrayList<>();
-    String selectedDegree = "Selecciona un cicle";
+    String player_ocupation = "";
+
+    TestClass testClass = new TestClass();
+    IPOP ipop = new IPOP();
+
+
     @Override
     public void show() {
-
-        up = new Rectangle(0, SCR_HEIGHT * 2 / 3f, SCR_WIDTH, SCR_HEIGHT / 3f);
-        down = new Rectangle(0, 0, SCR_WIDTH, SCR_HEIGHT / 3f);
-        left = new Rectangle(100, 100, SCR_WIDTH / 3f, SCR_HEIGHT);
-        right = new Rectangle(SCR_WIDTH * 2 / 3f, 0, SCR_WIDTH / 3f, SCR_HEIGHT);
-
         switch (SceneController.scene) {
-
-            case 0:
-                System.out.println("Scene 0");
-                actualStage = this.loadMainMenu();
-                break;
             case 1:
-                System.out.println("Scene 1");
                 actualStage = this.loadSelectName();
                 break;
             case 2:
-                System.out.println("Scene 2");
-                actualStage = this.loadCharacterSelector();
+                ipop.setScreen(new TestClass());
+                //actualStage = this.loadCharacterSelector();
                 break;
             case 3:
-                System.out.println("Scene 3");
                 actualStage = this.loadDegreeSelector();
                 break;
             case 4:
-                System.out.println("Scene 4");
                 actualStage = this.loadSinglePlayer();
                 break;
             case 5:
-                System.out.println("Scene 5");
                 actualStage = this.loadMultiplayer();
                 break;
             case 6:
-                System.out.println("Scene 6");
                 actualStage = this.loadRankings();
                 break;
             default:
                 actualStage = this.loadMainMenu();
                 break;
         }
-
-        InputMultiplexer inputMultiplexer = new InputMultiplexer();
-        inputMultiplexer.addProcessor(actualStage);
-        Gdx.input.setInputProcessor(inputMultiplexer);
-
     }
 
+    private int famIndex = 0;
+    private int famMax;
+
     private Stage loadDegreeSelector() {
-        //Integer number = 0;
-        OrthographicCamera camera;
-        SpriteBatch batch;
-        Button btn;
-        final Button.ButtonStyle tbs;
-
-        String selectedDegree = "Selecciona un cicle";
-
-        Texture img1, img2, img3, img4, img5, img6, img0;
-
-
-
         actualStage = SceneController.getStageActual();
         actualStage.clear();
         Gdx.input.setInputProcessor(actualStage);
-        //Añadir las familias de ciclos
-        families.add("Informatica");
-        families.add("Administratiu");
-        families.add("Automocio");
-        families.add("Manteniment i serveis a la produccio");
-        families.add("Fabricacio Mecanica");
-        families.add("Aigues");
 
-        //Cicles de les diferents families
-        familiaInformatica.add("Sistemes microinformatics i xarxes");
-        familiaInformatica.add("Administracio de sistemes informatics en xarxa");
-        familiaInformatica.add("Desenvolupament d aplicacions multiplataforma");
-        familiaInformatica.add("Desenvolupament d aplicacions web");
+        final TextButton title, subtitle;
+        TextButton family, goBack, goNext;
+        IPOP.loadResources();
+        famMax = IPOP.families.size();
 
-        familiaAdministratiu.add("Gestio administrativa");
-        familiaAdministratiu.add("Administracio i finances");
-        familiaAdministratiu.add("Assistencia a la direccio");
+        Skin defaultSkin = new Skin();
+        Skin noSkin = new Skin();
+        Skin goBackSkin = new Skin();
+        Skin goNextSkin = new Skin();
+        TextButton.TextButtonStyle defaultBtnStyle = new TextButton.TextButtonStyle();
+        TextButton.TextButtonStyle noSkinBtnStyle = new TextButton.TextButtonStyle();
+        TextButton.TextButtonStyle goBackStyle = new TextButton.TextButtonStyle();
+        TextButton.TextButtonStyle goNextStyle = new TextButton.TextButtonStyle();
+        defaultBtnStyle.font = new BitmapFont();
+        noSkinBtnStyle.font = new BitmapFont();
+        goBackStyle.font = new BitmapFont();
+        goNextStyle.font = new BitmapFont();
+        defaultBtnStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture("button-2.png")));
+        goBackStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture("back-button.png")));
+        goNextStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture("next-button.png")));
+        defaultBtnStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture("button-2.png")));
+        goBackStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture("back-button.png")));
+        goNextStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture("next-button.png")));
 
-        familiaAutomocio.add("Electromecanica de vehicles automobils");
-        familiaAutomocio.add("Automocio");
+        defaultSkin.add("default", defaultBtnStyle, TextButton.TextButtonStyle.class);
+        noSkin.add("default", noSkinBtnStyle, TextButton.TextButtonStyle.class);
+        goBackSkin.add("default", goBackStyle, TextButton.TextButtonStyle.class);
+        goNextSkin.add("default", goNextStyle, TextButton.TextButtonStyle.class);
 
-        familiaMecanica.add("Mecanitzacio");
-        familiaMecanica.add("Programacio en produccio fabricacio mecanica");
+        BitmapFont font = new BitmapFont();
+        font.getData().setScale(4.0f);
+        defaultBtnStyle.font = font;
+        noSkinBtnStyle.font = font;
 
-        familiaProduccio.add("Manteniment electromecanics");
-        familiaProduccio.add("Mecatronica industrial");
+        title = new TextButton("Select Familiy", noSkin);
+        title.setBounds(-200,900,2700,100);
+        title.setStyle(noSkinBtnStyle);
+        actualStage.addActor(title);
 
-        familiaAigua.add("Gestió de l aigua");
+        subtitle = new TextButton(IPOP.families.get(famIndex).getName(), noSkin);
+        subtitle.setBounds(-200,800,2700,100);
+        subtitle.setStyle(noSkinBtnStyle);
+        actualStage.addActor(subtitle);
 
-        //Imatges de prova
-        img0 = new Texture("preCicles.jpg");
-
-        img1 = new Texture("img1.png");
-        img2 = new Texture("img2.jpg");
-        img3 = new Texture("img3.jpg");
-        img4 = new Texture("img4.jpg");
-        img5 = new Texture("img5.jpg");
-        img6 = new Texture("img6.jpg");
-
-
-        imgFamilies.add(img1);
-        imgFamilies.add(img2);
-        imgFamilies.add(img3);
-        imgFamilies.add(img4);
-        imgFamilies.add(img5);
-        imgFamilies.add(img6);
-
-        //todo Fer una taula que s'actualizi segons la foto que será el cicle formatiu i despres mostra la quanitat de cicles a la taula
-
-        //Camera
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false, 800, 480);
-        batch = new SpriteBatch();
-
-        //make stage
-        //make button style (usually done with skin)
-        tbs = new Button.ButtonStyle();
-        tbs.up = new TextureRegionDrawable(new TextureRegion(img0 ,(int) (actualStage.getWidth())/2, (int) (actualStage.getHeight())));
-
-
-
-        // make button
-        btn = new Button(tbs);
-
-        btn.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                super.clicked(event, x, y);
-                if (number + 1 < imgFamilies.size()) {
-                    if (firstTime == true) {
-                        number = 0;
-                        firstTime = false;
-                    } else {
-                        number += 1;
-                    }
-                } else {
-                    number = 0;
-                }
-                tbs.up = new TextureRegionDrawable(imgFamilies.get(number));
-                System.out.println(families.get(number));
-
-                //Calcular les diferentes families
-                cicles.clear();
-                Gdx.gl.glClearColor( 255, 255, 255, 0 );
-                Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT );
-                ArrayList<String> arrayList = familiaButtons(families.get(number));
-                createFamilyButtons(arrayList);
-            }
-        });
-
-        // ad button to layout table
-        familia = new Table();
-        familia.add(btn);
-        //table.add(btn);
-        familia.setPosition(0,0);
-        //todo Mirar de separar las tablas
-        familia.setSize(actualStage.getWidth()/3,actualStage.getHeight());
-        familia.setColor(Color.WHITE);
-        //add table to stage
-        actualStage.addActor(familia);
-
-        //Taula amb els cicles de la familia
-        cicles = new Table();
-        cicles.setPosition((float) (actualStage.getHeight()/2.5),actualStage.getWidth()/10);
-        System.out.println(cicles.getX());
-        System.out.println(cicles.getY());
-        cicles.setSize(actualStage.getWidth()/2,actualStage.getHeight());
-
-        exit = new TextButton.TextButtonStyle();
-        exit.font = new BitmapFont();
-        exit.fontColor = Color.RED;
-
-        currentDegree = new TextButton.TextButtonStyle();
-        currentDegree.font = new BitmapFont();
-        currentDegree.fontColor = Color.GREEN;
-
-        actualStage.addActor(cicles);
-        //Segons el cicle afegir els elements a la taula
-
-        //set the stage to be the input processor so it responds to clicks
-        return actualStage;
-
-    }
-
-    public ArrayList<String> familiaButtons(String family) {
-
-        selected = new TextButton.TextButtonStyle();
-        selected.font = new BitmapFont();
-        selected.fontColor = Color.YELLOW;
-
-        //Es podria calcular la longitud del Array per a fer un pad mes dinamic
-        if (family.equals("Informatica")) {
-            degreeNameBtn = new TextButton(family,selected);
-            degreeNameBtn.setTransform(true);
-            degreeNameBtn.setScale(7.5f);
-            cicles.add(degreeNameBtn).padTop(350);
-            cicles.add().row();
-            return familiaInformatica;
-        } else if (family.equals("Administratiu")) {
-            degreeNameBtn = new TextButton(family,selected);
-            degreeNameBtn.setTransform(true);
-            degreeNameBtn.setScale(7.5f);
-            cicles.add(degreeNameBtn).padTop(250);
-            cicles.add().row();
-            return familiaAdministratiu;
-
-        } else if (family.equals("Automocio")) {
-            degreeNameBtn = new TextButton(family,selected);
-            degreeNameBtn.setTransform(true);
-            degreeNameBtn.setScale(7.5f);
-            cicles.add(degreeNameBtn).padTop(250);
-            cicles.add().row();
-            return familiaAutomocio;
-
-        } else if (family.equals("Manteniment i serveis a la produccio")) {
-            degreeNameBtn = new TextButton(family,selected);
-            degreeNameBtn.setTransform(true);
-            degreeNameBtn.setScale(7.5f);
-            cicles.add(degreeNameBtn).padTop(250);
-            cicles.add().row();
-            return familiaProduccio;
-
-        } else if (family.equals("Fabricacio Mecanica")) {
-            degreeNameBtn = new TextButton(family,selected);
-            degreeNameBtn.setTransform(true);
-            degreeNameBtn.setScale(7.5f);
-            cicles.add(degreeNameBtn).padTop(250);
-            cicles.add().row();
-            return familiaMecanica;
-
-        } else {
-            degreeNameBtn = new TextButton(family,selected);
-            degreeNameBtn.setTransform(true);
-            degreeNameBtn.setScale(7.5f);
-            cicles.add(degreeNameBtn).padTop(250);
-            cicles.add().row();
-            return familiaAigua;
-        }
-    }
-
-    public void createFamilyButtons (ArrayList<String> aList) {
-
-        ArrayList<Integer> buttonY = new ArrayList<>();
-        selected = new TextButton.TextButtonStyle();
-        selected.font = new BitmapFont();
-        selected.checkedDownFontColor = Color.ORANGE;
-        selected.fontColor = Color.LIGHT_GRAY;
-
-        for (int i = 0; i < aList.size(); i++) {
-
-            final String cicle = aList.get(i);
-            if (i == 0) {
-                buttonY.add((int) (cicles.getHeight()/aList.size()));
-            } else {
-                buttonY.add(buttonY.get(i-1) + (int) (cicles.getHeight()/aList.size()));
-            }
-
-
-
-            //selected.up = new TextureRegionDrawable(new TextureRegion(selectedUp));
-            //selected.down = new TextureRegionDrawable(new TextureRegion((buttonDownGreen)));
-            degreeNameBtn = new TextButton(cicle,selected);
-            degreeNameBtn.setTransform(true);
-            degreeNameBtn.setScale(6.0f);
-            //degreeNameBtn.setPosition(0,buttonY.get(i));
-            //degreeNameBtn.setY(buttonY.get(i));
-            degreeNameBtn.addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    super.clicked(event, x, y);
-
-                    selectedDegree = cicle;
-                    degreeBtn.setText(selectedDegree);
-                    Gdx.gl.glClearColor( 255, 255, 255, 0 );
-                    Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT );
-                }
-            });
-            cicles.add().row();
-            cicles.add(degreeNameBtn).pad(50);
-            cicles.add().row();
-
-            //cicles.add(degreeNameBtn).padLeft(10).width(cicles.getWidth()/aList.size()).height(cicles.getHeight()*i);
-
-
-        }
-
-
-        degreeBtn = new TextButton(selectedDegree,currentDegree);
-        degreeBtn.setTransform(true);
-        degreeBtn.setScale(6.0f);
-
-        cicles.add().row();
-        cicles.add(degreeBtn).padTop(cicles.getHeight()/8);
-        exitBtn = new TextButton("MENU",exit);
-        exitBtn.setTransform(true);
-        exitBtn.setScale(6.5f);
-
-        cicles.add().row();
-        cicles.add(exitBtn).pad(100);
-        exitBtn.addListener(new ClickListener() {
+        goBack = new TextButton("", goBackSkin);
+        goBack.setBounds(200,400,115,115);
+        goBack.setStyle(goBackStyle);
+        goBack.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 dropSound.play();
-                SceneController.scene = 8;
-                actualStage = loadMainMenu();
+                if (famIndex == 0) { famIndex = IPOP.families.size() - 1; }
+                else { famIndex -= 1; }
+                System.out.println(famIndex);
             }
         });
+        actualStage.addActor(goBack);
 
+        goNext = new TextButton("", goNextSkin);
+        goNext.setBounds(2000,400,115,115);
+        goNext.setStyle(goNextStyle);
+        goNext.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                dropSound.play();
+                if (famIndex == IPOP.families.size()) { famIndex = 0; }
+                else { famIndex += 1; }
+                System.out.println(famIndex);
+            }
+        });
+        actualStage.addActor(goNext);
+
+        font = new BitmapFont();
+        font.getData().setScale(2.5f);
+        defaultBtnStyle.font = font;
+        int startX= 800, startY = 650, item_heigth= 100;
+        for (int i = 0; i < IPOP.families.get(famIndex).getOcupations().size(); i++) {
+            family = new TextButton(IPOP.families.get(famIndex).getOcupations().get(i), defaultSkin);
+            if (IPOP.families.get(famIndex).getOcupations().get(i).length() > 30) {
+                family.setBounds(startX-100,startY,900,item_heigth);
+                family.setName(IPOP.families.get(famIndex).getOcupations().get(i));
+            } else {
+                family.setBounds(startX,startY,700,item_heigth);
+                family.setName(IPOP.families.get(famIndex).getOcupations().get(i));
+            }
+            family.setStyle(defaultBtnStyle);
+            startY -= (item_heigth + 25);
+            family.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    dropSound.play();
+                    player_ocupation = event.getListenerActor().getName();
+                    SceneController.scene = 1;
+                    actualStage = loadMainMenu();
+                }
+            });
+            actualStage.addActor(family);
+        }
+
+        return actualStage;
     }
 
     private Stage loadMainMenu() {
@@ -378,8 +193,8 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
         // Crear un estilo para el TextButton
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.font = new BitmapFont();
-        textButtonStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture("button.png")));
-        textButtonStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture("button.png")));
+        textButtonStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture("button-2.png")));
+        textButtonStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture("button-2.png")));
 
         // Asignar el estilo al Skin
         skin.add("default", textButtonStyle, TextButton.TextButtonStyle.class);
@@ -407,7 +222,6 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 dropSound.play();
-                selectName.setText("¡Hizo clic en el botón!");
                 SceneController.scene = 1;
                 actualStage = SceneController.selectNamePlayerStage;
             }
@@ -422,10 +236,10 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 dropSound.play();
-                selectCharacter.setText("¡Hizo clic en el botón!");
-                System.out.println("pressed!");
-                SceneController.scene = 2;
-                actualStage = loadCharacterSelector();
+                //SceneController.scene = 2;
+                ipop.setScreen(new TestClass());
+
+                //actualStage = loadCharacterSelector();
             }
         });
 
@@ -438,7 +252,6 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 dropSound.play();
-                selectGrade.setText("¡Hizo clic en el botón!");
                 SceneController.scene = 3;
                 System.out.println(SceneController.scene);
                 actualStage = loadDegreeSelector();
@@ -453,14 +266,6 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 dropSound.play();
-                if (selectedDegree.equals("Selecciona un cicle")) {
-                    SceneController.scene = 3;
-                    actualStage = loadDegreeSelector();
-                } else {
-                    SceneController.scene = 9;
-                    actualStage = SceneController.singlePlayerStage;
-                }
-
             }
         });
 
@@ -496,11 +301,10 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
         actualStage.clear();
         return actualStage;
     }
-
     int stateTime = 0;
-    int pasada = 0;
+
     private Stage loadCharacterSelector() {
-        System.out.println("Inside");
+        System.out.println("Pepa");
         final int[] direction = {0};
         actualStage.clear();
         actualStage = SceneController.getStageActual();
@@ -513,7 +317,27 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
         textButtonStyle.font = new BitmapFont();
         textButtonStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture("button.png")));
         textButtonStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture("button.png")));
+        Texture sprite = new Texture("IPOP-Walking.png");
+        TextureRegion player_up[] = new TextureRegion[4];
+        TextureRegion player_left[] = new TextureRegion[4];
+        TextureRegion player_right[] = new TextureRegion[4];
+        TextureRegion player_down[] = new TextureRegion[4];
 
+        player_down[0] = new TextureRegion(sprite,0,0,50,50);
+        player_down[1] = new TextureRegion(sprite,50,0,50,50);
+        player_down[2] = new TextureRegion(sprite,100,0,50,50);
+
+        player_left[0] = new TextureRegion(sprite,0,50,50,50);
+        player_left[1] = new TextureRegion(sprite,50,50,50,50);
+        player_left[2] = new TextureRegion(sprite,100,50,50,50);
+
+        player_right[0] = new TextureRegion(sprite,0,100,50,50);
+        player_right[1] = new TextureRegion(sprite,50,100,50,50);
+        player_right[2] = new TextureRegion(sprite,100,100,50,50);
+
+        player_up[0] = new TextureRegion(sprite,0,150,50,50);
+        player_up[1] = new TextureRegion(sprite,50,150,50,50);
+        player_up[2] = new TextureRegion(sprite,100,150,50,50);
         // Asignar el estilo al Skin
         skin.add("default", textButtonStyle, TextButton.TextButtonStyle.class);
 
@@ -544,56 +368,7 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
         });
         actualStage.addActor(goBack);
 
-        Rectangle player = new Rectangle();
-        player.width = 50;
-        player.height = 50;
-        player.x = SCR_WIDTH / 2;
-        player.y = SCR_HEIGHT / 2;
-        player.setPosition(player.x, player.y);
-
-        TextureRegion up[] = new TextureRegion[4];
-        TextureRegion down[] = new TextureRegion[4];
-        TextureRegion left[] = new TextureRegion[4];
-        TextureRegion right[] = new TextureRegion[4];
-
-        Texture playerTexture = new Texture("IPOP-Walking.png");
-        down[0] = new TextureRegion(playerTexture,0,0,50,50);
-        down[1] = new TextureRegion(playerTexture,50,0,50,50);
-        down[2] = new TextureRegion(playerTexture,100,0,50,50);
-        down[3] = new TextureRegion(playerTexture,150,0,50,50);
-
-        left[0] = new TextureRegion(playerTexture,0,50,50,50);
-        left[1] = new TextureRegion(playerTexture,50,50,50,50);
-        left[2] = new TextureRegion(playerTexture,100,50,50,50);
-        left[3] = new TextureRegion(playerTexture,150,50,50,50);
-
-        right[0] = new TextureRegion(playerTexture,0,100,50,50);
-        right[1] = new TextureRegion(playerTexture,50,100,50,50);
-        right[2] = new TextureRegion(playerTexture,100,100,50,50);
-        right[3] = new TextureRegion(playerTexture,150,100,50,50);
-
-        up[0] = new TextureRegion(playerTexture,0,150,50,50);
-        up[1] = new TextureRegion(playerTexture,50,150,50,50);
-        up[2] = new TextureRegion(playerTexture,100,150,50,50);
-        up[3] = new TextureRegion(playerTexture,150,150,50,50);
-
-        Animation<TextureRegion> playerAnimation = new Animation<TextureRegion>(0.25f,right);
-        stateTime += Gdx.graphics.getDeltaTime();
-        TextureRegion frame = playerAnimation.getKeyFrame(stateTime,true);
-        Image rightAnimation = walkAnimation("Right");
-        rightAnimation.setBounds(1025,375,50,50);
-        actualStage.addActor(rightAnimation);
-        Image leftAnimation = walkAnimation("Left");
-        leftAnimation.setBounds(925,375,50,50);
-        actualStage.addActor(leftAnimation);
-        Image downAnimation = walkAnimation("Down");
-        downAnimation.setBounds(1125,375,50,50);
-        actualStage.addActor(downAnimation);
-        Image upAnimation = walkAnimation("Up");
-        upAnimation.setBounds(1225,375,50,50);
-        actualStage.addActor(upAnimation);
-        //actualStage.addActor(frame);
-       /* up = new Rectangle(0, SCR_HEIGHT * 2 / 3f, SCR_WIDTH, SCR_HEIGHT / 3f);
+        up = new Rectangle(0, SCR_HEIGHT * 2 / 3f, SCR_WIDTH, SCR_HEIGHT / 3f);
         down = new Rectangle(0, 0, SCR_WIDTH, SCR_HEIGHT / 3f);
         left = new Rectangle(0, 0, SCR_WIDTH / 3f, SCR_HEIGHT);
         right = new Rectangle(SCR_WIDTH * 2 / 3f, 0, SCR_WIDTH / 3f, SCR_HEIGHT);
@@ -644,7 +419,7 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
         shadowImg.setBounds(750,300,750,550);
         actualStage.addActor(shadowImg);
         playerImg.setBounds(1025,375,200,200);
-        actualStage.addActor(playerImg);*/
+        actualStage.addActor(playerImg);
         return actualStage;
     }
 
@@ -664,61 +439,6 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
                 }
             }
         return 4;
-    }
-
-    private Image walkAnimation(String direction) {
-        Image stageFrame;
-        if (direction.equals("Right")) {
-            TextureRegion right[] = new TextureRegion[4];
-            Texture playerTexture = new Texture("IPOP-Walking.png");
-            if(pasada+1 < 3) {
-                pasada++;
-            } else {
-                pasada = 0;
-            }
-
-            //right[0] = new TextureRegion(playerTexture,number*50,100,50,50);
-        /*right[1] = new TextureRegion(playerTexture,50,100,50,50);
-        right[2] = new TextureRegion(playerTexture,100,100,50,50);
-        right[3] = new TextureRegion(playerTexture,150,100,50,50);*/
-            Animation<TextureRegion> playerAnimation = new Animation<TextureRegion>(0.25f,right);
-            stateTime += Gdx.graphics.getDeltaTime();
-            TextureRegion frame = playerAnimation.getKeyFrame(stateTime,true);
-           stageFrame  = new Image( new TextureRegion(playerTexture,pasada*50,100,50,50));
-
-        } else if (direction.equals("Left")) {
-            TextureRegion left[] = new TextureRegion[4];
-            Texture playerTexture = new Texture("IPOP-Walking.png");
-            if(pasada+1 < 3) {
-                pasada++;
-            } else {
-                pasada = 0;
-            }
-
-            stageFrame  = new Image( new TextureRegion(playerTexture,pasada*50,50,50,50));
-        }   else if (direction.equals("Down")) {
-            TextureRegion down[] = new TextureRegion[4];
-            Texture playerTexture = new Texture("IPOP-Walking.png");
-            if(pasada+1 < 3) {
-                pasada++;
-            } else {
-                pasada = 0;
-            }
-
-            stageFrame  = new Image( new TextureRegion(playerTexture,pasada*50,0,50,50));
-        } else {
-            TextureRegion up[] = new TextureRegion[4];
-            Texture playerTexture = new Texture("IPOP-Walking.png");
-            if(pasada+1 < 3) {
-                pasada++;
-            } else {
-                pasada = 0;
-            }
-
-            stageFrame  = new Image( new TextureRegion(playerTexture,pasada*50,100,50,50));
-        }
-        return stageFrame;
-
     }
 
     private Stage loadSinglePlayer() {
@@ -822,27 +542,27 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
         top5.setStyle(textButtonStyle);
         actualStage.addActor(top5);
 
-        top6 = new TextButton(rankings.get(0).name + " - " + rankings.get(0).score, skin);
+        top6 = new TextButton(rankings.get(5).name + " - " + rankings.get(5).score, skin);
         top6.setBounds(1300,650,450,100);
         top6.setStyle(textButtonStyle);
         actualStage.addActor(top6);
 
-        top7 = new TextButton(rankings.get(1).name + " - " + rankings.get(1).score, skin);
+        top7 = new TextButton(rankings.get(6).name + " - " + rankings.get(6).score, skin);
         top7.setBounds(1300,525,450,100);
         top7.setStyle(textButtonStyle);
         actualStage.addActor(top7);
 
-        top8 = new TextButton(rankings.get(2).name + " - " + rankings.get(2).score, skin);
+        top8 = new TextButton(rankings.get(7).name + " - " + rankings.get(7).score, skin);
         top8.setBounds(1300,400,450,100);
         top8.setStyle(textButtonStyle);
         actualStage.addActor(top8);
 
-        top9 = new TextButton(rankings.get(3).name + " - " + rankings.get(3).score, skin);
+        top9 = new TextButton(rankings.get(8).name + " - " + rankings.get(8).score, skin);
         top9.setBounds(1300,275,450,100);
         top9.setStyle(textButtonStyle);
         actualStage.addActor(top9);
 
-        top10 = new TextButton(rankings.get(4).name + " - " + rankings.get(4).score, skin);
+        top10 = new TextButton(rankings.get(9).name + " - " + rankings.get(9).score, skin);
         top10.setBounds(1300,150,450,100);
         top10.setStyle(textButtonStyle);
         actualStage.addActor(top10);
@@ -860,7 +580,11 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
 
         return actualStage;
     }
+    //todo
+/*1.Descubrir la forma correcta de cambiar de pantalla per a aconseguir invocar be l'animacio despres
 
+2.Sino descobrir com aplicar lo del delta perque no fagi el render tantes vegades (es pot posar un
+thread, encara que no seria lo millor)*/
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(1, 1, 1, 1);
@@ -868,13 +592,8 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
 
         actualStage.act(delta);
 
-        if (SceneController.scene == 2) {
-            this.loadCharacterSelector();
-            actualStage.draw();
+        actualStage.draw();
 
-        } else {
-            actualStage.draw();
-        }
     }
 
     @Override

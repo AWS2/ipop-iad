@@ -42,7 +42,6 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
 
     String player_ocupation = "";
 
-    TestClass testClass = new TestClass();
     final IPOP ipop;
 
     public MainMenuScreen(IPOP game) {
@@ -56,7 +55,7 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
                 actualStage = this.loadSelectName();
                 break;
             case 2:
-                ipop.setScreen(new TestClass());
+                ipop.setScreen(new PlayingScreen(ipop));
                 //actualStage = this.loadCharacterSelector();
                 break;
             case 3:
@@ -240,7 +239,7 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 dropSound.play();
                 //SceneController.scene = 2;
-                ipop.setScreen(new TestClass());
+                ipop.setScreen(new PlayingScreen(ipop));
 
                 //actualStage = loadCharacterSelector();
             }

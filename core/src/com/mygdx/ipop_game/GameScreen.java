@@ -1,4 +1,7 @@
 package com.mygdx.ipop_game;
+import static com.mygdx.ipop_game.utils.GameUtils.SCR_HEIGHT;
+import static com.mygdx.ipop_game.utils.GameUtils.SCR_WIDTH;
+
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Game;
@@ -26,7 +29,7 @@ public class GameScreen implements ApplicationListener, Screen {
 	public GameScreen(final IPOP game) {
 		this.game = game;
 		camera = new OrthographicCamera();
-		camera.setToOrtho(false, 800, 480);
+		camera.setToOrtho(false, SCR_WIDTH, SCR_HEIGHT);
 	}
 
 	@Override

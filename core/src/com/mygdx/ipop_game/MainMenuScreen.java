@@ -43,8 +43,11 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
     String player_ocupation = "";
 
     TestClass testClass = new TestClass();
-    IPOP ipop = new IPOP();
+    final IPOP ipop;
 
+    public MainMenuScreen(IPOP game) {
+        this.ipop = game;
+    }
 
     @Override
     public void show() {
@@ -265,7 +268,7 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
         singlePlayer.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                dropSound.play();
+                ipop.setScreen(new PlayingScreen(ipop));
             }
         });
 
@@ -378,15 +381,19 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 if (up.contains(x, y)) {
                     direction[0] = 0;
+                    System.out.println("up");
                     return true;
                 } else if (down.contains(x, y)) {
+                    System.out.println("down");
                     direction[0] = 1;
                     return true;
                 } else if (left.contains(x, y)) {
                     direction[0] = 2;
+                    System.out.println("left");
                     return true;
                 } else {
                     direction[0] = 3;
+                    System.out.println("right");
                     return right.contains(x, y);
                 }
             }

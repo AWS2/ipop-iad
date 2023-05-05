@@ -19,6 +19,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -39,11 +40,12 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
     final Sound dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
     Rectangle up, down, left, right;
 
-    Integer number = 0;
-    Boolean firstTime = true;
-    Table familia = new Table(),cicles = new Table();
-    TextButton degreeNameBtn,exitBtn,degreeBtn;
-    TextButton.TextButtonStyle selected,exit,currentDegree;
+    String player_ocupation = "";
+
+    TestClass testClass = new TestClass();
+    IPOP ipop = new IPOP();
+
+
     @Override
     public void show() {
         switch (SceneController.scene) {
@@ -51,7 +53,8 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
                 actualStage = this.loadSelectName();
                 break;
             case 2:
-                actualStage = this.loadCharacterSelector();
+                ipop.setScreen(new TestClass());
+                //actualStage = this.loadCharacterSelector();
                 break;
             case 3:
                 actualStage = this.loadDegreeSelector();
@@ -71,54 +74,108 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
         }
     }
 
+    private int famIndex = 0;
+    private int famMax;
+
     private Stage loadDegreeSelector() {
         actualStage = SceneController.getStageActual();
         actualStage.clear();
         Gdx.input.setInputProcessor(actualStage);
 
-        final TextButton title;
-        TextButton family;
+        final TextButton title, subtitle;
+        TextButton family, goBack, goNext;
         IPOP.loadResources();
-        Skin skin = new Skin();
-        // Crear un estilo para el TextButton
-        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
-        textButtonStyle.font = new BitmapFont();
-        textButtonStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture("button-2.png")));
-        textButtonStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture("button-2.png")));
+        famMax = IPOP.families.size();
 
-        // Asignar el estilo al Skin
-        skin.add("default", textButtonStyle, TextButton.TextButtonStyle.class);
+        Skin defaultSkin = new Skin();
+        Skin noSkin = new Skin();
+        Skin goBackSkin = new Skin();
+        Skin goNextSkin = new Skin();
+        TextButton.TextButtonStyle defaultBtnStyle = new TextButton.TextButtonStyle();
+        TextButton.TextButtonStyle noSkinBtnStyle = new TextButton.TextButtonStyle();
+        TextButton.TextButtonStyle goBackStyle = new TextButton.TextButtonStyle();
+        TextButton.TextButtonStyle goNextStyle = new TextButton.TextButtonStyle();
+        defaultBtnStyle.font = new BitmapFont();
+        noSkinBtnStyle.font = new BitmapFont();
+        goBackStyle.font = new BitmapFont();
+        goNextStyle.font = new BitmapFont();
+        defaultBtnStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture("button-2.png")));
+        goBackStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture("back-button.png")));
+        goNextStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture("next-button.png")));
+        defaultBtnStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture("button-2.png")));
+        goBackStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture("back-button.png")));
+        goNextStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture("next-button.png")));
+
+        defaultSkin.add("default", defaultBtnStyle, TextButton.TextButtonStyle.class);
+        noSkin.add("default", noSkinBtnStyle, TextButton.TextButtonStyle.class);
+        goBackSkin.add("default", goBackStyle, TextButton.TextButtonStyle.class);
+        goNextSkin.add("default", goNextStyle, TextButton.TextButtonStyle.class);
 
         BitmapFont font = new BitmapFont();
         font.getData().setScale(4.0f);
-        textButtonStyle.font = font;
+        defaultBtnStyle.font = font;
+        noSkinBtnStyle.font = font;
 
-        title = new TextButton("Select Familiy", skin);
-        title.setBounds(-200,800,2700,100);
-        title.setStyle(textButtonStyle);
+        title = new TextButton("Select Familiy", noSkin);
+        title.setBounds(-200,900,2700,100);
+        title.setStyle(noSkinBtnStyle);
         actualStage.addActor(title);
+
+        subtitle = new TextButton(IPOP.families.get(famIndex).getName(), noSkin);
+        subtitle.setBounds(-200,800,2700,100);
+        subtitle.setStyle(noSkinBtnStyle);
+        actualStage.addActor(subtitle);
+
+        goBack = new TextButton("", goBackSkin);
+        goBack.setBounds(200,400,115,115);
+        goBack.setStyle(goBackStyle);
+        goBack.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                dropSound.play();
+                if (famIndex == 0) { famIndex = IPOP.families.size() - 1; }
+                else { famIndex -= 1; }
+                System.out.println(famIndex);
+            }
+        });
+        actualStage.addActor(goBack);
+
+        goNext = new TextButton("", goNextSkin);
+        goNext.setBounds(2000,400,115,115);
+        goNext.setStyle(goNextStyle);
+        goNext.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                dropSound.play();
+                if (famIndex == IPOP.families.size()) { famIndex = 0; }
+                else { famIndex += 1; }
+                System.out.println(famIndex);
+            }
+        });
+        actualStage.addActor(goNext);
 
         font = new BitmapFont();
         font.getData().setScale(2.5f);
-        textButtonStyle.font = font;
-        int startX= 800, startY = 650;
-        int item_heigth= 100;
-        for (int i = 0; i < IPOP.families.size(); i++) {
-            family = new TextButton(IPOP.families.get(i), skin);
-            if (IPOP.families.get(i).length() > 30) {
+        defaultBtnStyle.font = font;
+        int startX= 800, startY = 650, item_heigth= 100;
+        for (int i = 0; i < IPOP.families.get(famIndex).getOcupations().size(); i++) {
+            family = new TextButton(IPOP.families.get(famIndex).getOcupations().get(i), defaultSkin);
+            if (IPOP.families.get(famIndex).getOcupations().get(i).length() > 30) {
                 family.setBounds(startX-100,startY,900,item_heigth);
+                family.setName(IPOP.families.get(famIndex).getOcupations().get(i));
             } else {
                 family.setBounds(startX,startY,700,item_heigth);
-
+                family.setName(IPOP.families.get(famIndex).getOcupations().get(i));
             }
-            family.setStyle(textButtonStyle);
+            family.setStyle(defaultBtnStyle);
             startY -= (item_heigth + 25);
             family.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     dropSound.play();
+                    player_ocupation = event.getListenerActor().getName();
                     SceneController.scene = 1;
-                    actualStage = SceneController.selectNamePlayerStage;
+                    actualStage = loadMainMenu();
                 }
             });
             actualStage.addActor(family);
@@ -179,8 +236,10 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 dropSound.play();
-                SceneController.scene = 2;
-                actualStage = loadCharacterSelector();
+                //SceneController.scene = 2;
+                ipop.setScreen(new TestClass());
+
+                //actualStage = loadCharacterSelector();
             }
         });
 
@@ -242,11 +301,10 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
         actualStage.clear();
         return actualStage;
     }
-
     int stateTime = 0;
-    int pasada = 0;
+
     private Stage loadCharacterSelector() {
-        System.out.println("Inside");
+        System.out.println("Pepa");
         final int[] direction = {0};
         actualStage.clear();
         actualStage = SceneController.getStageActual();
@@ -259,7 +317,27 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
         textButtonStyle.font = new BitmapFont();
         textButtonStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture("button.png")));
         textButtonStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture("button.png")));
+        Texture sprite = new Texture("IPOP-Walking.png");
+        TextureRegion player_up[] = new TextureRegion[4];
+        TextureRegion player_left[] = new TextureRegion[4];
+        TextureRegion player_right[] = new TextureRegion[4];
+        TextureRegion player_down[] = new TextureRegion[4];
 
+        player_down[0] = new TextureRegion(sprite,0,0,50,50);
+        player_down[1] = new TextureRegion(sprite,50,0,50,50);
+        player_down[2] = new TextureRegion(sprite,100,0,50,50);
+
+        player_left[0] = new TextureRegion(sprite,0,50,50,50);
+        player_left[1] = new TextureRegion(sprite,50,50,50,50);
+        player_left[2] = new TextureRegion(sprite,100,50,50,50);
+
+        player_right[0] = new TextureRegion(sprite,0,100,50,50);
+        player_right[1] = new TextureRegion(sprite,50,100,50,50);
+        player_right[2] = new TextureRegion(sprite,100,100,50,50);
+
+        player_up[0] = new TextureRegion(sprite,0,150,50,50);
+        player_up[1] = new TextureRegion(sprite,50,150,50,50);
+        player_up[2] = new TextureRegion(sprite,100,150,50,50);
         // Asignar el estilo al Skin
         skin.add("default", textButtonStyle, TextButton.TextButtonStyle.class);
 
@@ -290,56 +368,7 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
         });
         actualStage.addActor(goBack);
 
-        Rectangle player = new Rectangle();
-        player.width = 50;
-        player.height = 50;
-        player.x = SCR_WIDTH / 2;
-        player.y = SCR_HEIGHT / 2;
-        player.setPosition(player.x, player.y);
-
-        TextureRegion up[] = new TextureRegion[4];
-        TextureRegion down[] = new TextureRegion[4];
-        TextureRegion left[] = new TextureRegion[4];
-        TextureRegion right[] = new TextureRegion[4];
-
-        Texture playerTexture = new Texture("IPOP-Walking.png");
-        down[0] = new TextureRegion(playerTexture,0,0,50,50);
-        down[1] = new TextureRegion(playerTexture,50,0,50,50);
-        down[2] = new TextureRegion(playerTexture,100,0,50,50);
-        down[3] = new TextureRegion(playerTexture,150,0,50,50);
-
-        left[0] = new TextureRegion(playerTexture,0,50,50,50);
-        left[1] = new TextureRegion(playerTexture,50,50,50,50);
-        left[2] = new TextureRegion(playerTexture,100,50,50,50);
-        left[3] = new TextureRegion(playerTexture,150,50,50,50);
-
-        right[0] = new TextureRegion(playerTexture,0,100,50,50);
-        right[1] = new TextureRegion(playerTexture,50,100,50,50);
-        right[2] = new TextureRegion(playerTexture,100,100,50,50);
-        right[3] = new TextureRegion(playerTexture,150,100,50,50);
-
-        up[0] = new TextureRegion(playerTexture,0,150,50,50);
-        up[1] = new TextureRegion(playerTexture,50,150,50,50);
-        up[2] = new TextureRegion(playerTexture,100,150,50,50);
-        up[3] = new TextureRegion(playerTexture,150,150,50,50);
-
-        Animation<TextureRegion> playerAnimation = new Animation<TextureRegion>(0.25f,right);
-        stateTime += Gdx.graphics.getDeltaTime();
-        TextureRegion frame = playerAnimation.getKeyFrame(stateTime,true);
-        Image rightAnimation = walkAnimation("Right");
-        rightAnimation.setBounds(1025,375,50,50);
-        actualStage.addActor(rightAnimation);
-        Image leftAnimation = walkAnimation("Left");
-        leftAnimation.setBounds(925,375,50,50);
-        actualStage.addActor(leftAnimation);
-        Image downAnimation = walkAnimation("Down");
-        downAnimation.setBounds(1125,375,50,50);
-        actualStage.addActor(downAnimation);
-        Image upAnimation = walkAnimation("Up");
-        upAnimation.setBounds(1225,375,50,50);
-        actualStage.addActor(upAnimation);
-        //actualStage.addActor(frame);
-       /* up = new Rectangle(0, SCR_HEIGHT * 2 / 3f, SCR_WIDTH, SCR_HEIGHT / 3f);
+        up = new Rectangle(0, SCR_HEIGHT * 2 / 3f, SCR_WIDTH, SCR_HEIGHT / 3f);
         down = new Rectangle(0, 0, SCR_WIDTH, SCR_HEIGHT / 3f);
         left = new Rectangle(0, 0, SCR_WIDTH / 3f, SCR_HEIGHT);
         right = new Rectangle(SCR_WIDTH * 2 / 3f, 0, SCR_WIDTH / 3f, SCR_HEIGHT);
@@ -390,7 +419,7 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
         shadowImg.setBounds(750,300,750,550);
         actualStage.addActor(shadowImg);
         playerImg.setBounds(1025,375,200,200);
-        actualStage.addActor(playerImg);*/
+        actualStage.addActor(playerImg);
         return actualStage;
     }
 
@@ -410,61 +439,6 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
                 }
             }
         return 4;
-    }
-
-    private Image walkAnimation(String direction) {
-        Image stageFrame;
-        if (direction.equals("Right")) {
-            TextureRegion right[] = new TextureRegion[4];
-            Texture playerTexture = new Texture("IPOP-Walking.png");
-            if(pasada+1 < 3) {
-                pasada++;
-            } else {
-                pasada = 0;
-            }
-
-            //right[0] = new TextureRegion(playerTexture,number*50,100,50,50);
-        /*right[1] = new TextureRegion(playerTexture,50,100,50,50);
-        right[2] = new TextureRegion(playerTexture,100,100,50,50);
-        right[3] = new TextureRegion(playerTexture,150,100,50,50);*/
-            Animation<TextureRegion> playerAnimation = new Animation<TextureRegion>(0.25f,right);
-            stateTime += Gdx.graphics.getDeltaTime();
-            TextureRegion frame = playerAnimation.getKeyFrame(stateTime,true);
-           stageFrame  = new Image( new TextureRegion(playerTexture,pasada*50,100,50,50));
-
-        } else if (direction.equals("Left")) {
-            TextureRegion left[] = new TextureRegion[4];
-            Texture playerTexture = new Texture("IPOP-Walking.png");
-            if(pasada+1 < 3) {
-                pasada++;
-            } else {
-                pasada = 0;
-            }
-
-            stageFrame  = new Image( new TextureRegion(playerTexture,pasada*50,50,50,50));
-        }   else if (direction.equals("Down")) {
-            TextureRegion down[] = new TextureRegion[4];
-            Texture playerTexture = new Texture("IPOP-Walking.png");
-            if(pasada+1 < 3) {
-                pasada++;
-            } else {
-                pasada = 0;
-            }
-
-            stageFrame  = new Image( new TextureRegion(playerTexture,pasada*50,0,50,50));
-        } else {
-            TextureRegion up[] = new TextureRegion[4];
-            Texture playerTexture = new Texture("IPOP-Walking.png");
-            if(pasada+1 < 3) {
-                pasada++;
-            } else {
-                pasada = 0;
-            }
-
-            stageFrame  = new Image( new TextureRegion(playerTexture,pasada*50,100,50,50));
-        }
-        return stageFrame;
-
     }
 
     private Stage loadSinglePlayer() {
@@ -568,27 +542,27 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
         top5.setStyle(textButtonStyle);
         actualStage.addActor(top5);
 
-        top6 = new TextButton(rankings.get(0).name + " - " + rankings.get(0).score, skin);
+        top6 = new TextButton(rankings.get(5).name + " - " + rankings.get(5).score, skin);
         top6.setBounds(1300,650,450,100);
         top6.setStyle(textButtonStyle);
         actualStage.addActor(top6);
 
-        top7 = new TextButton(rankings.get(1).name + " - " + rankings.get(1).score, skin);
+        top7 = new TextButton(rankings.get(6).name + " - " + rankings.get(6).score, skin);
         top7.setBounds(1300,525,450,100);
         top7.setStyle(textButtonStyle);
         actualStage.addActor(top7);
 
-        top8 = new TextButton(rankings.get(2).name + " - " + rankings.get(2).score, skin);
+        top8 = new TextButton(rankings.get(7).name + " - " + rankings.get(7).score, skin);
         top8.setBounds(1300,400,450,100);
         top8.setStyle(textButtonStyle);
         actualStage.addActor(top8);
 
-        top9 = new TextButton(rankings.get(3).name + " - " + rankings.get(3).score, skin);
+        top9 = new TextButton(rankings.get(8).name + " - " + rankings.get(8).score, skin);
         top9.setBounds(1300,275,450,100);
         top9.setStyle(textButtonStyle);
         actualStage.addActor(top9);
 
-        top10 = new TextButton(rankings.get(4).name + " - " + rankings.get(4).score, skin);
+        top10 = new TextButton(rankings.get(9).name + " - " + rankings.get(9).score, skin);
         top10.setBounds(1300,150,450,100);
         top10.setStyle(textButtonStyle);
         actualStage.addActor(top10);
@@ -606,7 +580,11 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
 
         return actualStage;
     }
+    //todo
+/*1.Descubrir la forma correcta de cambiar de pantalla per a aconseguir invocar be l'animacio despres
 
+2.Sino descobrir com aplicar lo del delta perque no fagi el render tantes vegades (es pot posar un
+thread, encara que no seria lo millor)*/
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(1, 1, 1, 1);
@@ -614,13 +592,8 @@ public class MainMenuScreen extends ApplicationAdapter implements Screen {
 
         actualStage.act(delta);
 
-        if (SceneController.scene == 2) {
-            this.loadCharacterSelector();
-            actualStage.draw();
+        actualStage.draw();
 
-        } else {
-            actualStage.draw();
-        }
     }
 
     @Override

@@ -25,9 +25,7 @@ public class IPOP extends Game {
         return instancia;
     }
 
-    public IPOP() {
-
-    }
+    public IPOP() {  }
 
     public void create() {
         batch = new SpriteBatch();
@@ -66,16 +64,14 @@ public class IPOP extends Game {
         this.font = new BitmapFont();
     }
 
-    static ArrayList<String> families = new ArrayList<>();
-    static ArrayList<Texture> imgFamilies = new ArrayList<>();
-    static ArrayList<String> familiaInformatica = new ArrayList<>();
-    static ArrayList<String> familiaAdministratiu = new ArrayList<>();
-    static ArrayList<String> familiaAutomocio = new ArrayList<>();
-    static ArrayList<String> familiaProduccio = new ArrayList<>();
-    static ArrayList<String> familiaMecanica = new ArrayList<>();
-    static ArrayList<String>  familiaAigua = new ArrayList<>();
+    static ArrayList<Family> families = new ArrayList<>();
+    static ArrayList<String> informatica = new ArrayList<>();
+    static ArrayList<String> administrativo = new ArrayList<>();
+    static ArrayList<String> automocion = new ArrayList<>();
+    static ArrayList<String> mecanica = new ArrayList<>();
+    static ArrayList<String> produccion = new ArrayList<>();
+    static ArrayList<String> aguas = new ArrayList<>();
 
-    static ArrayList<Texture> familia_imagenes = new ArrayList<>();
 
     public static void loadResources() {
 
@@ -86,8 +82,6 @@ public class IPOP extends Game {
         TextureRegion[] player_right = new TextureRegion[4];
         TextureRegion[] player_down = new TextureRegion[4];
         TextureRegion[] player_show_room = new TextureRegion[16];
-
-
 
         player_front[0] = new TextureRegion(Player.sprite, 7, 3, 33, 45);
         player_front[1] = new TextureRegion(Player.sprite, 55, 1, 33, 47);
@@ -114,32 +108,32 @@ public class IPOP extends Game {
         Player.player_left = new Animation<>(0.25f, player_left);
         Player.player_right = new Animation<>(0.25f, player_right);
 
-        families.add("Informatica");
-        families.add("Administratiu");
-        families.add("Automocio");
-        families.add("Manteniment i serveis a la produccio");
-        families.add("Fabricacio Mecanica");
-        families.add("Aigues");
+        informatica.add("Sistemes microinformatics i xarxes");
+        informatica.add("Administracio de sistemes informatics en xarxa");
+        informatica.add("Desenvolupament d aplicacions multiplataforma");
+        informatica.add("Desenvolupament d aplicacions web");
 
-        familiaInformatica.add("Sistemes microinformatics i xarxes");
-        familiaInformatica.add("Administracio de sistemes informatics en xarxa");
-        familiaInformatica.add("Desenvolupament d aplicacions multiplataforma");
-        familiaInformatica.add("Desenvolupament d aplicacions web");
+        administrativo.add("Gestio administrativa");
+        administrativo.add("Administracio i finances");
+        administrativo.add("Assistencia a la direccio");
 
-        familiaAdministratiu.add("Gestio administrativa");
-        familiaAdministratiu.add("Administracio i finances");
-        familiaAdministratiu.add("Assistencia a la direccio");
+        automocion.add("Electromecanica de vehicles automobils");
+        automocion.add("Automocio");
 
-        familiaAutomocio.add("Electromecanica de vehicles automobils");
-        familiaAutomocio.add("Automocio");
+        mecanica.add("Mecanitzacio");
+        mecanica.add("Programacio en produccio fabricacio mecanica");
 
-        familiaMecanica.add("Mecanitzacio");
-        familiaMecanica.add("Programacio en produccio fabricacio mecanica");
+        produccion.add("Manteniment electromecanics");
+        produccion.add("Mecatronica industrial");
 
-        familiaProduccio.add("Manteniment electromecanics");
-        familiaProduccio.add("Mecatronica industrial");
+        aguas.add("Gestió de l aigua");
 
-        familiaAigua.add("Gestió de l aigua");
+        families.add(new Family("Informatica", informatica));
+        families.add(new Family("Administratiu", administrativo));
+        families.add(new Family("Automocio", automocion));
+        families.add(new Family("Manteniment", mecanica));
+        families.add(new Family("Fabricacio Mecanica", produccion));
+        families.add(new Family("Aigues", aguas));
 
     }
 

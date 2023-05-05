@@ -21,18 +21,16 @@ public class PlayingScreen implements Screen {
 
     public PlayingScreen(IPOP game) {
         this.game = game;
-        spriteSheet = new Texture(Gdx.files.internal("IPOP-Walking.png")); // Archivo con la hoja de sprites
-        TextureRegion[][] spriteSheetFrames = TextureRegion.split(spriteSheet, 32, 32); // Tamaño de cada frame en la hoja de sprites
+        spriteSheet = new Texture(Gdx.files.internal("IPOP-Walking.png"));
+        TextureRegion[][] spriteSheetFrames = TextureRegion.split(spriteSheet, 32, 32);
         Array<TextureRegion> animationFrames = new Array<TextureRegion>();
 
-        // Agregar los frames de la animación al Array
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 4; j++) {
                 animationFrames.add(spriteSheetFrames[i][j]);
             }
         }
 
-        // Crear la animación con los frames y la velocidad de reproducción
         animation = new Animation<TextureRegion>(0.25f, animationFrames);
         stateTime = 0f;
 
@@ -41,23 +39,14 @@ public class PlayingScreen implements Screen {
     }
 
     @Override
-    public void show() {
-
-    }
+    public void show() {  }
 
     @Override
     public void render(float delta) {
-        // Actualizar el tiempo de animación
         stateTime += delta;
-
-        // Limpiar la pantalla
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        // Obtener el frame actual de la animación
         TextureRegion currentFrame = animation.getKeyFrame(stateTime, true);
-
-        // Dibujar el frame actual en la posición del personaje
         spriteBatch.begin();
         spriteBatch.draw(currentFrame, characterBounds.x, characterBounds.y);
         if (Gdx.input.justTouched()) {
@@ -73,27 +62,16 @@ public class PlayingScreen implements Screen {
     }
 
     @Override
-    public void resize(int width, int height) {
-
-    }
+    public void resize(int width, int height) {  }
 
     @Override
-    public void pause() {
-
-    }
+    public void pause() {  }
 
     @Override
-    public void resume() {
-
-    }
+    public void resume() {  }
 
     @Override
-    public void hide() {
-
-    }
-
-    // Resto de métodos de la interfaz Screen
-    // ...
+    public void hide() {  }
 
     @Override
     public void dispose() {

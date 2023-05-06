@@ -4,7 +4,6 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
 import com.github.czyzby.websocket.GwtWebSockets;
-import com.mygdx.ipop_game.GameScreen;
 import com.mygdx.ipop_game.IPOP;
 
 public class HtmlLauncher extends GwtApplication {

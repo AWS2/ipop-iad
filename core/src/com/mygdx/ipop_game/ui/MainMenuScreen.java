@@ -1,21 +1,15 @@
-package com.mygdx.ipop_game;
-
-import static com.mygdx.ipop_game.utils.GameUtils.SCR_WIDTH;
+package com.mygdx.ipop_game.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.utils.Array;
-import com.mygdx.ipop_game.GameScreen;
+import com.badlogic.gdx.Input.TextInputListener;
 import com.mygdx.ipop_game.IPOP;
-import com.mygdx.ipop_game.utils.SelectNameScreen;
+import com.mygdx.ipop_game.Player;
 
-public class MainMenuScreen implements Screen {
+public class MainMenuScreen implements Screen, TextInputListener {
 
     private Texture background, selectName, selectCharacter, selectCicle, singlePlayer, multiPlayer, rankings;
 
@@ -24,17 +18,18 @@ public class MainMenuScreen implements Screen {
 
     public MainMenuScreen(IPOP game) {
         this.game = game;
+        IPOP.loadResources();
 
         background = new Texture(Gdx.files.internal("Mansion.png"));
 
         selectName = new Texture(Gdx.files.internal("select_name.png"));
         selectNameBtn = new Rectangle(900, 600, 500, 100);
 
-        selectCharacter = new Texture(Gdx.files.internal("select_character.png"));
-        selectCharacterBtn = new Rectangle(900, 490, 500, 100);
-
         selectCicle = new Texture(Gdx.files.internal("select_cicle.png"));
-        selectCicleBtn = new Rectangle(900, 380, 500, 100);
+        selectCicleBtn = new Rectangle(900, 490, 500, 100);
+
+        selectCharacter = new Texture(Gdx.files.internal("select_character.png"));
+        selectCharacterBtn = new Rectangle(900, 380, 500, 100);
 
         singlePlayer = new Texture(Gdx.files.internal("single_player.png"));
         singlePlayerBtn = new Rectangle(900, 270, 500, 100);
@@ -67,7 +62,19 @@ public class MainMenuScreen implements Screen {
             float touchX = Gdx.input.getX();
             float touchY = Gdx.graphics.getHeight() - Gdx.input.getY();
             if (selectNameBtn.contains(touchX, touchY)) {
-                game.setScreen(new SelectNameScreen(game));
+                //game.setScreen(new SelectNameScreen(game));
+                Gdx.input.getTextInput(new TextInputListener() {
+                    @Override
+                    public void input(String text) {
+                        Player.player_alias = text;
+                    }
+                    @Override
+                    public void canceled() {
+
+                    }
+                }, "Select name", "", "Username");
+            } else if (selectCicleBtn.contains(touchX, touchY)) {
+                game.setScreen(new CicleSelectionScreen(game));
             }
         }
         game.batch.end();
@@ -89,5 +96,15 @@ public class MainMenuScreen implements Screen {
     public void dispose() {
         game.batch.dispose();
         game.batch.dispose();
+    }
+
+    @Override
+    public void input(String text) {
+        System.out.println(text);
+    }
+
+    @Override
+    public void canceled() {
+
     }
 }

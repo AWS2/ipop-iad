@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.mygdx.ipop_game.ui.MainMenuScreen;
 
 import java.util.ArrayList;
 
@@ -64,13 +65,13 @@ public class IPOP extends Game {
         this.font = new BitmapFont();
     }
 
-    static ArrayList<Family> families = new ArrayList<>();
-    static ArrayList<String> informatica = new ArrayList<>();
-    static ArrayList<String> administrativo = new ArrayList<>();
-    static ArrayList<String> automocion = new ArrayList<>();
-    static ArrayList<String> mecanica = new ArrayList<>();
-    static ArrayList<String> produccion = new ArrayList<>();
-    static ArrayList<String> aguas = new ArrayList<>();
+    public static ArrayList<Family> families = new ArrayList<>();
+    public static ArrayList<String> informatica = new ArrayList<>();
+    public static ArrayList<String> administrativo = new ArrayList<>();
+    public static ArrayList<String> automocion = new ArrayList<>();
+    public static ArrayList<String> mecanica = new ArrayList<>();
+    public static ArrayList<String> produccion = new ArrayList<>();
+    public static ArrayList<String> aguas = new ArrayList<>();
 
 
     public static void loadResources() {

@@ -5,6 +5,11 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Player {
+
+    public static String player_alias= "";
+    public static String player_ocupation= "";
+    public static String player_cicle= "";
+
     public static int[] scale = {3, 3};
     public static int[] transform = {100, 100};
     public static int speed = 2;

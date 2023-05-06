@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
+import com.mygdx.ipop_game.ui.MainMenuScreen;
 
 public class PlayingScreen implements Screen {
 
@@ -54,8 +55,7 @@ public class PlayingScreen implements Screen {
             float touchY = Gdx.graphics.getHeight() - Gdx.input.getY();
 
             if (characterBounds.contains(touchX, touchY)) {
-                System.out.println("Personaje presionado");
-                game.setScreen(new GameScreen(game));
+                game.setScreen(new MainMenuScreen(game));
             }
         }
         spriteBatch.end();

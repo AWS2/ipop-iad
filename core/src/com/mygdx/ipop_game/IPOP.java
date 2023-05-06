@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.mygdx.ipop_game.ui.MainMenuScreen;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ public class IPOP extends Game {
 
     public SpriteBatch batch;
     public BitmapFont font;
+    public ShapeRenderer shapeRenderer;
 
     private static IPOP instancia = null;
 
@@ -31,6 +33,7 @@ public class IPOP extends Game {
     public void create() {
         batch = new SpriteBatch();
         font = new BitmapFont();
+        shapeRenderer = new ShapeRenderer();
         this.setScreen(new MainMenuScreen(this));
     }
 

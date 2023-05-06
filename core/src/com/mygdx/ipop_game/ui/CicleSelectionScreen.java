@@ -3,8 +3,10 @@ package com.mygdx.ipop_game.ui;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.TextInputListener;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.mygdx.ipop_game.IPOP;
 import com.mygdx.ipop_game.Player;
@@ -24,16 +26,16 @@ public class CicleSelectionScreen implements Screen {
         itemBackground = new Texture(Gdx.files.internal("panel-background.png"));
 
         firstOcupation = new Texture(Gdx.files.internal("select_name.png"));
-        firstOcupationBtn = new Rectangle(900, 600, 500, 100);
+        firstOcupationBtn = new Rectangle(0, 0, 0, 0);
 
         secondOcupation = new Texture(Gdx.files.internal("select_character.png"));
-        secondOcupationBtn = new Rectangle(900, 490, 500, 100);
+        secondOcupationBtn = new Rectangle(0, 0, 0, 0);
 
         thirdOcupation = new Texture(Gdx.files.internal("select_cicle.png"));
-        thirdOcupationBtn = new Rectangle(900, 380, 500, 100);
+        thirdOcupationBtn = new Rectangle(0, 0, 0, 0);
 
         fourthOcupation = new Texture(Gdx.files.internal("single_player.png"));
-        fourthOcupationBtn = new Rectangle(900, 270, 500, 100);
+        fourthOcupationBtn = new Rectangle(0, 0, 0, 0);
 
         goBack = new Texture(Gdx.files.internal("back-button.png"));
         goBackBtn = new Rectangle(200 , 400, 100, 100);
@@ -47,7 +49,7 @@ public class CicleSelectionScreen implements Screen {
     public void show() {  }
 
     int startX = 600;
-    int startY = 600;
+    int startY = 700;
     int marginVertical = 100;
 
     @Override
@@ -59,8 +61,44 @@ public class CicleSelectionScreen implements Screen {
         game.batch.draw(background, 0,0, 2400,1080);
         game.batch.draw(itemBackground, 450,100, 1500,650);
         game.font.getData().setScale(3.0f);
-        for (int i = 0; i < IPOP.families.get(famIndex).getOcupations().size(); i++) {
-            game.font.draw(game.batch, IPOP.families.get(famIndex).getOcupations().get(i).toUpperCase() , startX,(startY - (marginVertical * i)));
+
+        switch (IPOP.families.get(famIndex).getOcupations().size()) {
+            case 1:
+                game.font.draw(game.batch, IPOP.families.get(famIndex).getOcupations().get(0).toUpperCase(), startX, (startY - (marginVertical)));
+                firstOcupationBtn = new Rectangle(startX, (startY - (marginVertical) - 40), 1200, 50);
+
+                break;
+            case 2:
+                game.font.draw(game.batch, IPOP.families.get(famIndex).getOcupations().get(0).toUpperCase(), startX, (startY - (marginVertical)));
+                firstOcupationBtn = new Rectangle(startX, (startY - (marginVertical) - 40), 1200, 50);
+
+                game.font.draw(game.batch, IPOP.families.get(famIndex).getOcupations().get(1).toUpperCase(), startX, (startY - (marginVertical * 2)));
+                secondOcupationBtn = new Rectangle(startX, (startY - (marginVertical * 2) - 40), 1200, 50);
+                break;
+            case 3:
+                game.font.draw(game.batch, IPOP.families.get(famIndex).getOcupations().get(0).toUpperCase(), startX, (startY - (marginVertical)));
+                firstOcupationBtn = new Rectangle(startX, (startY - (marginVertical ) - 40), 1200, 50);
+
+                game.font.draw(game.batch, IPOP.families.get(famIndex).getOcupations().get(1).toUpperCase(), startX, (startY - (marginVertical * 2)));
+                secondOcupationBtn = new Rectangle(startX, (startY - (marginVertical * 2) - 40), 1200, 50);
+
+                game.font.draw(game.batch, IPOP.families.get(famIndex).getOcupations().get(2).toUpperCase(), startX, (startY - (marginVertical * 3)));
+                thirdOcupationBtn = new Rectangle(startX, (startY - (marginVertical * 3) - 40), 1200, 50);
+                break;
+            case 4:
+                game.font.draw(game.batch, IPOP.families.get(famIndex).getOcupations().get(0).toUpperCase(), startX, (startY - (marginVertical)));
+                firstOcupationBtn = new Rectangle(startX, (startY - (marginVertical) - 40), 1200, 50);
+
+                game.font.draw(game.batch, IPOP.families.get(famIndex).getOcupations().get(1).toUpperCase(), startX, (startY - (marginVertical * 2)));
+                secondOcupationBtn = new Rectangle(startX, (startY - (marginVertical * 2) - 40), 1200, 50);
+
+                game.font.draw(game.batch, IPOP.families.get(famIndex).getOcupations().get(2).toUpperCase(), startX, (startY - (marginVertical * 3)));
+                thirdOcupationBtn = new Rectangle(startX, (startY - (marginVertical * 3) - 40), 1200, 50);
+
+                game.font.draw(game.batch, IPOP.families.get(famIndex).getOcupations().get(3).toUpperCase(), startX, (startY - (marginVertical * 4)));
+                fourthOcupationBtn = new Rectangle(startX, (startY - (marginVertical * 4) - 40), 1200, 50);
+
+                break;
         }
 
         game.batch.draw(goBack,200 , 400, 100, 100);
@@ -76,6 +114,18 @@ public class CicleSelectionScreen implements Screen {
             } else if (goBackBtn.contains(touchX, touchY)) {
                 if (famIndex == 0) { famIndex = IPOP.families.size() - 1; }
                 else { famIndex--; }
+            } else if (firstOcupationBtn.contains(touchX, touchY)) {
+                Player.player_ocupation = IPOP.families.get(famIndex).getOcupations().get(0);
+                game.setScreen(new MainMenuScreen(game));
+            } else if (secondOcupationBtn.contains(touchX, touchY)) {
+                Player.player_ocupation = IPOP.families.get(famIndex).getOcupations().get(1);
+                game.setScreen(new MainMenuScreen(game));
+            } else if (thirdOcupationBtn.contains(touchX, touchY)) {
+                Player.player_ocupation = IPOP.families.get(famIndex).getOcupations().get(2);
+                game.setScreen(new MainMenuScreen(game));
+            } else if (fourthOcupationBtn.contains(touchX, touchY)) {
+                Player.player_ocupation = IPOP.families.get(famIndex).getOcupations().get(3);
+                game.setScreen(new MainMenuScreen(game));
             }
         }
         game.batch.end();

@@ -42,7 +42,6 @@ public class CharacterSelectionScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         game.batch.begin();
         stateTime += Gdx.graphics.getDeltaTime();
-        System.out.println(Player.player_show_room.get(Player.player_character));
         TextureRegion frame = Player.player_show_room.get(Player.player_character).getKeyFrame(stateTime, true);
         game.batch.draw(background, 0, 0, 2400, 1080);
         game.batch.draw(itemBackground, 400, 100, 1500, 650);
@@ -66,12 +65,10 @@ public class CharacterSelectionScreen implements Screen {
                 if (Player.player_character == Player.player_show_room.size() - 1) {
                     Player.player_character = 0;
                 } else { Player.player_character++;}
-                System.out.println(Player.player_character);
             } else if (goBackBtn.contains(touchX, touchY)) {
                 if (Player.player_character == 0) {
                     Player.player_character = Player.player_show_room.size() - 1;
                 } else { Player.player_character--;}
-                System.out.println(Player.player_character);
             }
         }
         game.batch.end();

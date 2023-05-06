@@ -4,15 +4,17 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-public class Player {
+import java.util.ArrayList;
 
+public class Player {
     public static String player_alias= "";
     public static String player_ocupation= "";
     public static int player_character = 0;
 
     public static int[] scale = {3, 3};
-    public static int[] transform = {100, 100};
+    public static int[] transform = {1050, 350};
     public static int speed = 2;
     public static Texture sprite;
-    public static Animation<TextureRegion> player_left, player_right, player_up, player_down;
+
+    public static ArrayList<Animation<TextureRegion>> player_show_room, player_left, player_right, player_up, player_down;
 }

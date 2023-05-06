@@ -82,6 +82,12 @@ public class IPOP extends Game {
     public static void loadResources() {
 
         Player.sprite = new Texture(Gdx.files.internal("IPOP-Walking.png"));
+        Player.player_down = new ArrayList<>();
+        Player.player_up = new ArrayList<>();
+        Player.player_left = new ArrayList<>();
+        Player.player_right = new ArrayList<>();
+        Player.player_show_room = new ArrayList<>();
+
 
         TextureRegion[] player_front = new TextureRegion[4];
         TextureRegion[] player_left = new TextureRegion[4];
@@ -109,11 +115,85 @@ public class IPOP extends Game {
         player_down[2] = new TextureRegion(Player.sprite, 104, 146, 33, 46);
         player_down[3] = new TextureRegion(Player.sprite, 55, 145, 33, 47);
 
-        Player.player_down = new Animation<>(0.25f, player_front);
-        Player.player_up = new Animation<>(0.25f, player_down);
-        Player.player_left = new Animation<>(0.25f, player_left);
-        Player.player_right = new Animation<>(0.25f, player_right);
+        player_show_room[0] = player_front[0];
+        player_show_room[1] = player_front[1];
+        player_show_room[2] = player_front[2];
+        player_show_room[3] = player_front[3];
 
+        player_show_room[4] = player_right[0];
+        player_show_room[5] = player_right[1];
+        player_show_room[6] = player_right[2];
+        player_show_room[7] = player_right[3];
+
+        player_show_room[8] = player_left[0];
+        player_show_room[9] = player_left[1];
+        player_show_room[10] = player_left[2];
+        player_show_room[11] = player_left[3];
+
+        player_show_room[12] = player_down[0];
+        player_show_room[13] = player_down[1];
+        player_show_room[14] = player_down[2];
+        player_show_room[15] = player_down[3];
+
+
+        Player.player_down.add(new Animation<>(0.25f, player_front));
+        Player.player_up.add(new Animation<>(0.25f, player_down));
+        Player.player_left.add(new Animation<>(0.25f, player_left));
+        Player.player_right.add(new Animation<>(0.25f, player_right));
+        Player.player_show_room.add(new Animation<>(0.25f, player_show_room));
+
+
+        player_front = new TextureRegion[4];
+        player_left = new TextureRegion[4];
+        player_right = new TextureRegion[4];
+        player_down = new TextureRegion[4];
+        player_show_room = new TextureRegion[16];
+
+        player_front[0] = new TextureRegion(Player.sprite, 149, 3, 35, 45);
+        player_front[1] = new TextureRegion(Player.sprite, 198, 2, 35, 46);
+        player_front[2] = new TextureRegion(Player.sprite, 247, 3, 35, 44);
+        player_front[3] = new TextureRegion(Player.sprite, 198, 2, 35, 46);
+
+        player_left[0] = new TextureRegion(Player.sprite, 152, 52, 37, 44);
+        player_left[1] = new TextureRegion(Player.sprite, 200, 51, 36, 45);
+        player_left[2] = new TextureRegion(Player.sprite, 248, 52, 35, 44);
+        player_left[3] = new TextureRegion(Player.sprite, 200, 51, 36, 45);
+
+        player_right[0] = new TextureRegion(Player.sprite, 146, 100, 37, 44);
+        player_right[1] = new TextureRegion(Player.sprite, 195, 99, 34, 45);
+        player_right[2] = new TextureRegion(Player.sprite, 244, 100, 35, 44);
+        player_right[3] = new TextureRegion(Player.sprite, 195, 99, 34, 45);
+
+        player_down[0] = new TextureRegion(Player.sprite, 150, 147, 35, 45);
+        player_down[1] = new TextureRegion(Player.sprite, 198, 146, 35, 46);
+        player_down[2] = new TextureRegion(Player.sprite, 246, 147, 35, 45);
+        player_down[3] = new TextureRegion(Player.sprite, 198, 146, 35, 46);
+
+        player_show_room[0] = player_front[0];
+        player_show_room[1] = player_front[1];
+        player_show_room[2] = player_front[2];
+        player_show_room[3] = player_front[3];
+
+        player_show_room[4] = player_right[0];
+        player_show_room[5] = player_right[1];
+        player_show_room[6] = player_right[2];
+        player_show_room[7] = player_right[3];
+
+        player_show_room[8] = player_left[0];
+        player_show_room[9] = player_left[1];
+        player_show_room[10] = player_left[2];
+        player_show_room[11] = player_left[3];
+
+        player_show_room[12] = player_down[0];
+        player_show_room[13] = player_down[1];
+        player_show_room[14] = player_down[2];
+        player_show_room[15] = player_down[3];
+
+        Player.player_down.add(new Animation<>(0.25f, player_front));
+        Player.player_up.add(new Animation<>(0.25f, player_down));
+        Player.player_left.add(new Animation<>(0.25f, player_left));
+        Player.player_right.add(new Animation<>(0.25f, player_right));
+        Player.player_show_room.add(new Animation<>(0.25f, player_show_room));
 
         informatica = new ArrayList<>();
         informatica.add("Sistemes microinformatics i xarxes");

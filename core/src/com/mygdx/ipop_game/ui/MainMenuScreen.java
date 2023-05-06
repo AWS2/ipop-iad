@@ -75,6 +75,8 @@ public class MainMenuScreen implements Screen, TextInputListener {
                 }, "Select name", "", "Username");
             } else if (selectCicleBtn.contains(touchX, touchY)) {
                 game.setScreen(new CicleSelectionScreen(game));
+            } else if (selectCharacterBtn.contains(touchX, touchY)) {
+                game.setScreen(new CharacterSelectionScreen(game));
             }
         }
         game.batch.end();

@@ -37,8 +37,8 @@ public class MainMenuScreen implements Screen, TextInputListener {
         multiPlayer = new Texture(Gdx.files.internal("multi_player.png"));
         multiPlayerBtn = new Rectangle(900, 160, 500, 100);
 
-        rankings = new Texture(Gdx.files.internal("button-2.png"));
-        rankingsBtn = new Rectangle(900, 50, 500, 100);
+        rankings = new Texture(Gdx.files.internal("ranking_button.png"));
+        rankingsBtn = new Rectangle(2100, 800, 150, 150);
     }
 
     @Override
@@ -51,12 +51,12 @@ public class MainMenuScreen implements Screen, TextInputListener {
         game.batch.begin();
 
         game.batch.draw(background, 0,0, 2400,1080);
-        game.batch.draw(selectName,900 , 600, 500, 100);
-        game.batch.draw(selectCicle,900 , 490, 500, 100);
-        game.batch.draw(selectCharacter,900 , 380, 500, 100);
-        game.batch.draw(singlePlayer,900 , 270, 500, 100);
-        game.batch.draw(multiPlayer,900 , 160, 500, 100);
-        game.batch.draw(rankings,900 , 50, 500, 100);
+        game.batch.draw(selectName,900 , 500, 500, 100);
+        game.batch.draw(selectCicle,900 , 390, 500, 100);
+        game.batch.draw(selectCharacter,900 , 280, 500, 100);
+        game.batch.draw(singlePlayer,900 , 170, 500, 100);
+        game.batch.draw(multiPlayer,900 , 60, 500, 100);
+        game.batch.draw(rankings,2100, 800, 150, 150);
 
         if (Gdx.input.justTouched()) {
             float touchX = Gdx.input.getX();
@@ -77,6 +77,8 @@ public class MainMenuScreen implements Screen, TextInputListener {
                 game.setScreen(new CicleSelectionScreen(game));
             } else if (selectCharacterBtn.contains(touchX, touchY)) {
                 game.setScreen(new CharacterSelectionScreen(game));
+            } else if (rankingsBtn.contains(touchX, touchY)) {
+                game.setScreen(new RankingsScreen(game));
             }
         }
         game.batch.end();

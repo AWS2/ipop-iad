@@ -1,4 +1,4 @@
-package com.mygdx.ipop_game;
+package com.mygdx.ipop_game.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
+import com.mygdx.ipop_game.IPOP;
 import com.mygdx.ipop_game.ui.MainMenuScreen;
 
 public class PlayingScreen implements Screen {

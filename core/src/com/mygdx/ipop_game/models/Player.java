@@ -1,4 +1,4 @@
-package com.mygdx.ipop_game;
+package com.mygdx.ipop_game.models;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -8,7 +8,7 @@ public class Player {
 
     public static String player_alias= "";
     public static String player_ocupation= "";
-    public static String player_cicle= "";
+    public static int player_character = 0;
 
     public static int[] scale = {3, 3};
     public static int[] transform = {100, 100};

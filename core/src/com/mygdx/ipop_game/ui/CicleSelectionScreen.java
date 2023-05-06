@@ -1,15 +1,12 @@
 package com.mygdx.ipop_game.ui;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.TextInputListener;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.mygdx.ipop_game.IPOP;
-import com.mygdx.ipop_game.Player;
+import com.mygdx.ipop_game.models.Player;
 
 public class CicleSelectionScreen implements Screen {
 

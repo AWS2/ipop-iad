@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.Input.TextInputListener;
 import com.mygdx.ipop_game.IPOP;
-import com.mygdx.ipop_game.Player;
+import com.mygdx.ipop_game.models.Player;
 
 public class MainMenuScreen implements Screen, TextInputListener {
 

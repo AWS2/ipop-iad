@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.mygdx.ipop_game.models.Family;
+import com.mygdx.ipop_game.models.Player;
 import com.mygdx.ipop_game.ui.MainMenuScreen;
 
 import java.util.ArrayList;

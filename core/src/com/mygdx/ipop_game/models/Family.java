@@ -1,4 +1,4 @@
-package com.mygdx.ipop_game;
+package com.mygdx.ipop_game.models;
 
 import java.util.ArrayList;
 

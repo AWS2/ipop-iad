@@ -54,7 +54,7 @@ public class EndGameScreen implements Screen {
 
         game.font.draw(
                 game.batch,
-                "Username - " + gr.getAliasPlayer(),
+                "Username - " + gr.aliasPlayer,
                 x, 700
         );
         game.font.draw(
@@ -64,12 +64,12 @@ public class EndGameScreen implements Screen {
         );
         game.font.draw(
                 game.batch,
-                "Game Duration - " + gr.getTimeStart() + " - " + gr.getTimeEnd(),
+                "Game Duration - " + gr.timeStart + " - " + gr.timeEnd,
                 x, 500
         );
         game.font.draw(
                 game.batch,
-                "Correct Totems: " + gr.getAliasPlayer() + " / " + (gr.wrongTotems + gr.correctTotems),
+                "Correct Totems: " + gr.correctTotems + " / " + (gr.wrongTotems + gr.correctTotems),
                 x, 400
         );
 

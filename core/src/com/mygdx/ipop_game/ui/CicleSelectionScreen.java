@@ -10,9 +10,9 @@ import com.mygdx.ipop_game.models.Player;
 
 public class CicleSelectionScreen implements Screen {
 
-    private Texture background, itemBackground, firstOcupation, secondOcupation, thirdOcupation, fourthOcupation, goBack, goNext;
+    private Texture mainMenu, background, itemBackground, firstOcupation, secondOcupation, thirdOcupation, fourthOcupation, goBack, goNext;
 
-    private Rectangle firstOcupationBtn, secondOcupationBtn, thirdOcupationBtn, fourthOcupationBtn, goBackBtn, goNextBtn;
+    private Rectangle mainMenuBtn, firstOcupationBtn, secondOcupationBtn, thirdOcupationBtn, fourthOcupationBtn, goBackBtn, goNextBtn;
     final IPOP game;
     int famIndex = 0;
 
@@ -40,6 +40,9 @@ public class CicleSelectionScreen implements Screen {
         goNext = new Texture(Gdx.files.internal("next-button.png"));
         goNextBtn = new Rectangle(2000 , 400, 100, 100);
 
+        mainMenu = new Texture(Gdx.files.internal("menu_button.png"));
+        mainMenuBtn = new Rectangle(25 , 900, 100, 100);
+
     }
 
     @Override
@@ -57,6 +60,7 @@ public class CicleSelectionScreen implements Screen {
         game.batch.begin();
         game.batch.draw(background, 0,0, 2400,1080);
         game.batch.draw(itemBackground, 450,100, 1500,650);
+        game.batch.draw(mainMenu, 25 , 900, 100, 100);
         game.font.getData().setScale(3.0f);
 
         switch (IPOP.families.get(famIndex).getOcupations().size()) {
@@ -113,15 +117,21 @@ public class CicleSelectionScreen implements Screen {
                 else { famIndex--; }
             } else if (firstOcupationBtn.contains(touchX, touchY)) {
                 Player.player_ocupation = IPOP.families.get(famIndex).getOcupations().get(0);
+                MainMenuScreen.cicleSelected = true;
                 game.setScreen(new MainMenuScreen(game));
             } else if (secondOcupationBtn.contains(touchX, touchY)) {
                 Player.player_ocupation = IPOP.families.get(famIndex).getOcupations().get(1);
+                MainMenuScreen.cicleSelected = true;
                 game.setScreen(new MainMenuScreen(game));
             } else if (thirdOcupationBtn.contains(touchX, touchY)) {
                 Player.player_ocupation = IPOP.families.get(famIndex).getOcupations().get(2);
+                MainMenuScreen.cicleSelected = true;
                 game.setScreen(new MainMenuScreen(game));
             } else if (fourthOcupationBtn.contains(touchX, touchY)) {
                 Player.player_ocupation = IPOP.families.get(famIndex).getOcupations().get(3);
+                MainMenuScreen.cicleSelected = true;
+                game.setScreen(new MainMenuScreen(game));
+            } else if (mainMenuBtn.contains(touchX, touchY)) {
                 game.setScreen(new MainMenuScreen(game));
             }
         }

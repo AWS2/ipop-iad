@@ -16,6 +16,10 @@ public class MainMenuScreen implements Screen, TextInputListener {
     private Rectangle selectNameBtn, selectCharacterBtn, selectCicleBtn, singlePlayerBtn, multiPlayerBtn, rankingsBtn;
     final IPOP game;
 
+    static boolean nameSelected = false;
+    static boolean cicleSelected = false;
+    static boolean characterSelected = false;
+
     public MainMenuScreen(IPOP game) {
         this.game = game;
         IPOP.loadResources();
@@ -23,19 +27,19 @@ public class MainMenuScreen implements Screen, TextInputListener {
         background = new Texture(Gdx.files.internal("Mansion.png"));
 
         selectName = new Texture(Gdx.files.internal("select_name.png"));
-        selectNameBtn = new Rectangle(900, 600, 500, 100);
+        selectNameBtn = new Rectangle(900, 500, 500, 100);
 
         selectCicle = new Texture(Gdx.files.internal("select_cicle.png"));
-        selectCicleBtn = new Rectangle(900, 490, 500, 100);
+        selectCicleBtn = new Rectangle(900, 390, 500, 100);
 
         selectCharacter = new Texture(Gdx.files.internal("select_character.png"));
-        selectCharacterBtn = new Rectangle(900, 380, 500, 100);
+        selectCharacterBtn = new Rectangle(900, 280, 500, 100);
 
         singlePlayer = new Texture(Gdx.files.internal("single_player.png"));
-        singlePlayerBtn = new Rectangle(900, 270, 500, 100);
+        singlePlayerBtn = new Rectangle(900, 170, 500, 100);
 
         multiPlayer = new Texture(Gdx.files.internal("multi_player.png"));
-        multiPlayerBtn = new Rectangle(900, 160, 500, 100);
+        multiPlayerBtn = new Rectangle(900, 60, 500, 100);
 
         rankings = new Texture(Gdx.files.internal("ranking_button.png"));
         rankingsBtn = new Rectangle(2100, 800, 150, 150);
@@ -62,21 +66,23 @@ public class MainMenuScreen implements Screen, TextInputListener {
             float touchX = Gdx.input.getX();
             float touchY = Gdx.graphics.getHeight() - Gdx.input.getY();
             if (selectNameBtn.contains(touchX, touchY)) {
-                //game.setScreen(new SelectNameScreen(game));
                 Gdx.input.getTextInput(new TextInputListener() {
                     @Override
                     public void input(String text) {
                         Player.player_alias = text;
+                        MainMenuScreen.nameSelected = true;
                     }
                     @Override
-                    public void canceled() {
-
-                    }
+                    public void canceled() { }
                 }, "Select name", "", "Username");
             } else if (selectCicleBtn.contains(touchX, touchY)) {
                 game.setScreen(new CicleSelectionScreen(game));
             } else if (selectCharacterBtn.contains(touchX, touchY)) {
                 game.setScreen(new CharacterSelectionScreen(game));
+            } else if (singlePlayerBtn.contains(touchX, touchY)) {
+                if (cicleSelected && nameSelected && characterSelected) {
+                    game.setScreen(new PlayingScreen(game));
+                }
             } else if (rankingsBtn.contains(touchX, touchY)) {
                 game.setScreen(new RankingsScreen(game));
             }

@@ -11,9 +11,9 @@ import com.mygdx.ipop_game.models.Player;
 
 public class CharacterSelectionScreen implements Screen {
 
-    private Texture background, itemBackground, goBack, goNext;
+    private Texture mainMenu,background, itemBackground, goBack, goNext;
 
-    private Rectangle goBackBtn, goNextBtn;
+    private Rectangle mainMenuBtn, goBackBtn, goNextBtn;
     final IPOP game;
     public float stateTime = 0f;
 
@@ -29,12 +29,13 @@ public class CharacterSelectionScreen implements Screen {
         goNext = new Texture(Gdx.files.internal("next-button.png"));
         goNextBtn = new Rectangle(2000 , 400, 100, 100);
 
+        mainMenu = new Texture(Gdx.files.internal("menu_button.png"));
+        mainMenuBtn = new Rectangle(25 , 900, 100, 100);
+
     }
 
     @Override
     public void show() {  }
-
-
 
     @Override
     public void render(float delta) {
@@ -44,6 +45,7 @@ public class CharacterSelectionScreen implements Screen {
         stateTime += Gdx.graphics.getDeltaTime();
         TextureRegion frame = Player.player_show_room.get(Player.player_character).getKeyFrame(stateTime, true);
         game.batch.draw(background, 0, 0, 2400, 1080);
+        game.batch.draw(mainMenu, 25 , 900, 100, 100);
         game.batch.draw(itemBackground, 400, 100, 1500, 650);
         game.font.getData().setScale(3.0f);
         game.batch.draw(
@@ -69,6 +71,9 @@ public class CharacterSelectionScreen implements Screen {
                 if (Player.player_character == 0) {
                     Player.player_character = Player.player_show_room.size() - 1;
                 } else { Player.player_character--;}
+            } else if (mainMenuBtn.contains(touchX, touchY)) {
+                MainMenuScreen.characterSelected = true;
+                game.setScreen(new MainMenuScreen(game));
             }
         }
         game.batch.end();

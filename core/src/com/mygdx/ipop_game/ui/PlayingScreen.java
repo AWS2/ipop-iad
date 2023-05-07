@@ -10,7 +10,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.ipop_game.IPOP;
+import com.mygdx.ipop_game.models.GameRecord;
+import com.mygdx.ipop_game.models.Player;
 import com.mygdx.ipop_game.ui.MainMenuScreen;
+
+import java.time.Instant;
 
 public class PlayingScreen implements Screen {
 
@@ -60,6 +64,21 @@ public class PlayingScreen implements Screen {
             }
         }
         spriteBatch.end();
+    }
+
+    int correctTotems = 0;
+    int incorrectTotems = 0;
+    int totemsToReach = 5;
+    Instant startDate;
+    Instant endDate;
+
+    public void checkWin() {
+        if (correctTotems >= totemsToReach) {
+            GameRecord gr = new GameRecord(
+                    correctTotems,incorrectTotems, Player.player_ocupation, Player.player_alias, startDate, endDate
+            );
+            game.setScreen(new EndGameScreen(game, gr));
+        }
     }
 
     @Override

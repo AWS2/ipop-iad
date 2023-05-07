@@ -4,14 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.utils.Json;
-import com.mygdx.ipop_game.ApiWs;
+import com.mygdx.ipop_game.utils.ApiWs;
 import com.mygdx.ipop_game.IPOP;
-import com.mygdx.ipop_game.models.Player;
 import com.mygdx.ipop_game.models.Record;
-import com.mygdx.ipop_game.utils.WebSockets;
+import com.mygdx.ipop_game.utils.WebServiceConstants;
 
 import org.json.JSONObject;
 
@@ -110,7 +107,7 @@ public class RankingsScreen implements Screen {
                     JSONObject json = new JSONObject();
                     json.put("start", start);
                     json.put("end", end);
-                    JSONObject response = new JSONObject(new ApiWs().sendPost("api/rankings", json));
+                    JSONObject response = new JSONObject(new ApiWs().sendPost(WebServiceConstants.api + "api/rankings", json));
                     System.out.println(response);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -123,7 +120,7 @@ public class RankingsScreen implements Screen {
                         JSONObject json = new JSONObject();
                         json.put("start", start);
                         json.put("end", end);
-                        JSONObject response = new JSONObject(new ApiWs().sendPost("api/rankings", json));
+                        JSONObject response = new JSONObject(new ApiWs().sendPost(WebServiceConstants.api + "api/rankings", json));
                         System.out.println(response);
                     } catch (IOException e) {
                         throw new RuntimeException(e);

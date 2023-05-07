@@ -1,6 +1,6 @@
-package com.mygdx.ipop_game;
+package com.mygdx.ipop_game.utils;
 
-import static com.mygdx.ipop_game.WebServiceConstants.USER_AGENT;
+import static com.mygdx.ipop_game.utils.WebServiceConstants.USER_AGENT;
 import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;

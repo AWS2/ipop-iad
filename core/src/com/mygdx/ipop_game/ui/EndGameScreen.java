@@ -1,13 +1,15 @@
 package com.mygdx.ipop_game.ui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.math.Vector3;
 import com.mygdx.ipop_game.IPOP;
 import com.mygdx.ipop_game.models.GameRecord;
+import com.mygdx.ipop_game.models.Player;
 import com.mygdx.ipop_game.models.Record;
 import com.mygdx.ipop_game.utils.ApiWs;
 import com.mygdx.ipop_game.utils.WebServiceConstants;
@@ -22,7 +24,7 @@ public class EndGameScreen implements Screen {
 
     private Texture background, itemBackground, saveScore;
 
-    private Rectangle goBackBtn, goNextBtn, saveScoreBtn;
+    private Rectangle saveScoreBtn;
     final IPOP game;
     final GameRecord gr;
     public float stateTime = 0f;
@@ -34,6 +36,10 @@ public class EndGameScreen implements Screen {
         this.gr = gr;
         background = new Texture(Gdx.files.internal("Mansion.png"));
         itemBackground = new Texture(Gdx.files.internal("panel-background.png"));
+
+        saveScore = new Texture(Gdx.files.internal("save_score_button.png"));
+        saveScoreBtn = new Rectangle(920 , 50, 450, 125);
+
     }
 
     @Override
@@ -45,8 +51,7 @@ public class EndGameScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         game.batch.begin();
-        saveScore = new Texture(Gdx.files.internal("save_score_button.png"));
-        saveScoreBtn = new Rectangle(920 , 50, 450, 125);
+
         game.batch.draw(background, 0, 0, 2400, 1080);
         game.batch.draw(itemBackground, 400, 100, 1500, 750);
         game.batch.draw(saveScore, 920 , 50, 450, 125);
@@ -54,49 +59,53 @@ public class EndGameScreen implements Screen {
 
         game.font.draw(
                 game.batch,
-                "Username - " + gr.aliasPlayer,
+                "Username: " + gr.aliasPlayer,
                 x, 700
         );
-        int score = gr.correctTotems - (gr.wrongTotems * 2);
+        int inTotems = gr.totalTotems - gr.correctTotems;
+        int score = gr.correctTotems - (inTotems * 2);
         game.font.draw(
                 game.batch,
-                "Score - " + score,
+                "Score:  " + score,
                 x, 600
         );
         long segundos = Duration.between(gr.timeStart, gr.timeEnd).getSeconds();
         game.font.draw(
                 game.batch,
-                "Game Duration - " + segundos + "s",
+                "Game Duration:  " + segundos + "s",
                 x, 500
         );
         game.font.draw(
                 game.batch,
-                "Correct Totems: " + gr.correctTotems + " / 10",
+                "Correct Totems: " + gr.correctTotems + " / " + (gr.totalTotems),
                 x, 400
         );
+
 
         if (Gdx.input.justTouched()) {
             float touchX = Gdx.input.getX();
             float touchY = Gdx.graphics.getHeight() - Gdx.input.getY();
             if (saveScoreBtn.contains(touchX, touchY)) {
-                System.out.println("pressed");
-                try {
-                    JSONObject json = new JSONObject();
-                    json.put("aliasPlayer", gr.aliasPlayer);
-                    json.put("timeStart", gr.timeStart);
-                    json.put("timeEnd", gr.timeEnd);
-                    json.put("correctTotems", gr.correctTotems);
-                    json.put("wrongTotems", gr.wrongTotems);
-                    json.put("nameCycle", gr.playerOcupation);
-                    new ApiWs().sendPost(WebServiceConstants.api + "api/set_ranking",json);
-                } catch (IOException e) {
-                    System.out.println("Failed");
-                    throw new RuntimeException(e);
+                if (saveScoreBtn.contains(touchX, touchY)) {
+                    try {
+                        JSONObject json = new JSONObject();
+                        json.put("aliasPlayer", gr.aliasPlayer);
+                        json.put("timeStart", gr.timeStart);
+                        json.put("timeEnd", gr.timeEnd);
+                        json.put("correctTotems", gr.correctTotems);
+                        json.put("wrongTotems", gr.correctTotems - gr.totalTotems);
+                        json.put("nameCycle", gr.playerOcupation);
+                        System.out.println(json);
+                        StringBuffer stb = new ApiWs().sendPost(WebServiceConstants.api + "api/set_ranking",json);
+                        System.out.println(stb);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    game.setScreen(new MainMenuScreen(game));
                 }
-
-                game.setScreen(new MainMenuScreen(game));
             }
         }
+
         game.batch.end();
     }
 

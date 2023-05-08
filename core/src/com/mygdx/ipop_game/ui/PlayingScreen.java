@@ -55,6 +55,8 @@ public class PlayingScreen implements Screen {
     Sound dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
     Sound cyndaquilSound = Gdx.audio.newSound(Gdx.files.internal("CYNDAQUIL.wav"));
     int totems_to_reach = 1;
+    int corTotems = 0;
+    int totalTotems = 0;
 
     public PlayingScreen(IPOP game) {
         camera = new OrthographicCamera();
@@ -194,9 +196,9 @@ public class PlayingScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         moving = false;
 
-        if (score == totems_to_reach) {
+        if (corTotems == totems_to_reach) {
             game.setScreen(new EndGameScreen(game, new GameRecord(
-                    totemsCorrectes.size(),totemsIncorrectes.size(), Player.player_ocupation, Player.player_alias, startPlaying, Instant.now()
+                    corTotems,totalTotems, Player.player_ocupation, Player.player_alias, startPlaying, Instant.now()
             )));
         }
 
@@ -239,12 +241,18 @@ public class PlayingScreen implements Screen {
                         activeOnFieldTotems.get(i).getSound().play();
                         //Verifica si hay que actualizar todos los totems si es correcto
                         if (activeOnFieldTotems.get(i).getCorrectTotem()) {
-                            score++;
+                            corTotems++;
+                            totalTotems++;
+                            System.out.println(corTotems);
                             activeOnFieldTotems.clear();
                             ocupacioInicial.clear();
                             generacioTotems();
                             //O solo eliminar el incorrecto
                         } else {
+                            corTotems--;
+                            totalTotems++;
+                            System.out.println(corTotems);
+                            System.out.println(totalTotems);
                             activeOnFieldTotems.remove(i);
                         }
                     }
@@ -259,7 +267,11 @@ public class PlayingScreen implements Screen {
         TextureRegion frame = player.getKeyFrame(stateTime,true);
         batch.draw(frame,playerRectangle.getX(),playerRectangle.getY(),Player.scale[0],Player.scale[1]);
         batch.draw(home, 100,900,100,100);
-        batch.draw(IPOP.score_bar[score], 900,900,450,100);
+        if (corTotems > 0){
+            batch.draw(IPOP.score_bar[corTotems], 900,950,750,100);
+        } else {
+            batch.draw(IPOP.score_bar[0], 900,950,750,100);
+        }
 
         drawTotems(activeOnFieldTotems);
 

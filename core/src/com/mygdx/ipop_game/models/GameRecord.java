@@ -5,20 +5,20 @@ import java.time.Instant;
 
 public class GameRecord {
 
-    public int correctTotems, wrongTotems;
+    public int correctTotems, totalTotems;
     public String aliasPlayer, playerOcupation;
     public Instant timeStart, timeEnd;
 
     public GameRecord(
             int correctTotems,
-            int wrongTotems,
+            int totalTotems,
             String playerOcupation,
             String aliasPlayer,
             Instant timeStart,
             Instant timeEnd
     ) {
         this.correctTotems = correctTotems;
-        this.wrongTotems = wrongTotems;
+        this.totalTotems = totalTotems;
         this.playerOcupation = playerOcupation;
         this.aliasPlayer = aliasPlayer;
         this.timeStart = timeStart;

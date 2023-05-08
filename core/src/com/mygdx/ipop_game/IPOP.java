@@ -48,26 +48,12 @@ public class IPOP extends Game {
         font.dispose();
     }
 
-    public void setTitle() {
-        setFontSize(4);
-        setFontColor(Color.BLACK);
-    }
-
-    public void setSubtitle() {
-        setFontSize(3);
-        setFontColor(Color.BLACK);
-    }
-
     public void setFontSize(int size) {
         this.font.getData().setScale(size);
     }
 
     public void setFontColor(Color color) {
         this.font.setColor(color);
-    }
-
-    public void restartFont() {
-        this.font = new BitmapFont();
     }
 
     public static ArrayList<Family> families = new ArrayList<>();
@@ -77,17 +63,19 @@ public class IPOP extends Game {
     public static ArrayList<String> mecanica = new ArrayList<>();
     public static ArrayList<String> produccion = new ArrayList<>();
     public static ArrayList<String> aguas = new ArrayList<>();
+    public static Texture[] score_bar = new Texture[7];
 
 
     public static void loadResources() {
 
         Player.sprite = new Texture(Gdx.files.internal("IPOP-Walking.png"));
+        Texture scoreBar = new Texture(Gdx.files.internal("score_bar.png"));
+
         Player.player_down = new ArrayList<>();
         Player.player_up = new ArrayList<>();
         Player.player_left = new ArrayList<>();
         Player.player_right = new ArrayList<>();
         Player.player_show_room = new ArrayList<>();
-
 
         TextureRegion[] player_front = new TextureRegion[4];
         TextureRegion[] player_left = new TextureRegion[4];
@@ -135,13 +123,11 @@ public class IPOP extends Game {
         player_show_room[14] = player_down[2];
         player_show_room[15] = player_down[3];
 
-
         Player.player_down.add(new Animation<>(0.25f, player_front));
         Player.player_up.add(new Animation<>(0.25f, player_down));
         Player.player_left.add(new Animation<>(0.25f, player_left));
         Player.player_right.add(new Animation<>(0.25f, player_right));
         Player.player_show_room.add(new Animation<>(0.25f, player_show_room));
-
 
         player_front = new TextureRegion[4];
         player_left = new TextureRegion[4];
@@ -194,6 +180,14 @@ public class IPOP extends Game {
         Player.player_left.add(new Animation<>(0.25f, player_left));
         Player.player_right.add(new Animation<>(0.25f, player_right));
         Player.player_show_room.add(new Animation<>(0.25f, player_show_room));
+
+        score_bar[0] = new Texture(Gdx.files.internal("score_0.png"));
+        score_bar[1] = new Texture(Gdx.files.internal("score_1.png"));
+        score_bar[2] = new Texture(Gdx.files.internal("score_2.png"));
+        score_bar[3] = new Texture(Gdx.files.internal("score_3.png"));
+        score_bar[4] = new Texture(Gdx.files.internal("score_4.png"));
+        score_bar[5] = new Texture(Gdx.files.internal("score_5.png"));
+        score_bar[6] = new Texture(Gdx.files.internal("score_5.png"));
 
         informatica = new ArrayList<>();
         informatica.add("Sistemes microinformatics i xarxes");

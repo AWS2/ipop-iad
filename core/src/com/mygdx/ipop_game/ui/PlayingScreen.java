@@ -1,8 +1,5 @@
 package com.mygdx.ipop_game.ui;
 
-import static com.mygdx.ipop_game.utils.GameUtils.SCR_HEIGHT;
-import static com.mygdx.ipop_game.utils.GameUtils.SCR_WIDTH;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -20,31 +17,36 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.ipop_game.IPOP;
+import com.mygdx.ipop_game.models.GameRecord;
 import com.mygdx.ipop_game.models.Player;
 import com.mygdx.ipop_game.models.Totem;
 
+import java.time.Instant;
 import java.util.ArrayList;
 
 public class PlayingScreen implements Screen {
 
     final IPOP game;
-    int screenWidth = Gdx.graphics.getWidth(),screenHeight = Gdx.graphics.getHeight();
+    int screenWidth = Gdx.graphics.getWidth(), screenHeight = Gdx.graphics.getHeight();
     int score = 0;
     Float stateTime = 0.0f;
     SpriteBatch batch;
-    Rectangle upPad,downPad,leftPad,rightPad,playerRectangle;
+    Rectangle upPad, downPad, leftPad, rightPad, playerRectangle, homeBtn;
     Texture background = new Texture("Map003.png");
+    Texture home = new Texture("menu_button.png");
+    Texture scoreBar;
     Texture totemSprite = new Texture("totem.png");
-    String direction,currentDirection;
+    String direction, currentDirection;
     private static OrthographicCamera camera;
-    Boolean moving,soundPlayed = false;
-    BitmapFont font = new BitmapFont(),scoreFont = new BitmapFont();
+    Boolean moving, soundPlayed = false;
+    BitmapFont font = new BitmapFont(), scoreFont = new BitmapFont();
 
     Animation<TextureRegion> player;
 
     float maxWidth = 200;
     float scrollSpeed = 200.0f;
     float textHeight = font.getLineHeight();
+    Instant startPlaying;
     ArrayList<Totem> totemsCorrectes = new ArrayList<>();
     ArrayList<Totem> totemsIncorrectes = new ArrayList<>();
     ArrayList<Totem> activeOnFieldTotems = new ArrayList<>();
@@ -52,6 +54,7 @@ public class PlayingScreen implements Screen {
 
     Sound dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
     Sound cyndaquilSound = Gdx.audio.newSound(Gdx.files.internal("CYNDAQUIL.wav"));
+    int totems_to_reach = 1;
 
     public PlayingScreen(IPOP game) {
         camera = new OrthographicCamera();
@@ -72,27 +75,18 @@ public class PlayingScreen implements Screen {
         leftPad = new Rectangle(0, 0, screenWidth/3, screenHeight);
         rightPad = new Rectangle(screenWidth*2/3, 0, screenWidth/3, screenHeight);
 
+        homeBtn = new Rectangle(100,900,100,100);
+
+
+
         font.getData().setScale(3);
         font.setColor(Color.RED);
         scoreFont.getData().setScale(5);
         scoreFont.getData().setLineHeight(3);
         scoreFont.setColor(Color.WHITE);
 
-        //Generate random number for the TextBox
-        //textBox.setX()
-
         generacioTotems();
-
-
-        /*textBox.setPosition(MathUtils.random(screenWidth),MathUtils.random(screenHeight));
-        textBox.setWidth(300);
-        textX = textBox.getX()+textBox.getWidth();
-        background.setWrap(Texture.TextureWrap.MirroredRepeat, Texture.TextureWrap.MirroredRepeat);
-
-        //Layout
-        glyphLayout.setText(font,ocupacio);*/
-
-
+        startPlaying = Instant.now();
         this.render(Gdx.graphics.getDeltaTime());
     }
 
@@ -195,43 +189,34 @@ public class PlayingScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        //todo Revisar por cuando se le da al downPad a veces vuelve a la posicion incial por defecto
-        //Puede que se este llamando a la clase de nuevo? Y por eso se reinicie
-        // Limpia la pantalla con un color específico
         batch.setProjectionMatrix(camera.combined);
         Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         moving = false;
-        //glyphLayout.setText(font,ocupacio);
 
-        //Frame por defecto
-        //TextureRegion frame = player.getKeyFrame(stateTime,true);
+        if (score == totems_to_reach) {
+            game.setScreen(new EndGameScreen(game, new GameRecord(
+                    totemsCorrectes.size(),totemsIncorrectes.size(), Player.player_ocupation, Player.player_alias, startPlaying, Instant.now()
+            )));
+        }
 
         if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-
             direction = "left";
             moving = true;
         }
         if(Gdx.input.isKeyPressed(Input.Keys.RIGHT))  {
-
             direction = "right";
             moving = true;
-
         }
         if(Gdx.input.isKeyPressed(Input.Keys.UP)) {
-
             direction = "up";
             moving = true;
-
         }
         if(Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-
             direction = "down";
             moving = true;
-
         }
         currentDirection = direction;
-        //GetDirection
         direction = virtual_joystick_control();
         walkDirection(direction,moving);
 
@@ -270,15 +255,24 @@ public class PlayingScreen implements Screen {
 
         batch.begin();
         batch.draw(background,0,0);
-
         stateTime += Gdx.graphics.getDeltaTime(); // Accumulate elapsed animation time
         TextureRegion frame = player.getKeyFrame(stateTime,true);
         batch.draw(frame,playerRectangle.getX(),playerRectangle.getY(),Player.scale[0],Player.scale[1]);
-        scoreFont.draw(batch,"Score = "+String.valueOf(score),100,screenHeight/10);
+        batch.draw(home, 100,900,100,100);
+        batch.draw(IPOP.score_bar[score], 900,900,450,100);
 
         drawTotems(activeOnFieldTotems);
 
-        //batch.end();
+        for(int i=0;i<10;i++)
+            if (Gdx.input.isTouched(i)) {
+                Vector3 touchPos = new Vector3();
+                touchPos.set(Gdx.input.getX(i), Gdx.input.getY(i), 0);
+                // traducció de coordenades reals (depen del dispositiu) a 800x480
+                PlayingScreen.camera.unproject(touchPos);
+                if (homeBtn.contains(touchPos.x, touchPos.y)) {
+                    game.setScreen(new MainMenuScreen(game));
+                }
+            }
 
         batch.end();
     }
@@ -308,50 +302,37 @@ public class PlayingScreen implements Screen {
     public void walkDirection(String direction, Boolean moving) {
         if (moving) {
             if (direction.equals("right")) {
-                player = new Animation<TextureRegion>(0.1f, Player.player_right.get(Player.player_character).getKeyFrames());
+                player = new Animation<>(0.1f, Player.player_right.get(Player.player_character).getKeyFrames());
                 playerRectangle.x += 500 * Gdx.graphics.getDeltaTime();
             }
             else if (direction.equals("left")) {
-                player = new Animation<TextureRegion>(0.1f, Player.player_left.get(Player.player_character).getKeyFrames());
+                player = new Animation<>(0.1f, Player.player_left.get(Player.player_character).getKeyFrames());
                 playerRectangle.x -= 500 * Gdx.graphics.getDeltaTime();
-
             }
             else if (direction.equals("up")) {
-                player = new Animation<TextureRegion>(0.1f, Player.player_up.get(Player.player_character).getKeyFrames());
+                player = new Animation<>(0.1f, Player.player_up.get(Player.player_character).getKeyFrames());
                 playerRectangle.y += 500 * Gdx.graphics.getDeltaTime();
-
             }
             else if (direction.equals("down")) {
-                player = new Animation<TextureRegion>(0.1f, Player.player_down.get(Player.player_character).getKeyFrames());
+                player = new Animation<>(0.1f, Player.player_down.get(Player.player_character).getKeyFrames());
                 playerRectangle.y -= 500 * Gdx.graphics.getDeltaTime();
-
             }
         } else {
-            player = new Animation<TextureRegion>(9999f, Player.player_down.get(Player.player_character).getKeyFrames());
+            player = new Animation<>(9999f, Player.player_down.get(Player.player_character).getKeyFrames());
         }
-
-
     }
 
     @Override
-    public void resize(int width, int height) {
-
-    }
+    public void resize(int width, int height) {  }
 
     @Override
-    public void pause() {
-
-    }
+    public void pause() {  }
 
     @Override
-    public void resume() {
-
-    }
+    public void resume() {  }
 
     @Override
-    public void hide() {
-
-    }
+    public void hide() {  }
 
     @Override
     public void dispose() {

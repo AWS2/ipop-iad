@@ -15,6 +15,7 @@ import com.mygdx.ipop_game.utils.WebServiceConstants;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 
 public class EndGameScreen implements Screen {
@@ -33,10 +34,6 @@ public class EndGameScreen implements Screen {
         this.gr = gr;
         background = new Texture(Gdx.files.internal("Mansion.png"));
         itemBackground = new Texture(Gdx.files.internal("panel-background.png"));
-
-        saveScore = new Texture(Gdx.files.internal("save_score_button.png"));
-        saveScoreBtn = new Rectangle(25 , 900, 100, 100);
-
     }
 
     @Override
@@ -48,8 +45,11 @@ public class EndGameScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         game.batch.begin();
+        saveScore = new Texture(Gdx.files.internal("save_score_button.png"));
+        saveScoreBtn = new Rectangle(920 , 50, 450, 125);
         game.batch.draw(background, 0, 0, 2400, 1080);
         game.batch.draw(itemBackground, 400, 100, 1500, 750);
+        game.batch.draw(saveScore, 920 , 50, 450, 125);
         game.font.getData().setScale(5.0f);
 
         game.font.draw(
@@ -57,19 +57,21 @@ public class EndGameScreen implements Screen {
                 "Username - " + gr.aliasPlayer,
                 x, 700
         );
+        int score = gr.correctTotems - (gr.wrongTotems * 2);
         game.font.draw(
                 game.batch,
-                "Score - " + gr.getScore(),
+                "Score - " + score,
                 x, 600
         );
+        long segundos = Duration.between(gr.timeStart, gr.timeEnd).getSeconds();
         game.font.draw(
                 game.batch,
-                "Game Duration - " + gr.timeStart + " - " + gr.timeEnd,
+                "Game Duration - " + segundos + "s",
                 x, 500
         );
         game.font.draw(
                 game.batch,
-                "Correct Totems: " + gr.correctTotems + " / " + (gr.wrongTotems + gr.correctTotems),
+                "Correct Totems: " + gr.correctTotems + " / 10",
                 x, 400
         );
 
@@ -77,6 +79,7 @@ public class EndGameScreen implements Screen {
             float touchX = Gdx.input.getX();
             float touchY = Gdx.graphics.getHeight() - Gdx.input.getY();
             if (saveScoreBtn.contains(touchX, touchY)) {
+                System.out.println("pressed");
                 try {
                     JSONObject json = new JSONObject();
                     json.put("aliasPlayer", gr.aliasPlayer);
@@ -87,6 +90,7 @@ public class EndGameScreen implements Screen {
                     json.put("nameCycle", gr.playerOcupation);
                     new ApiWs().sendPost(WebServiceConstants.api + "api/set_ranking",json);
                 } catch (IOException e) {
+                    System.out.println("Failed");
                     throw new RuntimeException(e);
                 }
 

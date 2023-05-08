@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Json;
 import com.mygdx.ipop_game.IPOP;
 import com.mygdx.ipop_game.models.GameRecord;
 import com.mygdx.ipop_game.models.Player;
@@ -81,7 +82,6 @@ public class EndGameScreen implements Screen {
                 x, 400
         );
 
-
         if (Gdx.input.justTouched()) {
             float touchX = Gdx.input.getX();
             float touchY = Gdx.graphics.getHeight() - Gdx.input.getY();
@@ -97,7 +97,8 @@ public class EndGameScreen implements Screen {
                         json.put("nameCycle", gr.playerOcupation);
                         System.out.println(json);
                         StringBuffer stb = new ApiWs().sendPost(WebServiceConstants.api + "api/set_ranking",json);
-                        System.out.println(stb);
+                        JSONObject response = new JSONObject(stb);
+                        System.out.println(response);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

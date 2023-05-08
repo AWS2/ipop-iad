@@ -54,7 +54,7 @@ public class PlayingScreen implements Screen {
 
     Sound dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
     Sound cyndaquilSound = Gdx.audio.newSound(Gdx.files.internal("CYNDAQUIL.wav"));
-    int totems_to_reach = 1;
+    int TOTEMS_TO_REACH = 5;
     int corTotems = 0;
     int totalTotems = 0;
 
@@ -78,8 +78,6 @@ public class PlayingScreen implements Screen {
         rightPad = new Rectangle(screenWidth*2/3, 0, screenWidth/3, screenHeight);
 
         homeBtn = new Rectangle(100,900,100,100);
-
-
 
         font.getData().setScale(3);
         font.setColor(Color.RED);
@@ -185,9 +183,7 @@ public class PlayingScreen implements Screen {
         }
     }
     @Override
-    public void show() {
-
-    }
+    public void show() {  }
 
     @Override
     public void render(float delta) {
@@ -196,7 +192,7 @@ public class PlayingScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         moving = false;
 
-        if (corTotems == totems_to_reach) {
+        if (corTotems == TOTEMS_TO_REACH) {
             game.setScreen(new EndGameScreen(game, new GameRecord(
                     corTotems,totalTotems, Player.player_ocupation, Player.player_alias, startPlaying, Instant.now()
             )));
@@ -268,9 +264,13 @@ public class PlayingScreen implements Screen {
         batch.draw(frame,playerRectangle.getX(),playerRectangle.getY(),Player.scale[0],Player.scale[1]);
         batch.draw(home, 100,900,100,100);
         if (corTotems > 0){
-            batch.draw(IPOP.score_bar[corTotems], 900,950,750,100);
+            batch.draw(IPOP.score_bar[corTotems], 800,950,750,100);
         } else {
-            batch.draw(IPOP.score_bar[0], 900,950,750,100);
+            if (corTotems == 0) {
+                batch.draw(IPOP.score_bar[0], 800,900,750,100);
+            } else {
+                batch.draw(IPOP.wrong_score_bar[Math.abs(corTotems)], 800,900,750,100);
+            }
         }
 
         drawTotems(activeOnFieldTotems);

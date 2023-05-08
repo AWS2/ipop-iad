@@ -11,7 +11,7 @@ import com.mygdx.ipop_game.models.Player;
 
 public class MainMenuScreen implements Screen, TextInputListener {
 
-    private Texture background, selectName, selectCharacter, selectCicle, singlePlayer, multiPlayer, rankings;
+    private Texture disabledSinglePlayer, disabledMultiPlayer, check, background, selectName, selectCharacter, selectCicle, singlePlayer, multiPlayer, rankings;
 
     private Rectangle selectNameBtn, selectCharacterBtn, selectCicleBtn, singlePlayerBtn, multiPlayerBtn, rankingsBtn;
     final IPOP game;
@@ -36,13 +36,18 @@ public class MainMenuScreen implements Screen, TextInputListener {
         selectCharacterBtn = new Rectangle(900, 280, 500, 100);
 
         singlePlayer = new Texture(Gdx.files.internal("single_player.png"));
+        disabledSinglePlayer = new Texture(Gdx.files.internal("disable_sp.png"));
         singlePlayerBtn = new Rectangle(900, 170, 500, 100);
 
         multiPlayer = new Texture(Gdx.files.internal("multi_player.png"));
+        disabledMultiPlayer = new Texture(Gdx.files.internal("disable_mp.png"));
         multiPlayerBtn = new Rectangle(900, 60, 500, 100);
 
         rankings = new Texture(Gdx.files.internal("ranking_button.png"));
         rankingsBtn = new Rectangle(2100, 800, 150, 150);
+
+        check = new Texture(Gdx.files.internal("check_button.png"));
+
     }
 
     @Override
@@ -58,9 +63,33 @@ public class MainMenuScreen implements Screen, TextInputListener {
         game.batch.draw(selectName,900 , 500, 500, 100);
         game.batch.draw(selectCicle,900 , 390, 500, 100);
         game.batch.draw(selectCharacter,900 , 280, 500, 100);
-        game.batch.draw(singlePlayer,900 , 170, 500, 100);
-        game.batch.draw(multiPlayer,900 , 60, 500, 100);
+
+        if (characterSelected && nameSelected && cicleSelected) {
+            game.batch.draw(singlePlayer,900 , 170, 500, 100);
+            // game.batch.draw(multiPlayer,900 , 60, 500, 100);
+        } else {
+            game.batch.draw(disabledSinglePlayer,900 , 170, 500, 100);
+            game.batch.draw(disabledMultiPlayer,900 , 60, 500, 100);
+        }
+
         game.batch.draw(rankings,2100, 800, 150, 150);
+
+        game.font.getData().setScale(3f);
+        if (characterSelected) {
+            game.font.draw(game.batch,"Character selected",100 , 300);
+            game.batch.draw(check, 25,250, 75,75);
+        }
+
+        if (nameSelected) {
+            game.font.draw(game.batch,"Name selected",100 , 200);
+            game.batch.draw(check, 25,150, 75,75);
+        }
+
+        if (cicleSelected) {
+            game.font.draw(game.batch,"Cicle selected",100 , 100);
+            game.batch.draw(check, 25,50, 75,75);
+        }
+
 
         if (Gdx.input.justTouched()) {
             float touchX = Gdx.input.getX();

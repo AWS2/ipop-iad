@@ -64,6 +64,7 @@ public class IPOP extends Game {
     public static ArrayList<String> produccion = new ArrayList<>();
     public static ArrayList<String> aguas = new ArrayList<>();
     public static Texture[] score_bar = new Texture[7];
+    public static Texture[] wrong_score_bar = new Texture[7];
 
 
     public static void loadResources() {
@@ -188,6 +189,14 @@ public class IPOP extends Game {
         score_bar[4] = new Texture(Gdx.files.internal("score_4.png"));
         score_bar[5] = new Texture(Gdx.files.internal("score_5.png"));
         score_bar[6] = new Texture(Gdx.files.internal("score_5.png"));
+
+        wrong_score_bar[0] = new Texture(Gdx.files.internal("score_0.png"));
+        wrong_score_bar[1] = new Texture(Gdx.files.internal("wrong_score_bar_1.png"));
+        wrong_score_bar[2] = new Texture(Gdx.files.internal("wrong_score_bar_2.png"));
+        wrong_score_bar[3] = new Texture(Gdx.files.internal("wrong_score_bar_3.png"));
+        wrong_score_bar[4] = new Texture(Gdx.files.internal("wrong_score_bar_4.png"));
+        wrong_score_bar[5] = new Texture(Gdx.files.internal("wrong_score_bar_5.png"));
+        wrong_score_bar[6] = new Texture(Gdx.files.internal("wrong_score_bar_5.png"));
 
         informatica = new ArrayList<>();
         informatica.add("Sistemes microinformatics i xarxes");

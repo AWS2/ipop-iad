@@ -100,15 +100,15 @@ public class IPOP extends Game {
         player_front[2] = new TextureRegion(Player.sprite, 102, 2, 33, 46);
         player_front[3] = new TextureRegion(Player.sprite, 55, 1, 33, 47);
 
-        player_right[0] = new TextureRegion(Player.sprite, 5, 50, 36, 46);
-        player_right[1] = new TextureRegion(Player.sprite, 53, 49, 36, 47);
-        player_right[2] = new TextureRegion(Player.sprite, 101, 50, 36, 46);
-        player_right[3] = new TextureRegion(Player.sprite, 53, 49, 36, 47);
+        player_left[0] = new TextureRegion(Player.sprite, 5, 50, 36, 46);
+        player_left[1] = new TextureRegion(Player.sprite, 53, 49, 36, 47);
+        player_left[2] = new TextureRegion(Player.sprite, 101, 50, 36, 46);
+        player_left[3] = new TextureRegion(Player.sprite, 53, 49, 36, 47);
 
-        player_left[0] = new TextureRegion(Player.sprite, 6, 98, 36, 46);
-        player_left[1] = new TextureRegion(Player.sprite, 54, 97, 37, 47);
-        player_left[2] = new TextureRegion(Player.sprite, 102, 98, 36, 46);
-        player_left[3] = new TextureRegion(Player.sprite, 54, 97, 37, 47);
+        player_right[0] = new TextureRegion(Player.sprite, 6, 98, 36, 46);
+        player_right[1] = new TextureRegion(Player.sprite, 54, 97, 37, 47);
+        player_right[2] = new TextureRegion(Player.sprite, 102, 98, 36, 46);
+        player_right[3] = new TextureRegion(Player.sprite, 54, 97, 37, 47);
 
         player_down[0] = new TextureRegion(Player.sprite, 7, 146, 33, 46);
         player_down[1] = new TextureRegion(Player.sprite, 55, 145, 33, 47);

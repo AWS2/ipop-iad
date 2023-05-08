@@ -20,6 +20,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.ipop_game.IPOP;
+import com.mygdx.ipop_game.models.Player;
 import com.mygdx.ipop_game.models.Totem;
 
 import java.util.ArrayList;
@@ -30,18 +31,16 @@ public class PlayingScreen implements Screen {
     int screenWidth = Gdx.graphics.getWidth(),screenHeight = Gdx.graphics.getHeight();
     int score = 0;
     Float stateTime = 0.0f;
-    Animation<TextureRegion> player;
     SpriteBatch batch;
-    TextureRegion player_up[] = new TextureRegion[4];
-    TextureRegion player_left[] = new TextureRegion[4];
-    TextureRegion player_right[] = new TextureRegion[4];
-    TextureRegion player_down[] = new TextureRegion[4];
     Rectangle upPad,downPad,leftPad,rightPad,playerRectangle;
-    Texture sprite = new Texture("IPOP-Walking.png"),background = new Texture("Map003.png"),totemSprite = new Texture("totem.png");
+    Texture background = new Texture("Map003.png");
+    Texture totemSprite = new Texture("totem.png");
     String direction,currentDirection;
     private static OrthographicCamera camera;
     Boolean moving,soundPlayed = false;
     BitmapFont font = new BitmapFont(),scoreFont = new BitmapFont();
+
+    Animation<TextureRegion> player;
 
     float maxWidth = 200;
     float scrollSpeed = 200.0f;
@@ -66,27 +65,6 @@ public class PlayingScreen implements Screen {
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, screenWidth, screenHeight);
-
-        //todo Revisar tamano de la TextureRegion para la Animacion
-        player_down[0] = new TextureRegion(sprite,0,0,50,49);
-        player_down[1] = new TextureRegion(sprite,50,0,50,49);
-        player_down[2] = new TextureRegion(sprite,100,0,50,49);
-        player_down[3] = new TextureRegion(sprite,50,0,50,49);
-
-        player_left[0] = new TextureRegion(sprite,0,49,50,49);
-        player_left[1] = new TextureRegion(sprite,50,49,50,49);
-        player_left[2] = new TextureRegion(sprite,100,49,50,49);
-        player_left[3] = new TextureRegion(sprite,50,49,50,49);
-
-        player_right[0] = new TextureRegion(sprite,0,97,50,49);
-        player_right[1] = new TextureRegion(sprite,50,97,50,49);
-        player_right[2] = new TextureRegion(sprite,100,97,50,49);
-        player_right[3] = new TextureRegion(sprite,50,97,50,49);
-
-        player_up[0] = new TextureRegion(sprite,0,147,50,49);
-        player_up[1] = new TextureRegion(sprite,50,147,50,49);
-        player_up[2] = new TextureRegion(sprite,100,147,50,49);
-        player_up[3] = new TextureRegion(sprite,50,147,50,49);
 
         //TouchPads
         upPad = new Rectangle(0, screenHeight*2/3, screenWidth, screenHeight);
@@ -295,49 +273,16 @@ public class PlayingScreen implements Screen {
 
         stateTime += Gdx.graphics.getDeltaTime(); // Accumulate elapsed animation time
         TextureRegion frame = player.getKeyFrame(stateTime,true);
-        batch.draw(frame,playerRectangle.getX(),playerRectangle.getY(),SCR_WIDTH/4,SCR_HEIGHT/4);
+        batch.draw(frame,playerRectangle.getX(),playerRectangle.getY(),Player.scale[0],Player.scale[1]);
         scoreFont.draw(batch,"Score = "+String.valueOf(score),100,screenHeight/10);
 
         drawTotems(activeOnFieldTotems);
-        //batch.draw(activeOnFieldTotems.get(0).getImage(),activeOnFieldTotems.get(0).getX(),activeOnFieldTotems.get(0).getY());
-        //font.draw(batch,glyphLayout,textX,textBox.getY());
-        //}
-
 
         //batch.end();
 
         batch.end();
-
-        /*System.out.println( textX + glyphLayout.width);
-        textX -= scrollSpeed * Gdx.graphics.getDeltaTime();
-
-
-        //todo Revisar porque no me hace las pasadas del substring
-        if (textBox.x > textX + glyphLayout.width) {
-            System.out.println("Canvi");
-            textX = textBox.getX()+textBox.getWidth();
-        } else {
-
-                String substring = ocupacio.substring(1);
-
-                glyphLayout.setText(font,substring);
-                if (textBox.x > textX + glyphLayout.width) {
-                    ocupacio = substring;
-                    substring = ocupacio.substring(1);
-                    glyphLayout.setText(font,substring);
-                    System.out.println(substring);
-                    System.out.println("Es mas peque");
-                }
-
-
-        }*/
-
-
-
     }
     protected String virtual_joystick_control() {
-        // iterar per multitouch
-        // cada "i" és un possible "touch" d'un dit a la pantalla
         for(int i=0;i<10;i++)
             if (Gdx.input.isTouched(i)) {
                 Vector3 touchPos = new Vector3();
@@ -358,47 +303,36 @@ public class PlayingScreen implements Screen {
                     return "right";
                 }
             }
-        //Revisar per el Key input
         return currentDirection;
     }
     public void walkDirection(String direction, Boolean moving) {
         if (moving) {
             if (direction.equals("right")) {
-                player = new Animation<TextureRegion>(0.1f,player_right);
+                player = new Animation<TextureRegion>(0.1f, Player.player_right.get(Player.player_character).getKeyFrames());
                 playerRectangle.x += 500 * Gdx.graphics.getDeltaTime();
             }
             else if (direction.equals("left")) {
-                player = new Animation<TextureRegion>(0.1f,player_left);
+                player = new Animation<TextureRegion>(0.1f, Player.player_left.get(Player.player_character).getKeyFrames());
                 playerRectangle.x -= 500 * Gdx.graphics.getDeltaTime();
 
             }
             else if (direction.equals("up")) {
-                player = new Animation<TextureRegion>(0.1f,player_up);
+                player = new Animation<TextureRegion>(0.1f, Player.player_up.get(Player.player_character).getKeyFrames());
                 playerRectangle.y += 500 * Gdx.graphics.getDeltaTime();
 
             }
             else if (direction.equals("down")) {
-                player = new Animation<TextureRegion>(0.1f,player_down);
+                player = new Animation<TextureRegion>(0.1f, Player.player_down.get(Player.player_character).getKeyFrames());
                 playerRectangle.y -= 500 * Gdx.graphics.getDeltaTime();
 
             }
         } else {
-            player = new Animation<TextureRegion>(999.9f,player_down);
+            player = new Animation<TextureRegion>(9999f, Player.player_down.get(Player.player_character).getKeyFrames());
         }
 
 
     }
 
-    /*public int setTextPosition(Rectangle textBox) {
-        System.out.println(textX);
-        if (textX - textBox.getWidth() < textBox.getX()) {
-            textX = textX-10;
-            return textX;
-        } else {
-            textX = (int) (textBox.getX()+textBox.getWidth()+100);
-            return textX;
-        }
-    }*/
     @Override
     public void resize(int width, int height) {
 
@@ -419,13 +353,9 @@ public class PlayingScreen implements Screen {
 
     }
 
-    // Resto de métodos de la interfaz Screen
-    // ...
-
     @Override
     public void dispose() {
         batch.dispose();
-        sprite.dispose();
         background.dispose();
     }
 }

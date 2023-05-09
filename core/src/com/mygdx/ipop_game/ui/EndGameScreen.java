@@ -97,8 +97,6 @@ public class EndGameScreen implements Screen {
                         json.put("nameCycle", gr.playerOcupation);
                         System.out.println(json);
                         StringBuffer stb = new ApiWs().sendPost(WebServiceConstants.api + "api/set_ranking",json);
-                        JSONObject response = new JSONObject(stb);
-                        System.out.println(response);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

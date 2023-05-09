@@ -52,7 +52,6 @@ public class EndGameScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         game.batch.begin();
-
         game.batch.draw(background, 0, 0, 2400, 1080);
         game.batch.draw(itemBackground, 400, 100, 1500, 750);
         game.batch.draw(saveScore, 920 , 50, 450, 125);
@@ -93,12 +92,10 @@ public class EndGameScreen implements Screen {
                         json.put("timeStart", gr.timeStart);
                         json.put("timeEnd", gr.timeEnd);
                         json.put("correctTotems", gr.correctTotems);
-                        json.put("wrongTotems", gr.correctTotems - gr.totalTotems);
+                        json.put("wrongTotems", gr.totalTotems - gr.correctTotems);
                         json.put("nameCycle", gr.playerOcupation);
                         System.out.println(json);
                         StringBuffer stb = new ApiWs().sendPost(WebServiceConstants.api + "api/set_ranking",json);
-                        JSONObject response = new JSONObject(stb);
-                        System.out.println(response);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

@@ -210,18 +210,18 @@ public class PlayingScreen implements Screen {
         } else if (cicle.equals("Gestio administrativa")) {
             ocupacions.add("Recepcionista. ");
             ocupacions.add("Personal auxiliar administratiu.");
-            ocupacions.add("Personal ajudant d’oficina. ");
+            ocupacions.add("Personal ajudant d oficina. ");
             ocupacions.add("Personal administratiu comercial. ");
             ocupacions.add("Personal empleat de tresoreria. ");
         } else if (cicle.equals("Electromecanica de vehicles automobils")) {
             ocupacions.add("Electronicistes de vehicles. ");
-            ocupacions.add("Personal mecànic d’automòbils. ");
-            ocupacions.add("Electricistes d’automòbils. ");
-            ocupacions.add("Personal electromecànic d’automòbils. ");
+            ocupacions.add("Personal mecànic d automòbils. ");
+            ocupacions.add("Electricistes d automòbils. ");
+            ocupacions.add("Personal electromecànic d automòbils. ");
             ocupacions.add("Personal reparador de sistemes pneumàtics i hidràulics");
         } else {
             ocupacions.add("Personal ajustador operari de màquines eina.");
-            ocupacions.add("Personal polidor de metalls i afilador d’eines. ");
+            ocupacions.add("Personal polidor de metalls i afilador d eines. ");
             ocupacions.add("Personal operador de màquines eina. ");
             ocupacions.add("Personal operador de robots industrials. ");
             ocupacions.add("Personal torner, fresador i mandrinador.");

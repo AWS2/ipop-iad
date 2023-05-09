@@ -66,7 +66,7 @@ public class MainMenuScreen implements Screen, TextInputListener {
 
         if (characterSelected && nameSelected && cicleSelected) {
             game.batch.draw(singlePlayer,900 , 170, 500, 100);
-            // game.batch.draw(multiPlayer,900 , 60, 500, 100);
+            game.batch.draw(disabledMultiPlayer,900 , 60, 500, 100);
         } else {
             game.batch.draw(disabledSinglePlayer,900 , 170, 500, 100);
             game.batch.draw(disabledMultiPlayer,900 , 60, 500, 100);

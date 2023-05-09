@@ -300,7 +300,6 @@ public class PlayingScreen implements Screen {
                             activeOnFieldTotems.remove(i);
                         }
                     }
-
                 }
             }
         }

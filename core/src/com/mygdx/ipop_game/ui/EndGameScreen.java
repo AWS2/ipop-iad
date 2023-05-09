@@ -56,20 +56,18 @@ public class EndGameScreen implements Screen {
         game.batch.draw(itemBackground, 400, 100, 1500, 750);
         game.batch.draw(saveScore, 920 , 50, 450, 125);
         game.font.getData().setScale(5.0f);
-
+        long segundos = Duration.between(gr.timeStart, gr.timeEnd).getSeconds();
         game.font.draw(
                 game.batch,
                 "Username: " + gr.aliasPlayer,
                 x, 700
         );
-        int inTotems = gr.totalTotems - gr.correctTotems;
-        int score = gr.correctTotems - (inTotems * 2);
+        int score = calcularPuntuacion(gr.correctTotems, (gr.totalTotems-gr.correctTotems), (int) segundos);
         game.font.draw(
                 game.batch,
                 "Score:  " + score,
                 x, 600
         );
-        long segundos = Duration.between(gr.timeStart, gr.timeEnd).getSeconds();
         game.font.draw(
                 game.batch,
                 "Game Duration:  " + segundos + "s",
@@ -105,6 +103,21 @@ public class EndGameScreen implements Screen {
         }
 
         game.batch.end();
+    }
+
+    private int calcularPuntuacion(int totemsCorrectos, int totemsIncorrectos, int tiempo) {
+        int puntosPorTotemCorrecto = 10;
+        int penalizacionPorTotemIncorrecto = 15;
+        int puntosPorSegundoRestante = 1;
+
+        int puntuacionSinTiempo = (totemsCorrectos * puntosPorTotemCorrecto) - (totemsIncorrectos * penalizacionPorTotemIncorrecto);
+        int puntuacionConTiempo = puntuacionSinTiempo + (tiempo * puntosPorSegundoRestante);
+
+        if (puntuacionConTiempo < 0) {
+            return 0;
+        } else {
+            return puntuacionConTiempo;
+        }
     }
 
     @Override

@@ -18,6 +18,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.ipop_game.IPOP;
 import com.mygdx.ipop_game.models.GameRecord;
+import com.mygdx.ipop_game.models.Ocupacio;
 import com.mygdx.ipop_game.models.Player;
 import com.mygdx.ipop_game.models.Totem;
 
@@ -27,8 +28,10 @@ import java.util.ArrayList;
 public class PlayingScreen implements Screen {
 
     final IPOP game;
+    Ocupacio ocupacioObject;
     int screenWidth = Gdx.graphics.getWidth(), screenHeight = Gdx.graphics.getHeight();
     int score = 0;
+    int pasada = 0;
     Float stateTime = 0.0f;
     SpriteBatch batch;
     Rectangle upPad, downPad, leftPad, rightPad, playerRectangle, homeBtn;
@@ -98,13 +101,19 @@ public class PlayingScreen implements Screen {
             Rectangle totemBox = new Rectangle();
             GlyphLayout glyphLayout = new GlyphLayout();
             float textX = 0;
-            String ocupacio = "Ocupacio"+i;
-            glyphLayout.setText(font,ocupacio);
+
 
             //Comprovar que no hi hagi totems en aquella posicio
 
             //Despues de la primera pasada se añadiran los incorrectos verificando su posicion
             if (i > 0) {
+                String ocupacio = "";
+                if (i == 1) {
+                    ocupacio = llistaOcupacions("Gestio administrativa");
+                } else {
+                    ocupacio = llistaOcupacions("Electromecanica de vehicles automobils");
+                }
+
                 System.out.println(totemsCorrectes);
                 Totem totem = new Totem(MathUtils.random(screenWidth-300),MathUtils.random(screenHeight-300),192,192,totemSprite,"Informatica",ocupacio,totemBox,glyphLayout,textX,dropSound,false);
                 totemBox.setPosition(totem.getX(),totem.getY()+50);
@@ -123,6 +132,9 @@ public class PlayingScreen implements Screen {
 
                 //Durante la primera pasada añadiremos el totem correcto
             } else {
+                String ocupacio = llistaOcupacions(Player.player_ocupation);
+
+                glyphLayout.setText(font,ocupacio);
                 Totem totem = new Totem(MathUtils.random(screenWidth-300),MathUtils.random(screenHeight-300),192,192    ,totemSprite,"Informatica",ocupacio,totemBox,glyphLayout,textX,cyndaquilSound,true);
                 totemBox.setPosition(totem.getX(),totem.getY()+50);
                 totemBox.setWidth(300);
@@ -182,6 +194,41 @@ public class PlayingScreen implements Screen {
             }
         }
     }
+
+    private String llistaOcupacions(String cicle) {
+        if (pasada > 4) {
+            pasada = 0;
+        }
+        ArrayList<String> ocupacions = new ArrayList<>();
+
+        if (cicle.equals("Sistemes microinformatics i xarxes")) {
+            ocupacions.add("Personal tècnic instal·lador-reparador d’equips informàtics");
+            ocupacions.add("Personal tècnic de suport informàtic.");
+            ocupacions.add("Personal tècnic de xarxes de dades. ");
+            ocupacions.add("Comercials de microinformàtica. ");
+            ocupacions.add("Personal operador de sistemes.");
+        } else if (cicle.equals("Gestio administrativa")) {
+            ocupacions.add("Recepcionista. ");
+            ocupacions.add("Personal auxiliar administratiu.");
+            ocupacions.add("Personal ajudant d’oficina. ");
+            ocupacions.add("Personal administratiu comercial. ");
+            ocupacions.add("Personal empleat de tresoreria. ");
+        } else if (cicle.equals("Electromecanica de vehicles automobils")) {
+            ocupacions.add("Electronicistes de vehicles. ");
+            ocupacions.add("Personal mecànic d’automòbils. ");
+            ocupacions.add("Electricistes d’automòbils. ");
+            ocupacions.add("Personal electromecànic d’automòbils. ");
+            ocupacions.add("Personal reparador de sistemes pneumàtics i hidràulics");
+        } else {
+            ocupacions.add("Personal ajustador operari de màquines eina.");
+            ocupacions.add("Personal polidor de metalls i afilador d’eines. ");
+            ocupacions.add("Personal operador de màquines eina. ");
+            ocupacions.add("Personal operador de robots industrials. ");
+            ocupacions.add("Personal torner, fresador i mandrinador.");
+        }
+
+        return ocupacions.get(pasada);
+    }
     @Override
     public void show() {  }
 
@@ -239,6 +286,7 @@ public class PlayingScreen implements Screen {
                         if (activeOnFieldTotems.get(i).getCorrectTotem()) {
                             corTotems++;
                             totalTotems++;
+                            pasada++;
                             System.out.println(corTotems);
                             activeOnFieldTotems.clear();
                             ocupacioInicial.clear();

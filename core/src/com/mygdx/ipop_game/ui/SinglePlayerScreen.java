@@ -25,7 +25,7 @@ import com.mygdx.ipop_game.models.Totem;
 import java.time.Instant;
 import java.util.ArrayList;
 
-public class PlayingScreen implements Screen {
+public class SinglePlayerScreen implements Screen {
 
     final IPOP game;
     Ocupacio ocupacioObject;
@@ -61,7 +61,7 @@ public class PlayingScreen implements Screen {
     int corTotems = 0;
     int totalTotems = 0;
 
-    public PlayingScreen(IPOP game) {
+    public SinglePlayerScreen(IPOP game) {
         camera = new OrthographicCamera();
         this.game = game;
         batch = new SpriteBatch();
@@ -327,7 +327,7 @@ public class PlayingScreen implements Screen {
                 Vector3 touchPos = new Vector3();
                 touchPos.set(Gdx.input.getX(i), Gdx.input.getY(i), 0);
                 // traducció de coordenades reals (depen del dispositiu) a 800x480
-                PlayingScreen.camera.unproject(touchPos);
+                SinglePlayerScreen.camera.unproject(touchPos);
                 if (homeBtn.contains(touchPos.x, touchPos.y)) {
                     game.setScreen(new MainMenuScreen(game));
                 }
@@ -341,7 +341,7 @@ public class PlayingScreen implements Screen {
                 Vector3 touchPos = new Vector3();
                 touchPos.set(Gdx.input.getX(i), Gdx.input.getY(i), 0);
                 // traducció de coordenades reals (depen del dispositiu) a 800x480
-                PlayingScreen.camera.unproject(touchPos);
+                SinglePlayerScreen.camera.unproject(touchPos);
                 if (upPad.contains(touchPos.x, touchPos.y)) {
                     moving = true;
                     return "up";

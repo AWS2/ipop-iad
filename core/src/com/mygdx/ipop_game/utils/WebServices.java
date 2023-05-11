@@ -2,8 +2,6 @@ package com.mygdx.ipop_game.utils;
 
 import static jdk.internal.net.http.HttpRequestImpl.USER_AGENT;
 
-import com.github.czyzby.websocket.WebSocket;
-
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -14,16 +12,14 @@ import java.net.URL;
 
         import java.io.BufferedReader;
         import java.io.DataOutputStream;
-        import java.io.IOException;
-        import java.io.InputStreamReader;
+import java.io.InputStreamReader;
         import java.net.HttpURLConnection;
-        import java.net.URL;
 
-interface WebSocketsInt {
+interface WebServicesInt {
     StringBuffer sendPost(String url, JSONObject json) throws IOException;
 }
 
-public class WebSockets implements WebSocketsInt{
+public class WebServices implements WebServicesInt{
     public static String ADDRESS = "localhost";
     public static final int PORT = 8888;
 

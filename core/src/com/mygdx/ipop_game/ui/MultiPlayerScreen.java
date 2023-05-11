@@ -33,6 +33,7 @@ import java.util.ArrayList;
 
 public class MultiPlayerScreen implements Screen {
 
+    public static String game_status = "playing";
     final IPOP game;
     Ocupacio ocupacioObject;
     int screenWidth = Gdx.graphics.getWidth(), screenHeight = Gdx.graphics.getHeight();
@@ -263,10 +264,38 @@ public class MultiPlayerScreen implements Screen {
         stateTime += Gdx.graphics.getDeltaTime();
         moving = false;
 
-        if (corTotems == TOTEMS_TO_REACH) {
-            game.setScreen(new EndGameScreen(game, new GameRecord(
-                    corTotems,totalTotems, Player.player_ocupation, Player.player_alias, startPlaying, Instant.now()
-            )));
+        if (MultiPlayerScreen.game_status.equals("finish")) {
+            JSONObject json = new JSONObject();
+            json.put("game_status", "finish");
+            json.put("player_won", Player.player_alias);
+            socket.send(json.toString());
+            game.setScreen(
+                    new EndGameScreen(
+                            game,
+                            new GameRecord(
+                                    corTotems,
+                                    totalTotems,
+                                    Player.player_ocupation,
+                                    Player.player_alias,
+                                    startPlaying,
+                                    Instant.now()
+                            )));
+        } else if (corTotems == TOTEMS_TO_REACH) {
+            JSONObject json = new JSONObject();
+            json.put("game_status", "finish");
+            json.put("player_won", Player.player_alias);
+            socket.send(json.toString());
+            game.setScreen(
+                    new EndGameScreen(
+                            game,
+                            new GameRecord(
+                                    corTotems,
+                                    totalTotems,
+                                    Player.player_ocupation,
+                                    Player.player_alias,
+                                    startPlaying,
+                                    Instant.now()
+                            )));
         }
 
         if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
@@ -443,7 +472,11 @@ class MyWSListener implements WebSocketListener {
 
     @Override
     public boolean onMessage(WebSocket webSocket, String packet) {
-        System.out.println("Message:");
+        System.out.println("Message: " + packet);
+        JSONObject response = new JSONObject(packet);
+        if (response.getString("game_status").equals("finish")) {
+            MultiPlayerScreen.game_status = "finish";
+        }
         return false;
     }
 

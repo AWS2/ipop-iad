@@ -31,6 +31,7 @@ public class EndGameScreen implements Screen {
     public float stateTime = 0f;
     private ArrayList<Record> rankings = new ArrayList<>();
     private ArrayList<Record> allRankings = new ArrayList<>();
+    public static boolean playerWon = true;
 
     public EndGameScreen(IPOP game, GameRecord gr) {
         this.game = game;
@@ -38,9 +39,15 @@ public class EndGameScreen implements Screen {
         background = new Texture(Gdx.files.internal("Mansion.png"));
         itemBackground = new Texture(Gdx.files.internal("panel-background.png"));
 
-        saveScore = new Texture(Gdx.files.internal("save_score_button.png"));
-        saveScoreBtn = new Rectangle(920 , 50, 450, 125);
-
+        if (gr.correctTotems >= 5) {
+            saveScore = new Texture(Gdx.files.internal("save_score_button.png"));
+            saveScoreBtn = new Rectangle(920 , 50, 450, 125);
+            playerWon = true;
+        } else {
+            saveScore = new Texture(Gdx.files.internal("go_to_menu.png"));
+            saveScoreBtn = new Rectangle(920 , 50, 450, 125);
+            playerWon = false;
+        }
     }
 
     @Override

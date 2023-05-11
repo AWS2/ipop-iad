@@ -296,37 +296,33 @@ public class MultiPlayerScreen implements Screen {
         if(playerRectangle.y > screenHeight - 150) playerRectangle.y = screenHeight - 150;
 
         //Revisar que no haya colision
-        for (int i = 0; i < activeOnFieldTotems.size(); i++) {
-            //Que la X no sea igual o menor + la width
-
-            if ((playerRectangle.x >= activeOnFieldTotems.get(i).getX()) && playerRectangle.x <=
-                    activeOnFieldTotems.get(i).getX()+activeOnFieldTotems.get(i).getWidth()) {
-                if ((playerRectangle.y >= activeOnFieldTotems.get(i).getY()) && playerRectangle.y <=
-                        activeOnFieldTotems.get(i).getY()+activeOnFieldTotems.get(i).getHeight()) {
-                    //Limita el sonido
-                    if (!soundPlayed) {
-                        activeOnFieldTotems.get(i).getSound().play();
-                        //Verifica si hay que actualizar todos los totems si es correcto
-                        if (activeOnFieldTotems.get(i).getCorrectTotem()) {
-                            corTotems++;
-                            totalTotems++;
-                            pasada++;
-                            System.out.println(corTotems);
-                            activeOnFieldTotems.clear();
-                            ocupacioInicial.clear();
-                            generacioTotems();
-                            //O solo eliminar el incorrecto
-                        } else {
-                            corTotems--;
-                            totalTotems++;
-                            System.out.println(corTotems);
-                            System.out.println(totalTotems);
-                            activeOnFieldTotems.remove(i);
-                        }
+        for (int i = activeOnFieldTotems.size() - 1; i >= 0; i--) {
+            Totem totem = activeOnFieldTotems.get(i);
+            if (playerRectangle.x >= totem.getX() && playerRectangle.x <= totem.getX() + totem.getWidth()
+                    && playerRectangle.y >= totem.getY() && playerRectangle.y <= totem.getY() + totem.getHeight()) {
+                if (!soundPlayed) {
+                    totem.getSound().play();
+                    if (totem.getCorrectTotem()) {
+                        corTotems++;
+                        totalTotems++;
+                        pasada++;
+                        System.out.println(corTotems);
+                        activeOnFieldTotems.clear();
+                        ocupacioInicial.clear();
+                        generacioTotems();
+                        sendTotemToServer(totem);
+                    } else {
+                        corTotems--;
+                        totalTotems++;
+                        System.out.println(corTotems);
+                        System.out.println(totalTotems);
+                        sendTotemToServer(totem);
+                        activeOnFieldTotems.remove(i);
                     }
                 }
             }
         }
+
 
         batch.begin();
         batch.draw(background,0,0);
@@ -359,6 +355,13 @@ public class MultiPlayerScreen implements Screen {
 
         batch.end();
     }
+
+    private void sendTotemToServer(Totem totem) {
+        JSONObject json = new JSONObject();
+        json.put("totem_id", totem.getId());
+        socket.send(json.toString());
+    }
+
     protected String virtual_joystick_control() {
         for(int i=0;i<10;i++)
             if (Gdx.input.isTouched(i)) {

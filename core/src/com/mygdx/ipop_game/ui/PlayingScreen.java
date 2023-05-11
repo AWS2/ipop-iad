@@ -15,6 +15,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.ipop_game.IPOP;
 import com.mygdx.ipop_game.models.GameRecord;
@@ -30,12 +31,12 @@ public class PlayingScreen implements Screen {
     final IPOP game;
     Ocupacio ocupacioObject;
     int screenWidth = Gdx.graphics.getWidth(), screenHeight = Gdx.graphics.getHeight();
-    int score = 0;
-    int pasada = 0;
+    int score = 0,pasada = 0,bgposx,bgposy;
     Float stateTime = 0.0f;
     SpriteBatch batch;
     Rectangle upPad, downPad, leftPad, rightPad, playerRectangle, homeBtn;
-    Texture background = new Texture("Map003.png");
+    Texture background = new Texture("Map001.png");
+    TextureRegion bgRegion;
     Texture home = new Texture("menu_button.png");
     Texture scoreBar;
     Texture totemSprite = new Texture("totem.png");
@@ -61,17 +62,19 @@ public class PlayingScreen implements Screen {
     int corTotems = 0;
     int totalTotems = 0;
 
+    @SuppressWarnings("NewApi")
     public PlayingScreen(IPOP game) {
         camera = new OrthographicCamera();
+
+        camera.position.set((screenWidth*3)/2, (screenHeight*3)/2,0);
         this.game = game;
         batch = new SpriteBatch();
         direction = "right";
         currentDirection = "right";
         playerRectangle = new Rectangle();
-        playerRectangle.setX(50);
-        playerRectangle.setY(50);
+        /*playerRectangle.setX(-5000);
+        playerRectangle.setY(-5000);*/
 
-        camera = new OrthographicCamera();
         camera.setToOrtho(false, screenWidth, screenHeight);
 
         //TouchPads
@@ -88,6 +91,12 @@ public class PlayingScreen implements Screen {
         scoreFont.getData().setLineHeight(3);
         scoreFont.setColor(Color.WHITE);
 
+        // bg
+        background.setWrap(Texture.TextureWrap.MirroredRepeat, Texture.TextureWrap.MirroredRepeat);
+        bgRegion = new TextureRegion(background);
+        bgposx = 0;
+        bgposy = 0;
+
         generacioTotems();
         startPlaying = Instant.now();
         this.render(Gdx.graphics.getDeltaTime());
@@ -96,103 +105,103 @@ public class PlayingScreen implements Screen {
     //Metodo que llamaremos cada vez que el usuario colisione contra el Totem correcto hasta 5 veces
     private void generacioTotems() {
         //todo fer que el text es fiqui damunt del totem
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 2; i++) {
 
             Rectangle totemBox = new Rectangle();
             GlyphLayout glyphLayout = new GlyphLayout();
             float textX = 0;
+            //Generar Totems Correctes
+            //todo Para actualizar la posicion de los totem según la pantalla se tendra que tener una
+            //todo posicion fija guardado y a cada momento que se llame el desplazar el totem se tendra
+            //todo que restar la variable de la camara al totem para que de el efecto que nos estamos
+            //todo acerdando a el
+            if (i == 0) {
+                for (int j = 0; j < 5; j++) {
+                    String ocupacio = llistaOcupacions(Player.player_ocupation);
 
+                    glyphLayout.setText(font,ocupacio);
+                    Vector2 totemPosition = new Vector2(MathUtils.random((screenWidth*3)/2-300),MathUtils.random((screenHeight*3)/2-300));
+                    Totem totem = new Totem(totemPosition.x,totemPosition.y,192,192    ,totemSprite,"Informatica",ocupacio,totemBox,glyphLayout,textX,cyndaquilSound,true);
+                    totemBox.setPosition(totem.getX(),totem.getY()+50);
+                    totemBox.setWidth(300);
+                    totem.setTextX(totemBox.getX()+totemBox.getWidth());
+                    //Layout
+                    activeOnFieldTotems.add(totem);
+                    ocupacioInicial.add(activeOnFieldTotems.get(j).getOcupacio());
+                    totemsCorrectes.add(totem);
+                }
+            } else {
+                for (int j = 0; j < 5; j++) {
+                    String ocupacio = "";
+                        ocupacio = llistaOcupacions("Gestio administrativa");
+                        System.out.println(totemsCorrectes);
+                        Totem totem = new Totem(MathUtils.random((screenWidth*3)/2-300),MathUtils.random((screenHeight*3)/2-300),192,192,totemSprite,"Informatica",ocupacio,totemBox,glyphLayout,textX,dropSound,false);
+                        totemBox.setPosition(totem.getX(),totem.getY()+50);
+                        totemBox.setWidth(300);
+                        totem.setTextX(totemBox.getX()+totemBox.getWidth());
+                        //Layout
+                        glyphLayout.setText(font,ocupacio);
+                        for (int k = 0; k < activeOnFieldTotems.size(); k++) {
+                            if (k < activeOnFieldTotems.size() && activeOnFieldTotems.get(k).getX() != totem.getX() && activeOnFieldTotems.get(k).getY() != totem.getY()) {
+                                activeOnFieldTotems.add(totem);
+                                ocupacioInicial.add(activeOnFieldTotems.get(j).getOcupacio());
+                                totemsIncorrectes.add(totem);
+                                break;
+                            }
+
+                        }
+                }
+
+
+
+
+            }
 
             //Comprovar que no hi hagi totems en aquella posicio
 
             //Despues de la primera pasada se añadiran los incorrectos verificando su posicion
-            if (i > 0) {
-                String ocupacio = "";
-                if (i == 1) {
-                    ocupacio = llistaOcupacions("Gestio administrativa");
-                } else {
-                    ocupacio = llistaOcupacions("Electromecanica de vehicles automobils");
-                }
 
-                System.out.println(totemsCorrectes);
-                Totem totem = new Totem(MathUtils.random(screenWidth-300),MathUtils.random(screenHeight-300),192,192,totemSprite,"Informatica",ocupacio,totemBox,glyphLayout,textX,dropSound,false);
-                totemBox.setPosition(totem.getX(),totem.getY()+50);
-                totemBox.setWidth(300);
-                totem.setTextX(totemBox.getX()+totemBox.getWidth());
-                //Layout
-                glyphLayout.setText(font,ocupacio);
-                for (int j = 0; j < totemsCorrectes.size(); j++) {
-                    if (j < activeOnFieldTotems.size() && activeOnFieldTotems.get(j).getX() != totem.getX() && activeOnFieldTotems.get(j).getY() != totem.getY()) {
-                        activeOnFieldTotems.add(totem);
-                        ocupacioInicial.add(activeOnFieldTotems.get(i).getOcupacio());
-                        totemsIncorrectes.add(totem);
-                    }
-
-                }
-
-                //Durante la primera pasada añadiremos el totem correcto
-            } else {
-                String ocupacio = llistaOcupacions(Player.player_ocupation);
-
-                glyphLayout.setText(font,ocupacio);
-                Totem totem = new Totem(MathUtils.random(screenWidth-300),MathUtils.random(screenHeight-300),192,192    ,totemSprite,"Informatica",ocupacio,totemBox,glyphLayout,textX,cyndaquilSound,true);
-                totemBox.setPosition(totem.getX(),totem.getY()+50);
-                totemBox.setWidth(300);
-                totem.setTextX(totemBox.getX()+totemBox.getWidth());
-                //Layout
-                activeOnFieldTotems.add(totem);
-                ocupacioInicial.add(activeOnFieldTotems.get(i).getOcupacio());
-                totemsCorrectes.add(totem);
-            }
         }
     }
 
     private void drawTotems (ArrayList<Totem> activeOnFieldTotems) {
-        for (int i = 0; i < activeOnFieldTotems.size(); i++) {
+        for (Totem totem : activeOnFieldTotems) {
             //Dibujar el Totem y la Imagen
-            batch.draw(activeOnFieldTotems.get(i).getImage(),activeOnFieldTotems.get(i).getX(),activeOnFieldTotems.get(i).getY());
-            font.draw(batch,activeOnFieldTotems.get(i).getGlyphLayout(),activeOnFieldTotems.get(i).getTextX(),activeOnFieldTotems.get(i).getTextBox().getY());
-            //batch.draw(activeOnFieldTotems.get(0).getImage(),activeOnFieldTotems.get(0).getX(),activeOnFieldTotems.get(0).getY());
-            //font.draw(batch,glyphLayout,textX,textBox.getY());
-            float newTextX = activeOnFieldTotems.get(i).getTextX() - (scrollSpeed * Gdx.graphics.getDeltaTime());
-            activeOnFieldTotems.get(i).setTextX(newTextX);
-            //activeOnFieldTotems.get(i).setTextX(activeOnFieldTotems.get(i).getTextX() -= scrollSpeed * Gdx.graphics.getDeltaTime()) ;
+            System.out.println(totem.getX()+"  "+totem.getY());
+            batch.draw(totem.getImage(), totem.getX(), totem.getY());
+            font.draw(batch, totem.getGlyphLayout(), totem.getTextX(), totem.getTextBox().getY());
 
+            float newTextX = totem.getTextX() - (scrollSpeed * Gdx.graphics.getDeltaTime());
+            totem.setTextX(newTextX);
 
             float elapsedTime = 0f;
-            //Revisar aixo i quan es va actualitzant realment
             float updateInterval = 0.01f;
-            //todo Revisar porque no me hace las pasadas del substring
-            if (activeOnFieldTotems.get(i).getTextBox().x > activeOnFieldTotems.get(i).getTextX() + activeOnFieldTotems.get(i).getGlyphLayout().width) {
-                activeOnFieldTotems.get(i).setTextX(activeOnFieldTotems.get(i).getTextBox().x+activeOnFieldTotems.get(i).getTextBox().getWidth());
-                //Tornar a generar el String inicial
-                elapsedTime = 0f; // reiniciar el temporizador
-                activeOnFieldTotems.get(i).setOcupacio(ocupacioInicial.get(i));
+
+            if (totem.getTextBox().x > totem.getTextX() + totem.getGlyphLayout().width) {
+                totem.setTextX(totem.getTextBox().x + totem.getTextBox().getWidth());
+                elapsedTime = 0f;
+                totem.setOcupacio(ocupacioInicial.get(activeOnFieldTotems.indexOf(totem)));
             } else {
-                // actualizar solo si ha pasado suficiente tiempo
                 elapsedTime += Gdx.graphics.getDeltaTime();
                 if (elapsedTime >= updateInterval) {
-                    if (activeOnFieldTotems.get(i).getOcupacio().length() > 1) {
-                        activeOnFieldTotems.get(i).getGlyphLayout().setText(font,activeOnFieldTotems.get(i).getOcupacio().substring(1));
-                        if (activeOnFieldTotems.get(i).getTextBox().x > activeOnFieldTotems.get(i).getTextX() + activeOnFieldTotems.get(i).getGlyphLayout().width) {
-
-                            String substring = activeOnFieldTotems.get(i).getOcupacio().substring(1);
-                            activeOnFieldTotems.get(i).setOcupacio(substring);
-                            substring = activeOnFieldTotems.get(i).getOcupacio().substring(1);
-                            activeOnFieldTotems.get(i).getGlyphLayout().setText(font,substring);
+                    if (totem.getOcupacio().length() > 1) {
+                        totem.getGlyphLayout().setText(font, totem.getOcupacio().substring(1));
+                        if (totem.getTextBox().x > totem.getTextX() + totem.getGlyphLayout().width) {
+                            String substring = totem.getOcupacio().substring(1);
+                            totem.setOcupacio(substring);
+                            substring = totem.getOcupacio().substring(1);
+                            totem.getGlyphLayout().setText(font, substring);
                             System.out.println(substring);
-                            activeOnFieldTotems.get(i).setTextX(activeOnFieldTotems.get(i).getTextX() - scrollSpeed * Gdx.graphics.getDeltaTime());
-                            elapsedTime = 0f; // reiniciar el temporizador
+                            totem.setTextX(totem.getTextX() - scrollSpeed * Gdx.graphics.getDeltaTime());
+                            elapsedTime = 0f;
                         } else {
-                            activeOnFieldTotems.get(i).getGlyphLayout().setText(font,ocupacioInicial.get(i));
-
+                            totem.getGlyphLayout().setText(font, ocupacioInicial.get(activeOnFieldTotems.indexOf(totem)));
                         }
-
                     }
-
                 }
             }
         }
+
     }
 
     private String llistaOcupacions(String cicle) {
@@ -232,6 +241,7 @@ public class PlayingScreen implements Screen {
     @Override
     public void show() {  }
 
+    @SuppressWarnings("NewApi")
     @Override
     public void render(float delta) {
         batch.setProjectionMatrix(camera.combined);
@@ -266,7 +276,11 @@ public class PlayingScreen implements Screen {
         walkDirection(direction,moving);
 
         //Limit screen movement
-        if(playerRectangle.x < 0) playerRectangle.x = 0;
+        /*if(playerRectangle.x < 0) playerRectangle.x = 0;
+        if(playerRectangle.x > screenWidth - 150) playerRectangle.x = screenWidth - 150;
+        if(playerRectangle.y < 0) playerRectangle.y = 0;
+        if(playerRectangle.y > screenHeight - 150) playerRectangle.y = screenHeight - 150;*/
+        //if(bgposx < 0) bgposx = 0;
         if(playerRectangle.x > screenWidth - 150) playerRectangle.x = screenWidth - 150;
         if(playerRectangle.y < 0) playerRectangle.y = 0;
         if(playerRectangle.y > screenHeight - 150) playerRectangle.y = screenHeight - 150;
@@ -303,12 +317,15 @@ public class PlayingScreen implements Screen {
                 }
             }
         }
+        bgRegion.setRegion(playerRectangle.x,playerRectangle.y,screenWidth,screenHeight);
 
         batch.begin();
-        batch.draw(background,0,0);
+        batch.draw(background,bgposx,bgposy,screenWidth*3,screenHeight*3);
         stateTime += Gdx.graphics.getDeltaTime(); // Accumulate elapsed animation time
         TextureRegion frame = player.getKeyFrame(stateTime,true);
-        batch.draw(frame,playerRectangle.getX(),playerRectangle.getY(),Player.scale[0],Player.scale[1]);
+        //batch.draw(frame,playerRectangle.getX(),playerRectangle.getY(),Player.scale[0],Player.scale[1]);
+        batch.draw(frame,(screenWidth*3)/2,(screenHeight*3)/2,Player.scale[0],Player.scale[1]);
+
         batch.draw(home, 100,900,100,100);
         if (corTotems > 0){
             batch.draw(IPOP.score_bar[corTotems], 800,950,750,100);
@@ -360,21 +377,29 @@ public class PlayingScreen implements Screen {
     }
     public void walkDirection(String direction, Boolean moving) {
         if (moving) {
+            //todo Sumar y restar aqui las posiciones de los totems
             if (direction.equals("right")) {
                 player = new Animation<>(0.1f, Player.player_right.get(Player.player_character).getKeyFrames());
-                playerRectangle.x += 500 * Gdx.graphics.getDeltaTime();
+                //playerRectangle.x += 500 * Gdx.graphics.getDeltaTime();
+                bgposx -= 500 * Gdx.graphics.getDeltaTime();
             }
             else if (direction.equals("left")) {
                 player = new Animation<>(0.1f, Player.player_left.get(Player.player_character).getKeyFrames());
-                playerRectangle.x -= 500 * Gdx.graphics.getDeltaTime();
+                //playerRectangle.x -= 500 * Gdx.graphics.getDeltaTime();
+                bgposx += 500 * Gdx.graphics.getDeltaTime();
+
             }
             else if (direction.equals("up")) {
                 player = new Animation<>(0.1f, Player.player_up.get(Player.player_character).getKeyFrames());
-                playerRectangle.y += 500 * Gdx.graphics.getDeltaTime();
+                //playerRectangle.y += 500 * Gdx.graphics.getDeltaTime();
+                bgposy -= 500 * Gdx.graphics.getDeltaTime();
+
             }
             else if (direction.equals("down")) {
                 player = new Animation<>(0.1f, Player.player_down.get(Player.player_character).getKeyFrames());
-                playerRectangle.y -= 500 * Gdx.graphics.getDeltaTime();
+                //playerRectangle.y -= 500 * Gdx.graphics.getDeltaTime();
+                bgposy += 500 * Gdx.graphics.getDeltaTime();
+
             }
         } else {
             player = new Animation<>(9999f, Player.player_down.get(Player.player_character).getKeyFrames());

@@ -66,7 +66,7 @@ public class PlayingScreen implements Screen {
     public PlayingScreen(IPOP game) {
         camera = new OrthographicCamera();
 
-        camera.position.set((screenWidth*3)/2, (screenHeight*3)/2,0);
+        //camera.position.set((screenWidth*3)/2, (screenHeight*3)/2,0);
         this.game = game;
         batch = new SpriteBatch();
         direction = "right";
@@ -75,7 +75,8 @@ public class PlayingScreen implements Screen {
         /*playerRectangle.setX(-5000);
         playerRectangle.setY(-5000);*/
 
-        camera.setToOrtho(false, screenWidth, screenHeight);
+        //Todo Cambiar este tamaño para la vista de la camara
+        camera.setToOrtho(false, screenWidth*2, screenHeight*2);
 
         //TouchPads
         upPad = new Rectangle(0, screenHeight*2/3, screenWidth, screenHeight);
@@ -120,7 +121,7 @@ public class PlayingScreen implements Screen {
                     String ocupacio = llistaOcupacions(Player.player_ocupation);
 
                     glyphLayout.setText(font,ocupacio);
-                    Vector2 totemPosition = new Vector2(MathUtils.random((screenWidth*3)/2-300),MathUtils.random((screenHeight*3)/2-300));
+                    Vector2 totemPosition = new Vector2(MathUtils.random((background.getWidth())-300),MathUtils.random((background.getHeight())-300));
                     Totem totem = new Totem(totemPosition.x,totemPosition.y,192,192    ,totemSprite,"Informatica",ocupacio,totemBox,glyphLayout,textX,cyndaquilSound,true);
                     totemBox.setPosition(totem.getX(),totem.getY()+50);
                     totemBox.setWidth(300);
@@ -135,7 +136,7 @@ public class PlayingScreen implements Screen {
                     String ocupacio = "";
                         ocupacio = llistaOcupacions("Gestio administrativa");
                         System.out.println(totemsCorrectes);
-                        Totem totem = new Totem(MathUtils.random((screenWidth*3)/2-300),MathUtils.random((screenHeight*3)/2-300),192,192,totemSprite,"Informatica",ocupacio,totemBox,glyphLayout,textX,dropSound,false);
+                        Totem totem = new Totem(MathUtils.random((background.getWidth())-300),MathUtils.random((background.getHeight())-300),192,192,totemSprite,"Informatica",ocupacio,totemBox,glyphLayout,textX,dropSound,false);
                         totemBox.setPosition(totem.getX(),totem.getY()+50);
                         totemBox.setWidth(300);
                         totem.setTextX(totemBox.getX()+totemBox.getWidth());
@@ -317,14 +318,14 @@ public class PlayingScreen implements Screen {
                 }
             }
         }
-        bgRegion.setRegion(playerRectangle.x,playerRectangle.y,screenWidth,screenHeight);
+        bgRegion.setRegion(bgposx,bgposy,screenWidth,screenHeight);
 
         batch.begin();
-        batch.draw(background,bgposx,bgposy,screenWidth*3,screenHeight*3);
+        batch.draw(background,bgposx,bgposy,background.getWidth(),background.getHeight());
         stateTime += Gdx.graphics.getDeltaTime(); // Accumulate elapsed animation time
         TextureRegion frame = player.getKeyFrame(stateTime,true);
         //batch.draw(frame,playerRectangle.getX(),playerRectangle.getY(),Player.scale[0],Player.scale[1]);
-        batch.draw(frame,(screenWidth*3)/2,(screenHeight*3)/2,Player.scale[0],Player.scale[1]);
+        batch.draw(frame,(screenWidth)/2,(screenHeight)/2,Player.scale[0],Player.scale[1]);
 
         batch.draw(home, 100,900,100,100);
         if (corTotems > 0){
@@ -376,31 +377,39 @@ public class PlayingScreen implements Screen {
         return currentDirection;
     }
     public void walkDirection(String direction, Boolean moving) {
+        float speed = 500 * Gdx.graphics.getDeltaTime();
         if (moving) {
+            for (Totem totem: activeOnFieldTotems) {
+
             //todo Sumar y restar aqui las posiciones de los totems
             if (direction.equals("right")) {
                 player = new Animation<>(0.1f, Player.player_right.get(Player.player_character).getKeyFrames());
                 //playerRectangle.x += 500 * Gdx.graphics.getDeltaTime();
-                bgposx -= 500 * Gdx.graphics.getDeltaTime();
+                bgposx -= speed;
+                totem.setX(totem.getX()+speed*2);
             }
             else if (direction.equals("left")) {
                 player = new Animation<>(0.1f, Player.player_left.get(Player.player_character).getKeyFrames());
                 //playerRectangle.x -= 500 * Gdx.graphics.getDeltaTime();
-                bgposx += 500 * Gdx.graphics.getDeltaTime();
-
+                bgposx += speed;
+                totem.setX(totem.getX() -speed*2);
             }
             else if (direction.equals("up")) {
                 player = new Animation<>(0.1f, Player.player_up.get(Player.player_character).getKeyFrames());
                 //playerRectangle.y += 500 * Gdx.graphics.getDeltaTime();
-                bgposy -= 500 * Gdx.graphics.getDeltaTime();
+                bgposy -= speed;
+                totem.setY(totem.getY() -speed*2);
 
             }
             else if (direction.equals("down")) {
                 player = new Animation<>(0.1f, Player.player_down.get(Player.player_character).getKeyFrames());
                 //playerRectangle.y -= 500 * Gdx.graphics.getDeltaTime();
-                bgposy += 500 * Gdx.graphics.getDeltaTime();
+                bgposy += speed;
+                totem.setY(totem.getY() +speed*2);
 
             }
+            }
+
         } else {
             player = new Animation<>(9999f, Player.player_down.get(Player.player_character).getKeyFrames());
         }

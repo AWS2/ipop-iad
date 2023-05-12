@@ -76,7 +76,7 @@ public class PlayingScreen implements Screen {
         playerRectangle.setY(-5000);*/
 
         //Todo Cambiar este tamaño para la vista de la camara
-        camera.setToOrtho(false, screenWidth*2, screenHeight*2);
+        camera.setToOrtho(false, screenWidth, screenHeight);
 
         //TouchPads
         upPad = new Rectangle(0, screenHeight*2/3, screenWidth, screenHeight);
@@ -377,7 +377,7 @@ public class PlayingScreen implements Screen {
         return currentDirection;
     }
     public void walkDirection(String direction, Boolean moving) {
-        float speed = 500 * Gdx.graphics.getDeltaTime();
+        float speed = 200 * Gdx.graphics.getDeltaTime();
         if (moving) {
             for (Totem totem: activeOnFieldTotems) {
 
@@ -386,13 +386,13 @@ public class PlayingScreen implements Screen {
                 player = new Animation<>(0.1f, Player.player_right.get(Player.player_character).getKeyFrames());
                 //playerRectangle.x += 500 * Gdx.graphics.getDeltaTime();
                 bgposx -= speed;
-                totem.setX(totem.getX()+speed*2);
+                totem.setX(totem.getX()-speed*2);
             }
             else if (direction.equals("left")) {
                 player = new Animation<>(0.1f, Player.player_left.get(Player.player_character).getKeyFrames());
                 //playerRectangle.x -= 500 * Gdx.graphics.getDeltaTime();
                 bgposx += speed;
-                totem.setX(totem.getX() -speed*2);
+                totem.setX(totem.getX() +speed*2);
             }
             else if (direction.equals("up")) {
                 player = new Animation<>(0.1f, Player.player_up.get(Player.player_character).getKeyFrames());

@@ -17,6 +17,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.github.czyzby.websocket.WebSocket;
 import com.github.czyzby.websocket.WebSocketListener;
 import com.github.czyzby.websocket.WebSockets;
@@ -26,7 +27,9 @@ import com.mygdx.ipop_game.models.Ocupacio;
 import com.mygdx.ipop_game.models.Player;
 import com.mygdx.ipop_game.models.Totem;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.w3c.dom.css.Rect;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -34,6 +37,7 @@ import java.util.ArrayList;
 public class MultiPlayerScreen implements Screen {
 
     public static String game_status = "playing";
+    public static String game_totems;
     final IPOP game;
     Ocupacio ocupacioObject;
     int screenWidth = Gdx.graphics.getWidth(), screenHeight = Gdx.graphics.getHeight();
@@ -115,6 +119,39 @@ public class MultiPlayerScreen implements Screen {
         this.render(Gdx.graphics.getDeltaTime());
     }
 
+    public void updateTotemFromServer() {
+        //String gameTotems = "{\"status\":\"ok\",\"type\":\"game_totems\",\"message\":{\"totems\":[{\"idTotem\":1,\"text\":\"Totem 1\",\"cycleLabel\":\"Cycle 1\",\"posX\":100,\"posY\":200,\"width\":50,\"height\":50},{\"idTotem\":2,\"text\":\"Totem 2\",\"cycleLabel\":\"Cycle 2\",\"posX\":150,\"posY\":250,\"width\":60,\"height\":60},{\"idTotem\":3,\"text\":\"Totem 3\",\"cycleLabel\":\"Cycle 3\",\"posX\":200,\"posY\":300,\"width\":70,\"height\":70},{\"idTotem\":4,\"text\":\"Totem 4\",\"cycleLabel\":\"Cycle 4\",\"posX\":250,\"posY\":350,\"width\":80,\"height\":80},{\"idTotem\":5,\"text\":\"Totem 5\",\"cycleLabel\":\"Cycle 5\",\"posX\":300,\"posY\":400,\"width\":90,\"height\":90},{\"idTotem\":6,\"text\":\"Totem 6\",\"cycleLabel\":\"Cycle 6\",\"posX\":350,\"posY\":450,\"width\":100,\"height\":100},{\"idTotem\":7,\"text\":\"Totem 7\",\"cycleLabel\":\"Cycle 7\",\"posX\":400,\"posY\":500,\"width\":110,\"height\":110},{\"idTotem\":8,\"text\":\"Totem 8\",\"cycleLabel\":\"Cycle 8\",\"posX\":450,\"posY\":550,\"width\":120,\"height\":120},{\"idTotem\":9,\"text\":\"Totem 9\",\"cycleLabel\":\"Cycle 9\",\"posX\":500,\"posY\":600,\"width\":130,\"height\":130},{\"idTotem\":10,\"text\":\"Totem 10\",\"cycleLabel\":\"Cycle 10\",\"posX\":550,\"posY\":650,\"width\":140,\"height\":140}]}}";
+
+        JSONObject response = new JSONObject(MultiPlayerScreen.game_totems);
+        JSONArray totemsArray = response.getJSONObject("message").getJSONArray("totems");
+
+        ArrayList<Totem> totemsList = new ArrayList<>();
+        for (int i = 0; i < totemsArray.length(); i++) {
+            JSONObject totemObject = totemsArray.getJSONObject(i);
+            int idTotem = totemObject.getInt("idTotem");
+            String text = totemObject.getString("text");
+            String cycleLabel = totemObject.getString("cycleLabel");
+            int posX = totemObject.getInt("posX");
+            int posY = totemObject.getInt("posY");
+            int width = totemObject.getInt("width");
+            int height = totemObject.getInt("height");
+            Rectangle totemBox = new Rectangle(posX, posY, width, height);
+            GlyphLayout glyphLayout = new GlyphLayout();
+            glyphLayout.setText(font, text);
+            Totem totem = new Totem(idTotem, posX, posY, width, height, totemSprite, cycleLabel, text, totemBox, glyphLayout, 0, dropSound);
+            totemBox.setPosition(totem.getX(),totem.getY()+50);
+            totemBox.setWidth(300);
+            totem.setTextX(totemBox.getX()+totemBox.getWidth());
+            totemsList.add(totem);
+        }
+
+        // Imprimir los objetos Totem en el ArrayList
+        for (Totem totem : totemsList) {
+            System.out.println(totem.toString());
+        }
+
+    }
+
     //Metodo que llamaremos cada vez que el usuario colisione contra el Totem correcto hasta 5 veces
     private void generacioTotems() {
         //todo fer que el text es fiqui damunt del totem
@@ -123,7 +160,6 @@ public class MultiPlayerScreen implements Screen {
             Rectangle totemBox = new Rectangle();
             GlyphLayout glyphLayout = new GlyphLayout();
             float textX = 0;
-
 
             //Comprovar que no hi hagi totems en aquella posicio
 
@@ -136,8 +172,7 @@ public class MultiPlayerScreen implements Screen {
                     ocupacio = llistaOcupacions("Electromecanica de vehicles automobils");
                 }
 
-                System.out.println(totemsCorrectes);
-                Totem totem = new Totem(MathUtils.random(screenWidth-300),MathUtils.random(screenHeight-300),192,192,totemSprite,"Informatica",ocupacio,totemBox,glyphLayout,textX,dropSound,false);
+                Totem totem = new Totem(1, MathUtils.random(screenWidth-300),MathUtils.random(screenHeight-300),192,192,totemSprite,"Informatica",ocupacio,totemBox,glyphLayout,textX,dropSound,false);
                 totemBox.setPosition(totem.getX(),totem.getY()+50);
                 totemBox.setWidth(300);
                 totem.setTextX(totemBox.getX()+totemBox.getWidth());
@@ -157,7 +192,7 @@ public class MultiPlayerScreen implements Screen {
                 String ocupacio = llistaOcupacions(Player.player_ocupation);
 
                 glyphLayout.setText(font,ocupacio);
-                Totem totem = new Totem(MathUtils.random(screenWidth-300),MathUtils.random(screenHeight-300),192,192    ,totemSprite,"Informatica",ocupacio,totemBox,glyphLayout,textX,cyndaquilSound,true);
+                Totem totem = new Totem(1, MathUtils.random(screenWidth-300),MathUtils.random(screenHeight-300),192,192    ,totemSprite,"Informatica",ocupacio,totemBox,glyphLayout,textX,cyndaquilSound,true);
                 totemBox.setPosition(totem.getX(),totem.getY()+50);
                 totemBox.setWidth(300);
                 totem.setTextX(totemBox.getX()+totemBox.getWidth());
@@ -204,7 +239,6 @@ public class MultiPlayerScreen implements Screen {
                             activeOnFieldTotems.get(i).setOcupacio(substring);
                             substring = activeOnFieldTotems.get(i).getOcupacio().substring(1);
                             activeOnFieldTotems.get(i).getGlyphLayout().setText(font,substring);
-                            System.out.println(substring);
                             activeOnFieldTotems.get(i).setTextX(activeOnFieldTotems.get(i).getTextX() - scrollSpeed * Gdx.graphics.getDeltaTime());
                             elapsedTime = 0f; // reiniciar el temporizador
                         } else {
@@ -263,6 +297,8 @@ public class MultiPlayerScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stateTime += Gdx.graphics.getDeltaTime();
         moving = false;
+
+        updateTotemFromServer();
 
         if (MultiPlayerScreen.game_status.equals("finish")) {
             JSONObject json = new JSONObject();
@@ -335,7 +371,6 @@ public class MultiPlayerScreen implements Screen {
                         corTotems++;
                         totalTotems++;
                         pasada++;
-                        System.out.println(corTotems);
                         activeOnFieldTotems.clear();
                         ocupacioInicial.clear();
                         generacioTotems();
@@ -343,8 +378,6 @@ public class MultiPlayerScreen implements Screen {
                     } else {
                         corTotems--;
                         totalTotems++;
-                        System.out.println(corTotems);
-                        System.out.println(totalTotems);
                         sendTotemToServer(totem);
                         activeOnFieldTotems.remove(i);
                     }
@@ -416,21 +449,23 @@ public class MultiPlayerScreen implements Screen {
     }
     public void walkDirection(String direction, Boolean moving) {
         if (moving) {
-            if (direction.equals("right")) {
-                player = new Animation<>(0.1f, Player.player_right.get(Player.player_character).getKeyFrames());
-                playerRectangle.x += 500 * Gdx.graphics.getDeltaTime();
-            }
-            else if (direction.equals("left")) {
-                player = new Animation<>(0.1f, Player.player_left.get(Player.player_character).getKeyFrames());
-                playerRectangle.x -= 500 * Gdx.graphics.getDeltaTime();
-            }
-            else if (direction.equals("up")) {
-                player = new Animation<>(0.1f, Player.player_up.get(Player.player_character).getKeyFrames());
-                playerRectangle.y += 500 * Gdx.graphics.getDeltaTime();
-            }
-            else if (direction.equals("down")) {
-                player = new Animation<>(0.1f, Player.player_down.get(Player.player_character).getKeyFrames());
-                playerRectangle.y -= 500 * Gdx.graphics.getDeltaTime();
+            switch (direction) {
+                case "right":
+                    player = new Animation<>(0.1f, Player.player_right.get(Player.player_character).getKeyFrames());
+                    playerRectangle.x += 500 * Gdx.graphics.getDeltaTime();
+                    break;
+                case "left":
+                    player = new Animation<>(0.1f, Player.player_left.get(Player.player_character).getKeyFrames());
+                    playerRectangle.x -= 500 * Gdx.graphics.getDeltaTime();
+                    break;
+                case "up":
+                    player = new Animation<>(0.1f, Player.player_up.get(Player.player_character).getKeyFrames());
+                    playerRectangle.y += 500 * Gdx.graphics.getDeltaTime();
+                    break;
+                case "down":
+                    player = new Animation<>(0.1f, Player.player_down.get(Player.player_character).getKeyFrames());
+                    playerRectangle.y -= 500 * Gdx.graphics.getDeltaTime();
+                    break;
             }
         } else {
             player = new Animation<>(9999f, Player.player_down.get(Player.player_character).getKeyFrames());
@@ -460,35 +495,33 @@ class MyWSListener implements WebSocketListener {
 
     @Override
     public boolean onOpen(WebSocket webSocket) {
-        System.out.println("Opening...");
         return false;
     }
 
     @Override
     public boolean onClose(WebSocket webSocket, int closeCode, String reason) {
-        System.out.println("Closing...");
         return false;
     }
 
     @Override
     public boolean onMessage(WebSocket webSocket, String packet) {
-        System.out.println("Message: " + packet);
         JSONObject response = new JSONObject(packet);
         if (response.getString("game_status").equals("finish")) {
             MultiPlayerScreen.game_status = "finish";
+        } else if (response.getString("type").equals("game_totems")) {
+            //PARA HACER PRUEBAS -> MultiPlayerScreen.game_totems = "{\"status\":\"ok\",\"message\":{\"totems\":[{\"idTotem\":1,\"text\":\"Totem 1\",\"cycleLabel\":\"Cycle 1\",\"posX\":100,\"posY\":200,\"width\":50,\"height\":50},{\"idTotem\":2,\"text\":\"Totem 2\",\"cycleLabel\":\"Cycle 2\",\"posX\":150,\"posY\":250,\"width\":60,\"height\":60},{\"idTotem\":3,\"text\":\"Totem 3\",\"cycleLabel\":\"Cycle 3\",\"posX\":200,\"posY\":300,\"width\":70,\"height\":70},{\"idTotem\":4,\"text\":\"Totem 4\",\"cycleLabel\":\"Cycle 4\",\"posX\":250,\"posY\":350,\"width\":80,\"height\":80},{\"idTotem\":5,\"text\":\"Totem 5\",\"cycleLabel\":\"Cycle 5\",\"posX\":300,\"posY\":400,\"width\":90,\"height\":90},{\"idTotem\":6,\"text\":\"Totem 6\",\"cycleLabel\":\"Cycle 6\",\"posX\":350,\"posY\":450,\"width\":100,\"height\":100},{\"idTotem\":7,\"text\":\"Totem 7\",\"cycleLabel\":\"Cycle 7\",\"posX\":400,\"posY\":500,\"width\":110,\"height\":110},{\"idTotem\":8,\"text\":\"Totem 8\",\"cycleLabel\":\"Cycle 8\",\"posX\":450,\"posY\":550,\"width\":120,\"height\":120},{\"idTotem\":9,\"text\":\"Totem 9\",\"cycleLabel\":\"Cycle 9\",\"posX\":500,\"posY\":600,\"width\":130,\"height\":130},{\"idTotem\":10,\"text\":\"Totem 10\",\"cycleLabel\":\"Cycle 10\",\"posX\":550,\"posY\":650,\"width\":140,\"height\":140}]}}\n";
+            MultiPlayerScreen.game_totems = response.getString("message");
         }
         return false;
     }
 
     @Override
     public boolean onMessage(WebSocket webSocket, byte[] packet) {
-        System.out.println("Message:");
         return false;
     }
 
     @Override
     public boolean onError(WebSocket webSocket, Throwable error) {
-        System.out.println("ERROR:" + error.toString());
         return false;
     }
 }

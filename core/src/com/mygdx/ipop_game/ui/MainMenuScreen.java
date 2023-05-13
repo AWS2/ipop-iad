@@ -16,9 +16,9 @@ public class MainMenuScreen implements Screen, TextInputListener {
     private Rectangle selectNameBtn, selectCharacterBtn, selectCicleBtn, singlePlayerBtn, multiPlayerBtn, rankingsBtn;
     final IPOP game;
 
-    static boolean nameSelected = false;
-    static boolean cicleSelected = false;
-    static boolean characterSelected = false;
+    static boolean nameSelected = true;
+    static boolean cicleSelected = true;
+    static boolean characterSelected = true;
 
     public MainMenuScreen(IPOP game) {
         this.game = game;

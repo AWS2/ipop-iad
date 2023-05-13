@@ -16,8 +16,7 @@ public class Totem {
     private Boolean correctTotem;
     private GlyphLayout glyphLayout;
     //Constructor
-    public Totem() {
-    }
+    public Totem() { }
 
     public Totem(int id, float x, float y, int height, int width, Texture image, String family, String ocupacio, Rectangle textBox, GlyphLayout glyphLayout, float textX, Sound sound, Boolean correctTotem) {
         this.id = id;
@@ -33,6 +32,21 @@ public class Totem {
         this.textX = textX;
         this.sound = sound;
         this.correctTotem = correctTotem;
+    }
+
+    public Totem(int id, float x, float y, int height, int width, Texture image, String family, String ocupacio, Rectangle textBox, GlyphLayout glyphLayout, float textX, Sound sound) {
+        this.id = id;
+        this.x = x;
+        this.y = y;
+        this.height = height;
+        this.width = width;
+        this.image = image;
+        this.family = family;
+        this.ocupacio = ocupacio;
+        this.textBox = textBox;
+        this.glyphLayout = glyphLayout;
+        this.textX = textX;
+        this.sound = sound;
     }
 
     //Setters i Getters

@@ -115,7 +115,7 @@ public class SinglePlayerScreen implements Screen {
                 }
 
                 System.out.println(totemsCorrectes);
-                Totem totem = new Totem(MathUtils.random(screenWidth-300),MathUtils.random(screenHeight-300),192,192,totemSprite,"Informatica",ocupacio,totemBox,glyphLayout,textX,dropSound,false);
+                Totem totem = new Totem(1, MathUtils.random(screenWidth-300),MathUtils.random(screenHeight-300),192,192,totemSprite,"Informatica",ocupacio,totemBox,glyphLayout,textX,dropSound,false);
                 totemBox.setPosition(totem.getX(),totem.getY()+50);
                 totemBox.setWidth(300);
                 totem.setTextX(totemBox.getX()+totemBox.getWidth());
@@ -135,7 +135,7 @@ public class SinglePlayerScreen implements Screen {
                 String ocupacio = llistaOcupacions(Player.player_ocupation);
 
                 glyphLayout.setText(font,ocupacio);
-                Totem totem = new Totem(MathUtils.random(screenWidth-300),MathUtils.random(screenHeight-300),192,192    ,totemSprite,"Informatica",ocupacio,totemBox,glyphLayout,textX,cyndaquilSound,true);
+                Totem totem = new Totem(1, MathUtils.random(screenWidth-300),MathUtils.random(screenHeight-300),192,192    ,totemSprite,"Informatica",ocupacio,totemBox,glyphLayout,textX,cyndaquilSound,true);
                 totemBox.setPosition(totem.getX(),totem.getY()+50);
                 totemBox.setWidth(300);
                 totem.setTextX(totemBox.getX()+totemBox.getWidth());

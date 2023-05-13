@@ -71,8 +71,8 @@ public class PlayingScreen implements Screen {
         direction = "right";
         currentDirection = "right";
         playerRectangle = new Rectangle();
-        /*playerRectangle.setX(-5000);
-        playerRectangle.setY(-5000);*/
+        playerRectangle.setX(background.getWidth()/2);
+        playerRectangle.setY(background.getHeight()/2);
 
         //Todo Cambiar este tamaño para la vista de la camara
         camera.setToOrtho(false, screenWidth, screenHeight);
@@ -94,9 +94,9 @@ public class PlayingScreen implements Screen {
 
         // bg
         background.setWrap(Texture.TextureWrap.MirroredRepeat, Texture.TextureWrap.MirroredRepeat);
-        bgRegion = new TextureRegion(background);
+        /*bgRegion = new TextureRegion(background);
         bgposx = 0;
-        bgposy = 0;
+        bgposy = 0;*/
 
         generacioTotems();
         startPlaying = Instant.now();
@@ -122,7 +122,7 @@ public class PlayingScreen implements Screen {
 
                     glyphLayout.setText(font,ocupacio);
                     Vector2 totemPosition = new Vector2(MathUtils.random((background.getWidth())-300),MathUtils.random((background.getHeight())-300));
-                    Totem totem = new Totem(totemPosition.x,totemPosition.y,192,192    ,totemSprite,"Informatica",ocupacio,totemBox,glyphLayout,textX,cyndaquilSound,true);
+                    Totem totem = new Totem(totemPosition.x,totemPosition.y,192,192,totemSprite,"Informatica",ocupacio,totemBox,glyphLayout,textX,cyndaquilSound,true);
                     totemBox.setPosition(totem.getX(),totem.getY()+50);
                     totemBox.setWidth(300);
                     totem.setTextX(totemBox.getX()+totemBox.getWidth());
@@ -135,7 +135,6 @@ public class PlayingScreen implements Screen {
                 for (int j = 0; j < 5; j++) {
                     String ocupacio = "";
                         ocupacio = llistaOcupacions("Gestio administrativa");
-                        System.out.println(totemsCorrectes);
                         Totem totem = new Totem(MathUtils.random((background.getWidth())-300),MathUtils.random((background.getHeight())-300),192,192,totemSprite,"Informatica",ocupacio,totemBox,glyphLayout,textX,dropSound,false);
                         totemBox.setPosition(totem.getX(),totem.getY()+50);
                         totemBox.setWidth(300);
@@ -166,43 +165,51 @@ public class PlayingScreen implements Screen {
     }
 
     private void drawTotems (ArrayList<Totem> activeOnFieldTotems) {
-        for (Totem totem : activeOnFieldTotems) {
+        for (int i = 0; i < activeOnFieldTotems.size(); i++) {
             //Dibujar el Totem y la Imagen
-            System.out.println(totem.getX()+"  "+totem.getY());
-            batch.draw(totem.getImage(), totem.getX(), totem.getY());
-            font.draw(batch, totem.getGlyphLayout(), totem.getTextX(), totem.getTextBox().getY());
+            batch.draw(activeOnFieldTotems.get(i).getImage(),activeOnFieldTotems.get(i).getX(),activeOnFieldTotems.get(i).getY());
+            font.draw(batch,activeOnFieldTotems.get(i).getGlyphLayout(),activeOnFieldTotems.get(i).getTextX(),activeOnFieldTotems.get(i).getTextBox().getY());
+            //batch.draw(activeOnFieldTotems.get(0).getImage(),activeOnFieldTotems.get(0).getX(),activeOnFieldTotems.get(0).getY());
+            //font.draw(batch,glyphLayout,textX,textBox.getY());
+            float newTextX = activeOnFieldTotems.get(i).getTextX() - (scrollSpeed * Gdx.graphics.getDeltaTime());
+            activeOnFieldTotems.get(i).setTextX(newTextX);
+            //activeOnFieldTotems.get(i).setTextX(activeOnFieldTotems.get(i).getTextX() -= scrollSpeed * Gdx.graphics.getDeltaTime()) ;
 
-            float newTextX = totem.getTextX() - (scrollSpeed * Gdx.graphics.getDeltaTime());
-            totem.setTextX(newTextX);
 
             float elapsedTime = 0f;
+            //Revisar aixo i quan es va actualitzant realment
             float updateInterval = 0.01f;
-
-            if (totem.getTextBox().x > totem.getTextX() + totem.getGlyphLayout().width) {
-                totem.setTextX(totem.getTextBox().x + totem.getTextBox().getWidth());
-                elapsedTime = 0f;
-                totem.setOcupacio(ocupacioInicial.get(activeOnFieldTotems.indexOf(totem)));
+            //todo Revisar porque no me hace las pasadas del substring
+            if (activeOnFieldTotems.get(i).getTextBox().x > activeOnFieldTotems.get(i).getTextX() + activeOnFieldTotems.get(i).getGlyphLayout().width) {
+                activeOnFieldTotems.get(i).setTextX(activeOnFieldTotems.get(i).getTextBox().x+activeOnFieldTotems.get(i).getTextBox().getWidth());
+                //Tornar a generar el String inicial
+                elapsedTime = 0f; // reiniciar el temporizador
+                activeOnFieldTotems.get(i).setOcupacio(ocupacioInicial.get(i));
             } else {
+                // actualizar solo si ha pasado suficiente tiempo
                 elapsedTime += Gdx.graphics.getDeltaTime();
                 if (elapsedTime >= updateInterval) {
-                    if (totem.getOcupacio().length() > 1) {
-                        totem.getGlyphLayout().setText(font, totem.getOcupacio().substring(1));
-                        if (totem.getTextBox().x > totem.getTextX() + totem.getGlyphLayout().width) {
-                            String substring = totem.getOcupacio().substring(1);
-                            totem.setOcupacio(substring);
-                            substring = totem.getOcupacio().substring(1);
-                            totem.getGlyphLayout().setText(font, substring);
-                            System.out.println(substring);
-                            totem.setTextX(totem.getTextX() - scrollSpeed * Gdx.graphics.getDeltaTime());
-                            elapsedTime = 0f;
+                    if (activeOnFieldTotems.get(i).getOcupacio().length() > 1) {
+                        activeOnFieldTotems.get(i).getGlyphLayout().setText(font,activeOnFieldTotems.get(i).getOcupacio().substring(1));
+                        if (activeOnFieldTotems.get(i).getTextBox().x > activeOnFieldTotems.get(i).getTextX() + activeOnFieldTotems.get(i).getGlyphLayout().width) {
+
+                            String substring = activeOnFieldTotems.get(i).getOcupacio().substring(1);
+                            activeOnFieldTotems.get(i).setOcupacio(substring);
+                            substring = activeOnFieldTotems.get(i).getOcupacio().substring(1);
+                            activeOnFieldTotems.get(i).getGlyphLayout().setText(font,substring);
+
+                            activeOnFieldTotems.get(i).setTextX(activeOnFieldTotems.get(i).getTextX() - scrollSpeed * Gdx.graphics.getDeltaTime());
+                            elapsedTime = 0f; // reiniciar el temporizador
                         } else {
-                            totem.getGlyphLayout().setText(font, ocupacioInicial.get(activeOnFieldTotems.indexOf(totem)));
+                            activeOnFieldTotems.get(i).getGlyphLayout().setText(font,ocupacioInicial.get(i));
+
                         }
+
                     }
+
                 }
             }
         }
-
     }
 
     private String llistaOcupacions(String cicle) {
@@ -245,6 +252,15 @@ public class PlayingScreen implements Screen {
     @SuppressWarnings("NewApi")
     @Override
     public void render(float delta) {
+        upPad.setPosition(camera.position.x - screenWidth/2, camera.position.y - screenHeight/2 + screenHeight*2/3);
+        downPad.setPosition(camera.position.x - screenWidth/2, camera.position.y - screenHeight/2);
+        leftPad.setPosition(camera.position.x - screenWidth/2, camera.position.y - screenHeight/2);
+        rightPad.setPosition(camera.position.x - screenWidth/2 + screenWidth*2/3, camera.position.y - screenHeight/2);
+
+        // Obtener las coordenadas de la cámara
+        float cameraX = camera.position.x - camera.viewportWidth / 2;
+        float cameraY = camera.position.y - camera.viewportHeight / 2;
+
         batch.setProjectionMatrix(camera.combined);
         Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -282,9 +298,10 @@ public class PlayingScreen implements Screen {
         if(playerRectangle.y < 0) playerRectangle.y = 0;
         if(playerRectangle.y > screenHeight - 150) playerRectangle.y = screenHeight - 150;*/
         //if(bgposx < 0) bgposx = 0;
-        if(playerRectangle.x > screenWidth - 150) playerRectangle.x = screenWidth - 150;
+        if(playerRectangle.x < 0) playerRectangle.x = 0;
+        if(playerRectangle.x > background.getWidth() - 150) playerRectangle.x = background.getWidth() - 150;
         if(playerRectangle.y < 0) playerRectangle.y = 0;
-        if(playerRectangle.y > screenHeight - 150) playerRectangle.y = screenHeight - 150;
+        if(playerRectangle.y > background.getHeight() - 150) playerRectangle.y = background.getHeight() - 150;
 
         //Revisar que no haya colision
         for (int i = 0; i < activeOnFieldTotems.size(); i++) {
@@ -302,16 +319,14 @@ public class PlayingScreen implements Screen {
                             corTotems++;
                             totalTotems++;
                             pasada++;
-                            System.out.println(corTotems);
-                            activeOnFieldTotems.clear();
-                            ocupacioInicial.clear();
-                            generacioTotems();
+                            activeOnFieldTotems.remove(i);
+
+                            //break;
                             //O solo eliminar el incorrecto
                         } else {
                             corTotems--;
                             totalTotems++;
-                            System.out.println(corTotems);
-                            System.out.println(totalTotems);
+
                             activeOnFieldTotems.remove(i);
                         }
                     }
@@ -319,29 +334,34 @@ public class PlayingScreen implements Screen {
             }
         }
         // Mover la cámara junto al jugador
-        camera.position.set(playerRectangle.x + playerRectangle.width / 2, playerRectangle.y + playerRectangle.height / 2, 0);
+        camera.position.set(playerRectangle.x, playerRectangle.y, 0);
         camera.update();
-        bgRegion.setRegion(bgposx,bgposy,screenWidth,screenHeight);
+        //bgRegion.setRegion(bgposx,bgposy,screenWidth,screenHeight);
 
         batch.begin();
-        batch.draw(background,bgposx,bgposy,background.getWidth(),background.getHeight());
+        batch.draw(background,0,0,background.getWidth(),background.getHeight());
         stateTime += Gdx.graphics.getDeltaTime(); // Accumulate elapsed animation time
         TextureRegion frame = player.getKeyFrame(stateTime,true);
-        //batch.draw(frame,playerRectangle.getX(),playerRectangle.getY(),Player.scale[0],Player.scale[1]);
-        batch.draw(frame,(screenWidth)/2,(screenHeight)/2,Player.scale[0],Player.scale[1]);
-
-        batch.draw(home, 100,900,100,100);
-        if (corTotems > 0){
-            batch.draw(IPOP.score_bar[corTotems], 800,950,750,100);
+        batch.draw(frame,playerRectangle.getX(),playerRectangle.getY(),Player.scale[0],Player.scale[1]);
+        //batch.draw(frame,(screenWidth)/2,(screenHeight)/2,Player.scale[0],Player.scale[1]);
+        batch.draw(home, 100 + cameraX, 900 + cameraY, 100, 100);
+        if (corTotems > 0) {
+            batch.draw(IPOP.score_bar[corTotems], 800 + cameraX, 950 + cameraY, 750, 100);
         } else {
             if (corTotems == 0) {
-                batch.draw(IPOP.score_bar[0], 800,900,750,100);
+                batch.draw(IPOP.score_bar[0], 800 + cameraX, 900 + cameraY, 750, 100);
             } else {
-                batch.draw(IPOP.wrong_score_bar[Math.abs(corTotems)], 800,900,750,100);
+                int barWidth = 750;
+                int barHeight = 100;
+                int barX = (int) (800 + cameraX);
+                int barY = (int) (900 + cameraY);
+                int wrongBarIndex = Math.abs(corTotems);
+
+                batch.draw(IPOP.wrong_score_bar[wrongBarIndex], barX, barY, barWidth, barHeight);
             }
         }
 
-        //drawTotems(activeOnFieldTotems);
+        drawTotems(activeOnFieldTotems);
 
         for(int i=0;i<10;i++)
             if (Gdx.input.isTouched(i)) {
@@ -380,53 +400,53 @@ public class PlayingScreen implements Screen {
         return currentDirection;
     }
     public void walkDirection(String direction, Boolean moving) {
-        float speed = 200 * Gdx.graphics.getDeltaTime();
+        float speed = 1000 * Gdx.graphics.getDeltaTime();
         if (moving) {
             for (Totem totem: activeOnFieldTotems) {
 
             //todo Sumar y restar aqui las posiciones de los totems
             if (direction.equals("right")) {
                 player = new Animation<>(0.1f, Player.player_right.get(Player.player_character).getKeyFrames());
-                //playerRectangle.x += 500 * Gdx.graphics.getDeltaTime();
-                bgposx -= speed;
+                playerRectangle.x += speed * Gdx.graphics.getDeltaTime();
+                /*bgposx -= speed;
                 if (totem.getX() > (bgposx + screenWidth)) {
                     totem.setX(totem.getX() - screenWidth);
                 } else {
                     totem.setX(totem.getX() + speed);
-                }
+                }*/
             }
             else if (direction.equals("left")) {
                 player = new Animation<>(0.1f, Player.player_left.get(Player.player_character).getKeyFrames());
-                //playerRectangle.x -= 500 * Gdx.graphics.getDeltaTime();
-                bgposx += speed;
+                playerRectangle.x -= speed * Gdx.graphics.getDeltaTime();
+                /*bgposx += speed;
                 //eLIM
                 if (totem.getX() < bgposx) {
                     totem.setX(totem.getX() + screenWidth);
                 } else {
                     totem.setX(totem.getX() - speed);
-                }
+                }*/
             }
             else if (direction.equals("up")) {
                 player = new Animation<>(0.1f, Player.player_up.get(Player.player_character).getKeyFrames());
-                //playerRectangle.y += 500 * Gdx.graphics.getDeltaTime();
-                bgposy -= speed;
+                playerRectangle.y += speed * Gdx.graphics.getDeltaTime();
+                /*bgposy -= speed;
                 if (totem.getY() > (bgposy + screenHeight)) {
                     totem.setY(totem.getY() - screenHeight);
                 } else {
                     totem.setY(totem.getY() + speed);
-                }
+                }*/
 
             }
             else if (direction.equals("down")) {
                 player = new Animation<>(0.1f, Player.player_down.get(Player.player_character).getKeyFrames());
-                //playerRectangle.y -= 500 * Gdx.graphics.getDeltaTime();
-                bgposy += speed;
+                playerRectangle.y -= speed * Gdx.graphics.getDeltaTime();
+                /*bgposy += speed;
                 //totem.setY(totem.getY() +speed*2);
                 if (totem.getY() < bgposy) {
                     totem.setY(totem.getY() + screenHeight);
                 } else {
                     totem.setY(totem.getY() - speed);
-                }
+                }*/
             }
             }
 

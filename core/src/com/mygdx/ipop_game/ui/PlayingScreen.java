@@ -66,7 +66,6 @@ public class PlayingScreen implements Screen {
     public PlayingScreen(IPOP game) {
         camera = new OrthographicCamera();
 
-        //camera.position.set((screenWidth*3)/2, (screenHeight*3)/2,0);
         this.game = game;
         batch = new SpriteBatch();
         direction = "right";
@@ -77,6 +76,7 @@ public class PlayingScreen implements Screen {
 
         //Todo Cambiar este tamaño para la vista de la camara
         camera.setToOrtho(false, screenWidth, screenHeight);
+        //camera.setToOrtho(false, screenWidth*2, screenHeight*2);
 
         //TouchPads
         upPad = new Rectangle(0, screenHeight*2/3, screenWidth, screenHeight);
@@ -318,6 +318,9 @@ public class PlayingScreen implements Screen {
                 }
             }
         }
+        // Mover la cámara junto al jugador
+        camera.position.set(playerRectangle.x + playerRectangle.width / 2, playerRectangle.y + playerRectangle.height / 2, 0);
+        camera.update();
         bgRegion.setRegion(bgposx,bgposy,screenWidth,screenHeight);
 
         batch.begin();
@@ -338,7 +341,7 @@ public class PlayingScreen implements Screen {
             }
         }
 
-        drawTotems(activeOnFieldTotems);
+        //drawTotems(activeOnFieldTotems);
 
         for(int i=0;i<10;i++)
             if (Gdx.input.isTouched(i)) {
@@ -386,27 +389,44 @@ public class PlayingScreen implements Screen {
                 player = new Animation<>(0.1f, Player.player_right.get(Player.player_character).getKeyFrames());
                 //playerRectangle.x += 500 * Gdx.graphics.getDeltaTime();
                 bgposx -= speed;
-                totem.setX(totem.getX()-speed*2);
+                if (totem.getX() > (bgposx + screenWidth)) {
+                    totem.setX(totem.getX() - screenWidth);
+                } else {
+                    totem.setX(totem.getX() + speed);
+                }
             }
             else if (direction.equals("left")) {
                 player = new Animation<>(0.1f, Player.player_left.get(Player.player_character).getKeyFrames());
                 //playerRectangle.x -= 500 * Gdx.graphics.getDeltaTime();
                 bgposx += speed;
-                totem.setX(totem.getX() +speed*2);
+                //eLIM
+                if (totem.getX() < bgposx) {
+                    totem.setX(totem.getX() + screenWidth);
+                } else {
+                    totem.setX(totem.getX() - speed);
+                }
             }
             else if (direction.equals("up")) {
                 player = new Animation<>(0.1f, Player.player_up.get(Player.player_character).getKeyFrames());
                 //playerRectangle.y += 500 * Gdx.graphics.getDeltaTime();
                 bgposy -= speed;
-                totem.setY(totem.getY() -speed*2);
+                if (totem.getY() > (bgposy + screenHeight)) {
+                    totem.setY(totem.getY() - screenHeight);
+                } else {
+                    totem.setY(totem.getY() + speed);
+                }
 
             }
             else if (direction.equals("down")) {
                 player = new Animation<>(0.1f, Player.player_down.get(Player.player_character).getKeyFrames());
                 //playerRectangle.y -= 500 * Gdx.graphics.getDeltaTime();
                 bgposy += speed;
-                totem.setY(totem.getY() +speed*2);
-
+                //totem.setY(totem.getY() +speed*2);
+                if (totem.getY() < bgposy) {
+                    totem.setY(totem.getY() + screenHeight);
+                } else {
+                    totem.setY(totem.getY() - speed);
+                }
             }
             }
 

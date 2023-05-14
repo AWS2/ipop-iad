@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.Rectangle;
 
 public class Totem {
     private float x,y,textX;
-    private int height,width;
+    private int id, height,width;
     private Texture image;
     private String family,ocupacio;
     private Rectangle textBox;
@@ -16,10 +16,10 @@ public class Totem {
     private Boolean correctTotem;
     private GlyphLayout glyphLayout;
     //Constructor
-    public Totem() {
-    }
+    public Totem() { }
 
-    public Totem(float x, float y, int height, int width, Texture image, String family, String ocupacio, Rectangle textBox, GlyphLayout glyphLayout, float textX, Sound sound, Boolean correctTotem) {
+    public Totem(int id, float x, float y, int height, int width, Texture image, String family, String ocupacio, Rectangle textBox, GlyphLayout glyphLayout, float textX, Sound sound, Boolean correctTotem) {
+        this.id = id;
         this.x = x;
         this.y = y;
         this.height = height;
@@ -34,7 +34,32 @@ public class Totem {
         this.correctTotem = correctTotem;
     }
 
+    public Totem(int id, float x, float y, int height, int width, Texture image, String family, String ocupacio, Rectangle textBox, GlyphLayout glyphLayout, float textX, Sound sound) {
+        this.id = id;
+        this.x = x;
+        this.y = y;
+        this.height = height;
+        this.width = width;
+        this.image = image;
+        this.family = family;
+        this.ocupacio = ocupacio;
+        this.textBox = textBox;
+        this.glyphLayout = glyphLayout;
+        this.textX = textX;
+        this.sound = sound;
+    }
+
     //Setters i Getters
+
+    public float getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+
     public float getX() {
         return x;
     }

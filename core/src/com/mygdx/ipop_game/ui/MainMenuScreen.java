@@ -16,9 +16,9 @@ public class MainMenuScreen implements Screen, TextInputListener {
     private Rectangle selectNameBtn, selectCharacterBtn, selectCicleBtn, singlePlayerBtn, multiPlayerBtn, rankingsBtn;
     final IPOP game;
 
-    static boolean nameSelected = false;
-    static boolean cicleSelected = false;
-    static boolean characterSelected = false;
+    static boolean nameSelected = true;
+    static boolean cicleSelected = true;
+    static boolean characterSelected = true;
 
     public MainMenuScreen(IPOP game) {
         this.game = game;
@@ -66,7 +66,7 @@ public class MainMenuScreen implements Screen, TextInputListener {
 
         if (characterSelected && nameSelected && cicleSelected) {
             game.batch.draw(singlePlayer,900 , 170, 500, 100);
-            game.batch.draw(disabledMultiPlayer,900 , 60, 500, 100);
+            game.batch.draw(multiPlayer,900 , 60, 500, 100);
         } else {
             game.batch.draw(disabledSinglePlayer,900 , 170, 500, 100);
             game.batch.draw(disabledMultiPlayer,900 , 60, 500, 100);
@@ -112,7 +112,11 @@ public class MainMenuScreen implements Screen, TextInputListener {
                 if (cicleSelected && nameSelected && characterSelected) {
                     game.setScreen(new PlayingScreen(game));
                 }
-            } else if (rankingsBtn.contains(touchX, touchY)) {
+            } else if (multiPlayerBtn.contains(touchX, touchY)) {
+                if (cicleSelected && nameSelected && characterSelected) {
+                    game.setScreen(new MultiPlayerScreen(game));
+                }
+            }else if (rankingsBtn.contains(touchX, touchY)) {
                 game.setScreen(new RankingsScreen(game));
             }
         }

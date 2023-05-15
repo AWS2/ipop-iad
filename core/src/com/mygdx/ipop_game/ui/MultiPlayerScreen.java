@@ -466,7 +466,7 @@ public class MultiPlayerScreen implements Screen {
                 playerArray.players_character = 1;
                 Player.player_down.get(0).getKeyFrameIndex(1);
                 batch.draw(Player.player_down.get(0).getKeyFrames()[1],playerArray.players_transform[0],playerArray.players_transform[1],Player.scale[0],Player.scale[1]);
-                characterFont.draw(batch,playerArray.players_alias,100,100);
+                characterFont.draw(batch,playerArray.players_alias,playerArray.players_transform[0],playerArray.players_transform[1]);
 
             } else {
                 playerArray.players_character = 0;

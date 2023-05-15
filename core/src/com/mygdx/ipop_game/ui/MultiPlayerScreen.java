@@ -115,7 +115,6 @@ public class MultiPlayerScreen implements Screen {
         socket.setSendGracefully(false);
         socket.addListener((WebSocketListener) new MyWSListener());
         socket.connect();
-        socket.send("Enviar dades");
 
         generacioTotems();
         startPlaying = Instant.now();

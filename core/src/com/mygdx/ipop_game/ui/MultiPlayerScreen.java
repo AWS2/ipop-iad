@@ -120,6 +120,7 @@ public class MultiPlayerScreen implements Screen {
         ballon_exclamation[7] = new TextureRegion(ballons, 329, 0, 47, 50);
         exclamation = new Animation<>(0.2f,ballon_exclamation);
         players = new ArrayList<>();
+        activeOnFieldTotems = new ArrayList<>();
         if (Gdx.app.getType() == Application.ApplicationType.Android)
             // en Android el host és accessible per 10.0.2.2
             address = "10.0.2.2";
@@ -143,6 +144,7 @@ public class MultiPlayerScreen implements Screen {
     }
 
     public void updateTotemFromServer() {
+        if (MultiPlayerScreen.game_totems == null) { return; }
         JSONObject response = new JSONObject(MultiPlayerScreen.game_totems);
         JSONArray totemsArray = response.getJSONObject("message").getJSONArray("totems");
 
@@ -171,6 +173,7 @@ public class MultiPlayerScreen implements Screen {
     }
 
     public void updatePlayersFromServer() {
+        if (MultiPlayerScreen.players_str == null) { return; }
         JSONObject response = new JSONObject(MultiPlayerScreen.players_str);
         JSONArray playersArray = response.getJSONObject("message").getJSONArray("players");
 

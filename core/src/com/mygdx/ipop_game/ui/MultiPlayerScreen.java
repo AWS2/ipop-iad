@@ -525,10 +525,8 @@ public class MultiPlayerScreen implements Screen {
         return currentDirection;
     }
     public void walkDirection(String direction, Boolean moving) {
-        float speed = 5000 * Gdx.graphics.getDeltaTime();
+        double speed = 50000 * Gdx.graphics.getDeltaTime();
         if (moving) {
-            for (Totem totem: activeOnFieldTotems) {
-
                 if (direction.equals("right")) {
                     player = new Animation<>(0.1f, Player.player_right.get(Player.player_character).getKeyFrames());
                     playerRectangle.x += speed * Gdx.graphics.getDeltaTime();
@@ -546,8 +544,6 @@ public class MultiPlayerScreen implements Screen {
                     playerRectangle.y -= speed * Gdx.graphics.getDeltaTime();
 
                 }
-            }
-
         } else {
             exclamation = new Animation<>(0.2f,ballon_exclamation);
 

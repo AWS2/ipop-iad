@@ -66,7 +66,7 @@ public class MultiPlayerScreen implements Screen {
     ArrayList<Totem> totemsIncorrectes = new ArrayList<>();
     ArrayList<Totem> activeOnFieldTotems = new ArrayList<>();
     ArrayList<String> ocupacioInicial = new ArrayList<>();
-
+    ArrayList<Player> players;
     Sound dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
     Sound cyndaquilSound = Gdx.audio.newSound(Gdx.files.internal("CYNDAQUIL.wav"));
     int TOTEMS_TO_REACH = 5;
@@ -120,7 +120,9 @@ public class MultiPlayerScreen implements Screen {
         ballon_exclamation[6] = new TextureRegion(ballons, 282, 0, 47, 50);
         ballon_exclamation[7] = new TextureRegion(ballons, 329, 0, 47, 50);
         exclamation = new Animation<>(0.2f,ballon_exclamation);
-
+        players = new ArrayList<>();
+        players.add(new Player("Manolo",0, new int[]{1050, 350}));
+        players.add(new Player("Ramon",0, new int[]{100, 100}));
         if (Gdx.app.getType() == Application.ApplicationType.Android)
             // en Android el host és accessible per 10.0.2.2
             address = "10.0.2.2";
@@ -446,12 +448,18 @@ public class MultiPlayerScreen implements Screen {
         batch.draw(frame,playerRectangle.getX(),playerRectangle.getY(),Player.scale[0],Player.scale[1]);
         characterFont.draw(batch,Player.player_alias,playerRectangle.getX(),playerRectangle.getY()+playerRectangle.getHeight());
 
-        ArrayList<Player> playerArrayList = new ArrayList<>();
         //Dibujar otros players
-        for (Player playerArray: playerArrayList) {
+        for (Player playerArray: players) {
+            Texture sprite;
+
             if (Player.player_character == 0) {
                 //batch.draw(playerArray.);
+                playerArray.players_character = 1;
+                Player.player_down.get(0).getKeyFrameIndex(1);
+                batch.draw(Player.player_down.get(0).getKeyFrames()[1],Player.scale[0],Player.scale[1],playerArray.players_transform[0],playerArray.players_transform[1]);
             } else {
+                playerArray.players_character = 0;
+                batch.draw(Player.player_down.get(1).getKeyFrames()[1],Player.scale[0],Player.scale[1],playerArray.players_transform[0],playerArray.players_transform[1]);
 
             }
 
@@ -467,8 +475,8 @@ public class MultiPlayerScreen implements Screen {
             }
 
             //Ambos PlayerScale son de 128px
-            scoreFont.draw(batch,"Peter de Sistemes Microinformatics i Xarxes s ha unit",cameraX+Player.scale[0]+Player.scale[1],cameraY+screenHeight/4);
-            batch.draw(ballon,cameraX,cameraY+screenHeight/4-64,Player.scale[0],Player.scale[1]);
+            scoreFont.draw(batch,"Peter de Sistemes Microinformatics i Xarxes s ha unit",cameraX+Player.scale[0]+Player.scale[1],cameraY+screenHeight-100);
+            batch.draw(ballon,cameraX,cameraY+screenHeight-164,Player.scale[0],Player.scale[1]);
         }
 
         //batch.draw(frame,(screenWidth)/2,(screenHeight)/2,Player.scale[0],Player.scale[1]);

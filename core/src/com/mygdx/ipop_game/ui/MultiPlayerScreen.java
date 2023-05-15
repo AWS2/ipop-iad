@@ -78,7 +78,7 @@ public class MultiPlayerScreen implements Screen {
 
     WebSocket socket;
     String address = "localhost";
-    int port = 8888;
+    int port = 3001;
 
 
     public MultiPlayerScreen(IPOP game) {
@@ -130,7 +130,16 @@ public class MultiPlayerScreen implements Screen {
         socket.setSendGracefully(false);
         socket.addListener((WebSocketListener) new MyWSListener());
         socket.connect();
-        socket.send("Enviar dades");
+
+        JSONObject json = new JSONObject();
+        json.put("type", "startGame");
+        json.put("nameCycle", Player.player_ocupation);
+        json.put("player_alias", Player.player_alias);
+        json.put("player_sprite", Player.player_character);
+        json.put("player_x", Player.transform[0]);
+        json.put("player_y", Player.transform[1]);
+
+        socket.send(json.toString());
 
         generacioTotems();
         startPlaying = Instant.now();
@@ -337,10 +346,12 @@ public class MultiPlayerScreen implements Screen {
         if (stateTime - lastSend > 1.0f) {
             lastSend = (int) stateTime;
             JSONObject json = new JSONObject();
+            json.put("nameCycle", Player.player_ocupation);
             json.put("player_alias", Player.player_alias);
             json.put("player_sprite", Player.player_character);
             json.put("player_x", Player.transform[0]);
             json.put("player_y", Player.transform[1]);
+
             socket.send(json.toString());
         }
         updateTotemFromServer();
@@ -557,18 +568,26 @@ public class MultiPlayerScreen implements Screen {
                 if (direction.equals("right")) {
                     player = new Animation<>(0.1f, Player.player_right.get(Player.player_character).getKeyFrames());
                     playerRectangle.x += speed * Gdx.graphics.getDeltaTime();
+                    Player.transform[0] = (int) playerRectangle.x;
+                    Player.transform[1] = (int) playerRectangle.y;
                 }
                 else if (direction.equals("left")) {
                     player = new Animation<>(0.1f, Player.player_left.get(Player.player_character).getKeyFrames());
                     playerRectangle.x -= speed * Gdx.graphics.getDeltaTime();
+                    Player.transform[0] = (int) playerRectangle.x;
+                    Player.transform[1] = (int) playerRectangle.y;
                 }
                 else if (direction.equals("up")) {
                     player = new Animation<>(0.1f, Player.player_up.get(Player.player_character).getKeyFrames());
                     playerRectangle.y += speed * Gdx.graphics.getDeltaTime();
+                    Player.transform[0] = (int) playerRectangle.x;
+                    Player.transform[1] = (int) playerRectangle.y;
                 }
                 else if (direction.equals("down")) {
                     player = new Animation<>(0.1f, Player.player_down.get(Player.player_character).getKeyFrames());
                     playerRectangle.y -= speed * Gdx.graphics.getDeltaTime();
+                    Player.transform[0] = (int) playerRectangle.x;
+                    Player.transform[1] = (int) playerRectangle.y;
 
                 }
         } else {
@@ -606,6 +625,7 @@ class MyWSListener implements WebSocketListener {
 
     @Override
     public boolean onClose(WebSocket webSocket, int closeCode, String reason) {
+        System.out.println(reason);
         return false;
     }
 

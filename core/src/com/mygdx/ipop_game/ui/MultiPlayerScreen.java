@@ -138,6 +138,7 @@ public class MultiPlayerScreen implements Screen {
 
         socket.send(json.toString());
 
+
         generacioTotems();
         startPlaying = Instant.now();
         this.render(Gdx.graphics.getDeltaTime());

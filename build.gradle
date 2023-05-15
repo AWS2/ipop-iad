@@ -72,7 +72,7 @@ project(":android") {
 
     }
 }
-
+/*
 project(":html") {
     apply plugin: "java-library"
     apply plugin: "gwt"
@@ -90,7 +90,7 @@ project(":html") {
         api "com.github.MrStahlfelge.gdx-websockets:html:$wsVersion:sources"
     }
 }
-
+*/
 project(":core") {
     apply plugin: "java-library"
 

@@ -52,7 +52,7 @@ public class MultiPlayerScreen implements Screen {
     String direction, currentDirection;
     private static OrthographicCamera camera;
     Boolean moving, soundPlayed = false;
-    BitmapFont font = new BitmapFont(), scoreFont = new BitmapFont();
+    BitmapFont font = new BitmapFont(), scoreFont = new BitmapFont(),characterFont = new BitmapFont();
     float elapsedTimeNewPlayer = 0f; // Tiempo transcurrido en segundos
     float duration = 3f; // Duración en segundos durante la cual se dibujará el texto
     boolean playerJoined = false; // Variable de control para determinar si se debe dibujar el texto o no
@@ -66,7 +66,7 @@ public class MultiPlayerScreen implements Screen {
     ArrayList<Totem> totemsIncorrectes = new ArrayList<>();
     ArrayList<Totem> activeOnFieldTotems = new ArrayList<>();
     ArrayList<String> ocupacioInicial = new ArrayList<>();
-
+    ArrayList<Player> players;
     Sound dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
     Sound cyndaquilSound = Gdx.audio.newSound(Gdx.files.internal("CYNDAQUIL.wav"));
     int TOTEMS_TO_REACH = 5;
@@ -78,7 +78,7 @@ public class MultiPlayerScreen implements Screen {
 
     WebSocket socket;
     String address = "localhost";
-    int port = 8888;
+    int port = 3001;
 
 
     public MultiPlayerScreen(IPOP game) {
@@ -102,8 +102,11 @@ public class MultiPlayerScreen implements Screen {
 
         homeBtn = new Rectangle(100,900,100,100);
 
+        //Fonts info
         font.getData().setScale(3);
         font.setColor(Color.RED);
+        characterFont.getData().setScale(3);
+        characterFont.setColor(Color.BLACK);
         scoreFont.getData().setScale(5);
         scoreFont.getData().setLineHeight(3);
         scoreFont.setColor(Color.WHITE);
@@ -116,7 +119,9 @@ public class MultiPlayerScreen implements Screen {
         ballon_exclamation[5] = new TextureRegion(ballons, 235, 0, 47, 50);
         ballon_exclamation[6] = new TextureRegion(ballons, 282, 0, 47, 50);
         ballon_exclamation[7] = new TextureRegion(ballons, 329, 0, 47, 50);
-
+        exclamation = new Animation<>(0.2f,ballon_exclamation);
+        players = new ArrayList<>();
+        players.add(new Player("Manolo",1, new int[]{1050, 350}));
         if (Gdx.app.getType() == Application.ApplicationType.Android)
             // en Android el host és accessible per 10.0.2.2
             address = "10.0.2.2";
@@ -124,7 +129,15 @@ public class MultiPlayerScreen implements Screen {
         socket.setSendGracefully(false);
         socket.addListener((WebSocketListener) new MyWSListener());
         socket.connect();
-        socket.send("Enviar dades");
+
+        JSONObject json = new JSONObject();
+        json.put("type", "startGame");
+        json.put("nameCycle", Player.player_ocupation);
+        json.put("player_alias", Player.player_alias);
+        json.put("player_sprite", Player.player_character);
+
+        socket.send(json.toString());
+
 
         generacioTotems();
         startPlaying = Instant.now();
@@ -331,10 +344,12 @@ public class MultiPlayerScreen implements Screen {
         if (stateTime - lastSend > 1.0f) {
             lastSend = (int) stateTime;
             JSONObject json = new JSONObject();
+            json.put("nameCycle", Player.player_ocupation);
             json.put("player_alias", Player.player_alias);
             json.put("player_sprite", Player.player_character);
             json.put("player_x", Player.transform[0]);
             json.put("player_y", Player.transform[1]);
+
             socket.send(json.toString());
         }
         updateTotemFromServer();
@@ -438,18 +453,39 @@ public class MultiPlayerScreen implements Screen {
         stateTime += Gdx.graphics.getDeltaTime(); // Accumulate elapsed animation time
         TextureRegion frame = player.getKeyFrame(stateTime,true);
         TextureRegion ballon = exclamation.getKeyFrame(stateTime,true);
+        //Player
         batch.draw(frame,playerRectangle.getX(),playerRectangle.getY(),Player.scale[0],Player.scale[1]);
+        characterFont.draw(batch,Player.player_alias,playerRectangle.getX(),playerRectangle.getY()+playerRectangle.getHeight());
+
+        //Dibujar otros players
+        for (Player playerArray: players) {
+            Texture sprite;
+
+            if (Player.player_character == 0) {
+                //batch.draw(playerArray.);
+                playerArray.players_character = 1;
+                Player.player_down.get(0).getKeyFrameIndex(1);
+                batch.draw(Player.player_down.get(0).getKeyFrames()[1],playerArray.players_transform[0],playerArray.players_transform[1],Player.scale[0],Player.scale[1]);
+                characterFont.draw(batch,playerArray.players_alias,100,100);
+
+            } else {
+                playerArray.players_character = 0;
+                batch.draw(Player.player_down.get(1).getKeyFrames()[1],playerArray.players_transform[0],playerArray.players_transform[1],Player.scale[0],Player.scale[1]);
+
+            }
+
+        }
+
         if (playerJoined) {
             elapsedTimeNewPlayer += delta;
-
-            // Verificar si ha pasado la duración establecida
             if (elapsedTimeNewPlayer >= duration) {
                 playerJoined = false; // Dejar de dibujar el texto
                 elapsedTimeNewPlayer = 0f;
             }
 
-            scoreFont.draw(batch,"Peter de Sistemes Microinformatics i Xarxes s ha unit",cameraX,cameraY+screenHeight/4);
-            batch.draw(ballon,cameraX+screenWidth-Player.scale[0],cameraY+screenHeight/4-Player.scale[1],Player.scale[0],Player.scale[1]);
+            //Ambos PlayerScale son de 128px
+            scoreFont.draw(batch,"Peter de Sistemes Microinformatics i Xarxes s ha unit",cameraX+Player.scale[0]+Player.scale[1],cameraY+screenHeight-100);
+            batch.draw(ballon,cameraX,cameraY+screenHeight-164,Player.scale[0],Player.scale[1]);
         }
 
         //batch.draw(frame,(screenWidth)/2,(screenHeight)/2,Player.scale[0],Player.scale[1]);
@@ -530,18 +566,26 @@ public class MultiPlayerScreen implements Screen {
                 if (direction.equals("right")) {
                     player = new Animation<>(0.1f, Player.player_right.get(Player.player_character).getKeyFrames());
                     playerRectangle.x += speed * Gdx.graphics.getDeltaTime();
+                    Player.transform[0] = (int) playerRectangle.x;
+                    Player.transform[1] = (int) playerRectangle.y;
                 }
                 else if (direction.equals("left")) {
                     player = new Animation<>(0.1f, Player.player_left.get(Player.player_character).getKeyFrames());
                     playerRectangle.x -= speed * Gdx.graphics.getDeltaTime();
+                    Player.transform[0] = (int) playerRectangle.x;
+                    Player.transform[1] = (int) playerRectangle.y;
                 }
                 else if (direction.equals("up")) {
                     player = new Animation<>(0.1f, Player.player_up.get(Player.player_character).getKeyFrames());
                     playerRectangle.y += speed * Gdx.graphics.getDeltaTime();
+                    Player.transform[0] = (int) playerRectangle.x;
+                    Player.transform[1] = (int) playerRectangle.y;
                 }
                 else if (direction.equals("down")) {
                     player = new Animation<>(0.1f, Player.player_down.get(Player.player_character).getKeyFrames());
                     playerRectangle.y -= speed * Gdx.graphics.getDeltaTime();
+                    Player.transform[0] = (int) playerRectangle.x;
+                    Player.transform[1] = (int) playerRectangle.y;
 
                 }
         } else {
@@ -579,6 +623,7 @@ class MyWSListener implements WebSocketListener {
 
     @Override
     public boolean onClose(WebSocket webSocket, int closeCode, String reason) {
+        System.out.println(reason);
         return false;
     }
 
@@ -590,6 +635,7 @@ class MyWSListener implements WebSocketListener {
         } else if (response.getString("type").equals("game_totems")) {
             //PARA HACER PRUEBAS -> MultiPlayerScreen.game_totems = "{\"status\":\"ok\",\"message\":{\"totems\":[{\"idTotem\":1,\"text\":\"Totem 1\",\"cycleLabel\":\"Cycle 1\",\"posX\":100,\"posY\":200,\"width\":50,\"height\":50},{\"idTotem\":2,\"text\":\"Totem 2\",\"cycleLabel\":\"Cycle 2\",\"posX\":150,\"posY\":250,\"width\":60,\"height\":60},{\"idTotem\":3,\"text\":\"Totem 3\",\"cycleLabel\":\"Cycle 3\",\"posX\":200,\"posY\":300,\"width\":70,\"height\":70},{\"idTotem\":4,\"text\":\"Totem 4\",\"cycleLabel\":\"Cycle 4\",\"posX\":250,\"posY\":350,\"width\":80,\"height\":80},{\"idTotem\":5,\"text\":\"Totem 5\",\"cycleLabel\":\"Cycle 5\",\"posX\":300,\"posY\":400,\"width\":90,\"height\":90},{\"idTotem\":6,\"text\":\"Totem 6\",\"cycleLabel\":\"Cycle 6\",\"posX\":350,\"posY\":450,\"width\":100,\"height\":100},{\"idTotem\":7,\"text\":\"Totem 7\",\"cycleLabel\":\"Cycle 7\",\"posX\":400,\"posY\":500,\"width\":110,\"height\":110},{\"idTotem\":8,\"text\":\"Totem 8\",\"cycleLabel\":\"Cycle 8\",\"posX\":450,\"posY\":550,\"width\":120,\"height\":120},{\"idTotem\":9,\"text\":\"Totem 9\",\"cycleLabel\":\"Cycle 9\",\"posX\":500,\"posY\":600,\"width\":130,\"height\":130},{\"idTotem\":10,\"text\":\"Totem 10\",\"cycleLabel\":\"Cycle 10\",\"posX\":550,\"posY\":650,\"width\":140,\"height\":140}]}}\n";
             MultiPlayerScreen.game_totems = response.getString("message");
+            System.out.println(MultiPlayerScreen.game_totems);
         }
         return false;
     }

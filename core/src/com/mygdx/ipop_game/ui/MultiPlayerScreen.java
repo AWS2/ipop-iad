@@ -130,7 +130,9 @@ public class MultiPlayerScreen implements Screen {
         socket.setSendGracefully(false);
         socket.addListener((WebSocketListener) new MyWSListener());
         socket.connect();
-        socket.send("Enviar dades");
+        JSONObject json = new JSONObject();
+        json.put("type", "startGame");
+        socket.send(json);
 
         generacioTotems();
         startPlaying = Instant.now();
@@ -467,8 +469,6 @@ public class MultiPlayerScreen implements Screen {
 
         if (playerJoined) {
             elapsedTimeNewPlayer += delta;
-
-            // Verificar si ha pasado la duración establecida
             if (elapsedTimeNewPlayer >= duration) {
                 playerJoined = false; // Dejar de dibujar el texto
                 elapsedTimeNewPlayer = 0f;

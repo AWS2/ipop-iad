@@ -52,7 +52,7 @@ public class MultiPlayerScreen implements Screen {
     String direction, currentDirection;
     private static OrthographicCamera camera;
     Boolean moving, soundPlayed = false;
-    BitmapFont font = new BitmapFont(), scoreFont = new BitmapFont();
+    BitmapFont font = new BitmapFont(), scoreFont = new BitmapFont(),characterFont = new BitmapFont();
     float elapsedTimeNewPlayer = 0f; // Tiempo transcurrido en segundos
     float duration = 3f; // Duración en segundos durante la cual se dibujará el texto
     boolean playerJoined = false; // Variable de control para determinar si se debe dibujar el texto o no
@@ -102,8 +102,11 @@ public class MultiPlayerScreen implements Screen {
 
         homeBtn = new Rectangle(100,900,100,100);
 
+        //Fonts info
         font.getData().setScale(3);
         font.setColor(Color.RED);
+        characterFont.getData().setScale(3);
+        characterFont.setColor(Color.BLACK);
         scoreFont.getData().setScale(5);
         scoreFont.getData().setLineHeight(3);
         scoreFont.setColor(Color.WHITE);
@@ -116,6 +119,7 @@ public class MultiPlayerScreen implements Screen {
         ballon_exclamation[5] = new TextureRegion(ballons, 235, 0, 47, 50);
         ballon_exclamation[6] = new TextureRegion(ballons, 282, 0, 47, 50);
         ballon_exclamation[7] = new TextureRegion(ballons, 329, 0, 47, 50);
+        exclamation = new Animation<>(0.2f,ballon_exclamation);
 
         if (Gdx.app.getType() == Application.ApplicationType.Android)
             // en Android el host és accessible per 10.0.2.2
@@ -438,7 +442,21 @@ public class MultiPlayerScreen implements Screen {
         stateTime += Gdx.graphics.getDeltaTime(); // Accumulate elapsed animation time
         TextureRegion frame = player.getKeyFrame(stateTime,true);
         TextureRegion ballon = exclamation.getKeyFrame(stateTime,true);
+        //Player
         batch.draw(frame,playerRectangle.getX(),playerRectangle.getY(),Player.scale[0],Player.scale[1]);
+        characterFont.draw(batch,Player.player_alias,playerRectangle.getX(),playerRectangle.getY()+playerRectangle.getHeight());
+
+        ArrayList<Player> playerArrayList = new ArrayList<>();
+        //Dibujar otros players
+        for (Player playerArray: playerArrayList) {
+            if (Player.player_character == 0) {
+                //batch.draw(playerArray.);
+            } else {
+
+            }
+
+        }
+
         if (playerJoined) {
             elapsedTimeNewPlayer += delta;
 
@@ -448,8 +466,9 @@ public class MultiPlayerScreen implements Screen {
                 elapsedTimeNewPlayer = 0f;
             }
 
-            scoreFont.draw(batch,"Peter de Sistemes Microinformatics i Xarxes s ha unit",cameraX,cameraY+screenHeight/4);
-            batch.draw(ballon,cameraX+screenWidth-Player.scale[0],cameraY+screenHeight/4-Player.scale[1],Player.scale[0],Player.scale[1]);
+            //Ambos PlayerScale son de 128px
+            scoreFont.draw(batch,"Peter de Sistemes Microinformatics i Xarxes s ha unit",cameraX+Player.scale[0]+Player.scale[1],cameraY+screenHeight/4);
+            batch.draw(ballon,cameraX,cameraY+screenHeight/4-64,Player.scale[0],Player.scale[1]);
         }
 
         //batch.draw(frame,(screenWidth)/2,(screenHeight)/2,Player.scale[0],Player.scale[1]);

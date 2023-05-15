@@ -64,6 +64,8 @@ public class MultiPlayerScreen implements Screen {
     ArrayList<Totem> activeOnFieldTotems = new ArrayList<>();
     ArrayList<String> ocupacioInicial = new ArrayList<>();
 
+    ArrayList<Player> players = new ArrayList<>();
+
     Sound dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
     Sound cyndaquilSound = Gdx.audio.newSound(Gdx.files.internal("CYNDAQUIL.wav"));
     int TOTEMS_TO_REACH = 5;
@@ -87,6 +89,7 @@ public class MultiPlayerScreen implements Screen {
         playerRectangle = new Rectangle();
         playerRectangle.setX(50);
         playerRectangle.setY(50);
+        players = new ArrayList<>();
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, screenWidth, screenHeight);

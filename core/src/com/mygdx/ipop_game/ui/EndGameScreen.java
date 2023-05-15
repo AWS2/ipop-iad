@@ -41,13 +41,13 @@ public class EndGameScreen implements Screen {
 
         if (gr.correctTotems >= 5) {
             saveScore = new Texture(Gdx.files.internal("save_score_button.png"));
-            saveScoreBtn = new Rectangle(920 , 50, 450, 125);
             playerWon = true;
         } else {
             saveScore = new Texture(Gdx.files.internal("go_to_menu.png"));
-            saveScoreBtn = new Rectangle(920 , 50, 450, 125);
             playerWon = false;
         }
+        saveScoreBtn = new Rectangle(920 , 50, 450, 125);
+
     }
 
     @Override

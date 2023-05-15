@@ -39,6 +39,7 @@ public class MultiPlayerScreen implements Screen {
 
     public static String game_status = "playing";
     public static String game_totems;
+    public static String players_str;
     final IPOP game;
     Ocupacio ocupacioObject;
     int screenWidth = Gdx.graphics.getWidth(), screenHeight = Gdx.graphics.getHeight();
@@ -62,8 +63,6 @@ public class MultiPlayerScreen implements Screen {
 
     float scrollSpeed = 200.0f;
     Instant startPlaying;
-    ArrayList<Totem> totemsCorrectes = new ArrayList<>();
-    ArrayList<Totem> totemsIncorrectes = new ArrayList<>();
     ArrayList<Totem> activeOnFieldTotems = new ArrayList<>();
     ArrayList<String> ocupacioInicial = new ArrayList<>();
     ArrayList<Player> players;
@@ -121,7 +120,6 @@ public class MultiPlayerScreen implements Screen {
         ballon_exclamation[7] = new TextureRegion(ballons, 329, 0, 47, 50);
         exclamation = new Animation<>(0.2f,ballon_exclamation);
         players = new ArrayList<>();
-        players.add(new Player("Manolo",1, new int[]{1050, 350}));
         if (Gdx.app.getType() == Application.ApplicationType.Android)
             // en Android el host és accessible per 10.0.2.2
             address = "10.0.2.2";
@@ -139,14 +137,12 @@ public class MultiPlayerScreen implements Screen {
         socket.send(json.toString());
 
 
-        generacioTotems();
+        //generacioTotems();
         startPlaying = Instant.now();
         this.render(Gdx.graphics.getDeltaTime());
     }
 
     public void updateTotemFromServer() {
-        String gameTotems = "{\"status\":\"ok\",\"type\":\"game_totems\",\"message\":{\"totems\":[{\"idTotem\":1,\"text\":\"Totem 1\",\"cycleLabel\":\"Cycle 1\",\"posX\":100,\"posY\":200,\"width\":50,\"height\":50},{\"idTotem\":2,\"text\":\"Totem 2\",\"cycleLabel\":\"Cycle 2\",\"posX\":150,\"posY\":250,\"width\":60,\"height\":60},{\"idTotem\":3,\"text\":\"Totem 3\",\"cycleLabel\":\"Cycle 3\",\"posX\":200,\"posY\":300,\"width\":70,\"height\":70},{\"idTotem\":4,\"text\":\"Totem 4\",\"cycleLabel\":\"Cycle 4\",\"posX\":250,\"posY\":350,\"width\":80,\"height\":80},{\"idTotem\":5,\"text\":\"Totem 5\",\"cycleLabel\":\"Cycle 5\",\"posX\":300,\"posY\":400,\"width\":90,\"height\":90},{\"idTotem\":6,\"text\":\"Totem 6\",\"cycleLabel\":\"Cycle 6\",\"posX\":350,\"posY\":450,\"width\":100,\"height\":100},{\"idTotem\":7,\"text\":\"Totem 7\",\"cycleLabel\":\"Cycle 7\",\"posX\":400,\"posY\":500,\"width\":110,\"height\":110},{\"idTotem\":8,\"text\":\"Totem 8\",\"cycleLabel\":\"Cycle 8\",\"posX\":450,\"posY\":550,\"width\":120,\"height\":120},{\"idTotem\":9,\"text\":\"Totem 9\",\"cycleLabel\":\"Cycle 9\",\"posX\":500,\"posY\":600,\"width\":130,\"height\":130},{\"idTotem\":10,\"text\":\"Totem 10\",\"cycleLabel\":\"Cycle 10\",\"posX\":550,\"posY\":650,\"width\":140,\"height\":140}]}}";
-        game_totems = gameTotems;
         JSONObject response = new JSONObject(MultiPlayerScreen.game_totems);
         JSONArray totemsArray = response.getJSONObject("message").getJSONArray("totems");
 
@@ -169,12 +165,29 @@ public class MultiPlayerScreen implements Screen {
             totem.setTextX(totemBox.getX()+totemBox.getWidth());
             totemsList.add(totem);
         }
+        activeOnFieldTotems.clear();
+        activeOnFieldTotems = totemsList;
 
-        // Imprimir los objetos Totem en el ArrayList
-        /*for (Totem totem : totemsList) {
-            System.out.println(totem.toString());
-        }*/
+    }
 
+    public void updatePlayersFromServer() {
+        JSONObject response = new JSONObject(MultiPlayerScreen.players_str);
+        JSONArray playersArray = response.getJSONObject("message").getJSONArray("players");
+
+        ArrayList<Player> playersList = new ArrayList<>();
+        for (int i = 0; i < playersArray.length(); i++) {
+            JSONObject playerObject = playersArray.getJSONObject(i);
+            String player_alias = playerObject.getString("name");
+            int player_character = playerObject.getInt("spriteSelected");
+            int[] player_transform = new int[]{playerObject.getInt("posZ"), playerObject.getInt("posY")};
+            playersList.add(new Player(
+                    player_alias,
+                    player_character,
+                    player_transform
+            ));
+        }
+        players.clear();
+        players = playersList;
     }
 
     //Metodo que llamaremos cada vez que el usuario colisione contra el Totem correcto hasta 5 veces
@@ -199,7 +212,7 @@ public class MultiPlayerScreen implements Screen {
                     //Layout
                     activeOnFieldTotems.add(totem);
                     ocupacioInicial.add(activeOnFieldTotems.get(j).getOcupacio());
-                    totemsCorrectes.add(totem);
+                    //totemsCorrectes.add(totem);
                     pasada++;
                 }
             } else {
@@ -219,7 +232,7 @@ public class MultiPlayerScreen implements Screen {
                         if (k < activeOnFieldTotems.size() && activeOnFieldTotems.get(k).getX() != totem.getX() && activeOnFieldTotems.get(k).getY() != totem.getY()) {
                             activeOnFieldTotems.add(totem);
                             ocupacioInicial.add(totem.getOcupacio());
-                            totemsIncorrectes.add(totem);
+                            //totemsIncorrectes.add(totem);
                             pasada++;
                             break;
                         }
@@ -231,11 +244,6 @@ public class MultiPlayerScreen implements Screen {
 
 
             }
-
-            //Comprovar que no hi hagi totems en aquella posicio
-
-            //Despues de la primera pasada se añadiran los incorrectos verificando su posicion
-
         }
     }
 
@@ -326,200 +334,203 @@ public class MultiPlayerScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        upPad.setPosition(camera.position.x - screenWidth/2, camera.position.y - screenHeight/2 + screenHeight*2/3);
-        downPad.setPosition(camera.position.x - screenWidth/2, camera.position.y - screenHeight/2);
-        leftPad.setPosition(camera.position.x - screenWidth/2, camera.position.y - screenHeight/2);
-        rightPad.setPosition(camera.position.x - screenWidth/2 + screenWidth*2/3, camera.position.y - screenHeight/2);
+        if (activeOnFieldTotems == null || activeOnFieldTotems.size() == 0) {
+            upPad.setPosition(camera.position.x - screenWidth/2, camera.position.y - screenHeight/2 + screenHeight*2/3);
+            downPad.setPosition(camera.position.x - screenWidth/2, camera.position.y - screenHeight/2);
+            leftPad.setPosition(camera.position.x - screenWidth/2, camera.position.y - screenHeight/2);
+            rightPad.setPosition(camera.position.x - screenWidth/2 + screenWidth*2/3, camera.position.y - screenHeight/2);
 
-        // Obtener las coordenadas de la cámara
-        float cameraX = camera.position.x - camera.viewportWidth / 2;
-        float cameraY = camera.position.y - camera.viewportHeight / 2;
-        homeBtn.setPosition(100 + cameraX, 900 + cameraY);
+            // Obtener las coordenadas de la cámara
+            float cameraX = camera.position.x - camera.viewportWidth / 2;
+            float cameraY = camera.position.y - camera.viewportHeight / 2;
+            homeBtn.setPosition(100 + cameraX, 900 + cameraY);
 
-        batch.setProjectionMatrix(camera.combined);
-        Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        stateTime += Gdx.graphics.getDeltaTime();
-        moving = false;
-        if (stateTime - lastSend > 1.0f) {
-            lastSend = (int) stateTime;
-            JSONObject json = new JSONObject();
-            json.put("nameCycle", Player.player_ocupation);
-            json.put("player_alias", Player.player_alias);
-            json.put("player_sprite", Player.player_character);
-            json.put("player_x", Player.transform[0]);
-            json.put("player_y", Player.transform[1]);
+            batch.setProjectionMatrix(camera.combined);
+            Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+            stateTime += Gdx.graphics.getDeltaTime();
+            moving = false;
+            if (stateTime - lastSend > 1.0f) {
+                lastSend = (int) stateTime;
+                JSONObject json = new JSONObject();
+                json.put("nameCycle", Player.player_ocupation);
+                json.put("player_alias", Player.player_alias);
+                json.put("player_sprite", Player.player_character);
+                json.put("player_x", Player.transform[0]);
+                json.put("player_y", Player.transform[1]);
 
-            socket.send(json.toString());
-        }
-        updateTotemFromServer();
+                socket.send(json.toString());
+            }
+            updateTotemFromServer();
+            updatePlayersFromServer();
 
-        if (MultiPlayerScreen.game_status.equals("finish")) {
-            JSONObject json = new JSONObject();
-            json.put("game_status", "finish");
-            json.put("player_won", Player.player_alias);
-            socket.send(json.toString());
-            game.setScreen(
-                    new EndGameScreen(
-                            game,
-                            new GameRecord(
-                                    corTotems,
-                                    totalTotems,
-                                    Player.player_ocupation,
-                                    Player.player_alias,
-                                    startPlaying,
-                                    Instant.now()
-                            )));
-        } else if (corTotems == TOTEMS_TO_REACH || Player.totemsLeft == 0) {
-            JSONObject json = new JSONObject();
-            json.put("game_status", "finish");
-            json.put("player_won", Player.player_alias);
-            socket.send(json.toString());
-            game.setScreen(
-                    new EndGameScreen(
-                            game,
-                            new GameRecord(
-                                    corTotems,
-                                    totalTotems,
-                                    Player.player_ocupation,
-                                    Player.player_alias,
-                                    startPlaying,
-                                    Instant.now()
-                            )));
-        }
+            if (MultiPlayerScreen.game_status.equals("finish")) {
+                JSONObject json = new JSONObject();
+                json.put("game_status", "finish");
+                json.put("player_won", Player.player_alias);
+                socket.send(json.toString());
+                game.setScreen(
+                        new EndGameScreen(
+                                game,
+                                new GameRecord(
+                                        corTotems,
+                                        totalTotems,
+                                        Player.player_ocupation,
+                                        Player.player_alias,
+                                        startPlaying,
+                                        Instant.now()
+                                )));
+            } else if (corTotems == TOTEMS_TO_REACH || Player.totemsLeft == 0) {
+                JSONObject json = new JSONObject();
+                json.put("game_status", "finish");
+                json.put("player_won", Player.player_alias);
+                socket.send(json.toString());
+                game.setScreen(
+                        new EndGameScreen(
+                                game,
+                                new GameRecord(
+                                        corTotems,
+                                        totalTotems,
+                                        Player.player_ocupation,
+                                        Player.player_alias,
+                                        startPlaying,
+                                        Instant.now()
+                                )));
+            }
 
-        if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            direction = "left";
-            moving = true;
-        }
-        if(Gdx.input.isKeyPressed(Input.Keys.RIGHT))  {
-            direction = "right";
-            moving = true;
-        }
-        if(Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            direction = "up";
-            moving = true;
-        }
-        if(Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            direction = "down";
-            moving = true;
-        }
-        currentDirection = direction;
-        direction = virtual_joystick_control();
-        walkDirection(direction,moving);
+            if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+                direction = "left";
+                moving = true;
+            }
+            if(Gdx.input.isKeyPressed(Input.Keys.RIGHT))  {
+                direction = "right";
+                moving = true;
+            }
+            if(Gdx.input.isKeyPressed(Input.Keys.UP)) {
+                direction = "up";
+                moving = true;
+            }
+            if(Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+                direction = "down";
+                moving = true;
+            }
+            currentDirection = direction;
+            direction = virtual_joystick_control();
+            walkDirection(direction,moving);
 
-        //Limit screen movement
-        if(playerRectangle.x < 0) playerRectangle.x = 0;
-        if(playerRectangle.x > background.getWidth() - 150) playerRectangle.x = background.getWidth() - 150;
-        if(playerRectangle.y < 0) playerRectangle.y = 0;
-        if(playerRectangle.y > background.getHeight() - 150) playerRectangle.y = background.getHeight() - 150;
+            //Limit screen movement
+            if(playerRectangle.x < 0) playerRectangle.x = 0;
+            if(playerRectangle.x > background.getWidth() - 150) playerRectangle.x = background.getWidth() - 150;
+            if(playerRectangle.y < 0) playerRectangle.y = 0;
+            if(playerRectangle.y > background.getHeight() - 150) playerRectangle.y = background.getHeight() - 150;
 
-        //Revisar que no haya colision
-        for (int i = activeOnFieldTotems.size() - 1; i >= 0; i--) {
-            Totem totem = activeOnFieldTotems.get(i);
-            if (playerRectangle.x >= totem.getX() && playerRectangle.x <= totem.getX() + totem.getWidth()
-                    && playerRectangle.y >= totem.getY() && playerRectangle.y <= totem.getY() + totem.getHeight()) {
-                if (!soundPlayed) {
-                    totem.getSound().play();
-                    if (totem.getCorrectTotem()) {
-                        corTotems++;
-                        totalTotems++;
-                        activeOnFieldTotems.remove(i);
-                        Player.totemsLeft --;
-                        sendTotemToServer(totem);
-                        playerJoined = true;
-                        //Calculos para dibujar en caso de que se una un nuevo jugador
-                        // Actualizar el tiempo transcurrido
+            //Revisar que no haya colision
+            for (int i = activeOnFieldTotems.size() - 1; i >= 0; i--) {
+                Totem totem = activeOnFieldTotems.get(i);
+                if (playerRectangle.x >= totem.getX() && playerRectangle.x <= totem.getX() + totem.getWidth()
+                        && playerRectangle.y >= totem.getY() && playerRectangle.y <= totem.getY() + totem.getHeight()) {
+                    if (!soundPlayed) {
+                        totem.getSound().play();
+                        if (totem.getCorrectTotem()) {
+                            corTotems++;
+                            totalTotems++;
+                            activeOnFieldTotems.remove(i);
+                            Player.totemsLeft --;
+                            sendTotemToServer(totem);
+                            playerJoined = true;
+                            //Calculos para dibujar en caso de que se una un nuevo jugador
+                            // Actualizar el tiempo transcurrido
 
-                    } else {
-                        corTotems--;
-                        totalTotems++;
-                        sendTotemToServer(totem);
-                        activeOnFieldTotems.remove(i);
+                        } else {
+                            corTotems--;
+                            totalTotems++;
+                            sendTotemToServer(totem);
+                            activeOnFieldTotems.remove(i);
+                        }
                     }
                 }
             }
-        }
 
 
 
 
-        // Mover la cámara junto al jugador
-        camera.position.set(playerRectangle.x, playerRectangle.y, 0);
-        camera.update();
+            // Mover la cámara junto al jugador
+            camera.position.set(playerRectangle.x, playerRectangle.y, 0);
+            camera.update();
 
-        batch.begin();
-        batch.draw(background,0,0,background.getWidth(),background.getHeight());
-        stateTime += Gdx.graphics.getDeltaTime(); // Accumulate elapsed animation time
-        TextureRegion frame = player.getKeyFrame(stateTime,true);
-        TextureRegion ballon = exclamation.getKeyFrame(stateTime,true);
-        //Player
-        batch.draw(frame,playerRectangle.getX(),playerRectangle.getY(),Player.scale[0],Player.scale[1]);
-        characterFont.draw(batch,Player.player_alias,playerRectangle.getX(),playerRectangle.getY()+playerRectangle.getHeight());
+            batch.begin();
+            batch.draw(background,0,0,background.getWidth(),background.getHeight());
+            stateTime += Gdx.graphics.getDeltaTime(); // Accumulate elapsed animation time
+            TextureRegion frame = player.getKeyFrame(stateTime,true);
+            TextureRegion ballon = exclamation.getKeyFrame(stateTime,true);
+            //Player
+            batch.draw(frame,playerRectangle.getX(),playerRectangle.getY(),Player.scale[0],Player.scale[1]);
+            characterFont.draw(batch,Player.player_alias,playerRectangle.getX(),playerRectangle.getY()+playerRectangle.getHeight());
 
-        //Dibujar otros players
-        for (Player playerArray: players) {
-            Texture sprite;
+            //Dibujar otros players
+            for (Player playerArray: players) {
+                Texture sprite;
 
-            if (Player.player_character == 0) {
-                //batch.draw(playerArray.);
-                playerArray.players_character = 1;
-                Player.player_down.get(0).getKeyFrameIndex(1);
-                batch.draw(Player.player_down.get(0).getKeyFrames()[1],playerArray.players_transform[0],playerArray.players_transform[1],Player.scale[0],Player.scale[1]);
-                characterFont.draw(batch,playerArray.players_alias,playerArray.players_transform[0],playerArray.players_transform[1]);
+                if (Player.player_character == 0) {
+                    //batch.draw(playerArray.);
+                    playerArray.players_character = 1;
+                    Player.player_down.get(0).getKeyFrameIndex(1);
+                    batch.draw(Player.player_down.get(0).getKeyFrames()[1],playerArray.players_transform[0],playerArray.players_transform[1],Player.scale[0],Player.scale[1]);
+                    characterFont.draw(batch,playerArray.players_alias,playerArray.players_transform[0],playerArray.players_transform[1]);
 
+                } else {
+                    playerArray.players_character = 0;
+                    batch.draw(Player.player_down.get(1).getKeyFrames()[1],playerArray.players_transform[0],playerArray.players_transform[1],Player.scale[0],Player.scale[1]);
+
+                }
+
+            }
+
+            if (playerJoined) {
+                elapsedTimeNewPlayer += delta;
+                if (elapsedTimeNewPlayer >= duration) {
+                    playerJoined = false; // Dejar de dibujar el texto
+                    elapsedTimeNewPlayer = 0f;
+                }
+
+                //Ambos PlayerScale son de 128px
+                scoreFont.draw(batch,"Peter de Sistemes Microinformatics i Xarxes s ha unit",cameraX+Player.scale[0]+Player.scale[1],cameraY+screenHeight-100);
+                batch.draw(ballon,cameraX,cameraY+screenHeight-164,Player.scale[0],Player.scale[1]);
+            }
+
+            //batch.draw(frame,(screenWidth)/2,(screenHeight)/2,Player.scale[0],Player.scale[1]);
+            batch.draw(home, 100 + cameraX, 900 + cameraY, 100, 100);
+            if (corTotems > 0) {
+                batch.draw(IPOP.score_bar[corTotems], 800 + cameraX, 950 + cameraY, 750, 100);
             } else {
-                playerArray.players_character = 0;
-                batch.draw(Player.player_down.get(1).getKeyFrames()[1],playerArray.players_transform[0],playerArray.players_transform[1],Player.scale[0],Player.scale[1]);
+                if (corTotems == 0) {
+                    batch.draw(IPOP.score_bar[0], 800 + cameraX, 900 + cameraY, 750, 100);
+                } else {
+                    int barWidth = 750;
+                    int barHeight = 100;
+                    int barX = (int) (800 + cameraX);
+                    int barY = (int) (900 + cameraY);
+                    int wrongBarIndex = Math.abs(corTotems);
 
-            }
-
-        }
-
-        if (playerJoined) {
-            elapsedTimeNewPlayer += delta;
-            if (elapsedTimeNewPlayer >= duration) {
-                playerJoined = false; // Dejar de dibujar el texto
-                elapsedTimeNewPlayer = 0f;
-            }
-
-            //Ambos PlayerScale son de 128px
-            scoreFont.draw(batch,"Peter de Sistemes Microinformatics i Xarxes s ha unit",cameraX+Player.scale[0]+Player.scale[1],cameraY+screenHeight-100);
-            batch.draw(ballon,cameraX,cameraY+screenHeight-164,Player.scale[0],Player.scale[1]);
-        }
-
-        //batch.draw(frame,(screenWidth)/2,(screenHeight)/2,Player.scale[0],Player.scale[1]);
-        batch.draw(home, 100 + cameraX, 900 + cameraY, 100, 100);
-        if (corTotems > 0) {
-            batch.draw(IPOP.score_bar[corTotems], 800 + cameraX, 950 + cameraY, 750, 100);
-        } else {
-            if (corTotems == 0) {
-                batch.draw(IPOP.score_bar[0], 800 + cameraX, 900 + cameraY, 750, 100);
-            } else {
-                int barWidth = 750;
-                int barHeight = 100;
-                int barX = (int) (800 + cameraX);
-                int barY = (int) (900 + cameraY);
-                int wrongBarIndex = Math.abs(corTotems);
-
-                batch.draw(IPOP.wrong_score_bar[wrongBarIndex], barX, barY, barWidth, barHeight);
-            }
-        }
-
-        drawTotems(activeOnFieldTotems);
-
-        for(int i=0;i<10;i++)
-            if (Gdx.input.isTouched(i)) {
-                Vector3 touchPos = new Vector3();
-                touchPos.set(Gdx.input.getX(i), Gdx.input.getY(i), 0);
-                // traducció de coordenades reals (depen del dispositiu) a 800x480
-                MultiPlayerScreen.camera.unproject(touchPos);
-                if (homeBtn.contains(touchPos.x, touchPos.y)) {
-                    game.setScreen(new MainMenuScreen(game));
+                    batch.draw(IPOP.wrong_score_bar[wrongBarIndex], barX, barY, barWidth, barHeight);
                 }
             }
 
-        batch.end();
+            drawTotems(activeOnFieldTotems);
+
+            for(int i=0;i<10;i++)
+                if (Gdx.input.isTouched(i)) {
+                    Vector3 touchPos = new Vector3();
+                    touchPos.set(Gdx.input.getX(i), Gdx.input.getY(i), 0);
+                    // traducció de coordenades reals (depen del dispositiu) a 800x480
+                    MultiPlayerScreen.camera.unproject(touchPos);
+                    if (homeBtn.contains(touchPos.x, touchPos.y)) {
+                        game.setScreen(new MainMenuScreen(game));
+                    }
+                }
+
+            batch.end();
+        }
     }
 
     private void sendTotemToServer(Totem totem) {
@@ -561,33 +572,35 @@ public class MultiPlayerScreen implements Screen {
         return currentDirection;
     }
     public void walkDirection(String direction, Boolean moving) {
-        double speed = 50000 * Gdx.graphics.getDeltaTime();
+        double speed = 15000 * Gdx.graphics.getDeltaTime();
         if (moving) {
-                if (direction.equals("right")) {
+            switch (direction) {
+                case "right":
                     player = new Animation<>(0.1f, Player.player_right.get(Player.player_character).getKeyFrames());
                     playerRectangle.x += speed * Gdx.graphics.getDeltaTime();
                     Player.transform[0] = (int) playerRectangle.x;
                     Player.transform[1] = (int) playerRectangle.y;
-                }
-                else if (direction.equals("left")) {
+                    break;
+                case "left":
                     player = new Animation<>(0.1f, Player.player_left.get(Player.player_character).getKeyFrames());
                     playerRectangle.x -= speed * Gdx.graphics.getDeltaTime();
                     Player.transform[0] = (int) playerRectangle.x;
                     Player.transform[1] = (int) playerRectangle.y;
-                }
-                else if (direction.equals("up")) {
+                    break;
+                case "up":
                     player = new Animation<>(0.1f, Player.player_up.get(Player.player_character).getKeyFrames());
                     playerRectangle.y += speed * Gdx.graphics.getDeltaTime();
                     Player.transform[0] = (int) playerRectangle.x;
                     Player.transform[1] = (int) playerRectangle.y;
-                }
-                else if (direction.equals("down")) {
+                    break;
+                case "down":
                     player = new Animation<>(0.1f, Player.player_down.get(Player.player_character).getKeyFrames());
                     playerRectangle.y -= speed * Gdx.graphics.getDeltaTime();
                     Player.transform[0] = (int) playerRectangle.x;
                     Player.transform[1] = (int) playerRectangle.y;
 
-                }
+                    break;
+            }
         } else {
             exclamation = new Animation<>(0.2f,ballon_exclamation);
 
@@ -618,6 +631,7 @@ class MyWSListener implements WebSocketListener {
 
     @Override
     public boolean onOpen(WebSocket webSocket) {
+        System.out.println("openWS");
         return false;
     }
 
@@ -630,12 +644,15 @@ class MyWSListener implements WebSocketListener {
     @Override
     public boolean onMessage(WebSocket webSocket, String packet) {
         JSONObject response = new JSONObject(packet);
+        System.out.println(response.toString());
         if (response.getString("game_status").equals("finish")) {
             MultiPlayerScreen.game_status = "finish";
         } else if (response.getString("type").equals("game_totems")) {
-            //PARA HACER PRUEBAS -> MultiPlayerScreen.game_totems = "{\"status\":\"ok\",\"message\":{\"totems\":[{\"idTotem\":1,\"text\":\"Totem 1\",\"cycleLabel\":\"Cycle 1\",\"posX\":100,\"posY\":200,\"width\":50,\"height\":50},{\"idTotem\":2,\"text\":\"Totem 2\",\"cycleLabel\":\"Cycle 2\",\"posX\":150,\"posY\":250,\"width\":60,\"height\":60},{\"idTotem\":3,\"text\":\"Totem 3\",\"cycleLabel\":\"Cycle 3\",\"posX\":200,\"posY\":300,\"width\":70,\"height\":70},{\"idTotem\":4,\"text\":\"Totem 4\",\"cycleLabel\":\"Cycle 4\",\"posX\":250,\"posY\":350,\"width\":80,\"height\":80},{\"idTotem\":5,\"text\":\"Totem 5\",\"cycleLabel\":\"Cycle 5\",\"posX\":300,\"posY\":400,\"width\":90,\"height\":90},{\"idTotem\":6,\"text\":\"Totem 6\",\"cycleLabel\":\"Cycle 6\",\"posX\":350,\"posY\":450,\"width\":100,\"height\":100},{\"idTotem\":7,\"text\":\"Totem 7\",\"cycleLabel\":\"Cycle 7\",\"posX\":400,\"posY\":500,\"width\":110,\"height\":110},{\"idTotem\":8,\"text\":\"Totem 8\",\"cycleLabel\":\"Cycle 8\",\"posX\":450,\"posY\":550,\"width\":120,\"height\":120},{\"idTotem\":9,\"text\":\"Totem 9\",\"cycleLabel\":\"Cycle 9\",\"posX\":500,\"posY\":600,\"width\":130,\"height\":130},{\"idTotem\":10,\"text\":\"Totem 10\",\"cycleLabel\":\"Cycle 10\",\"posX\":550,\"posY\":650,\"width\":140,\"height\":140}]}}\n";
             MultiPlayerScreen.game_totems = response.getString("message");
             System.out.println(MultiPlayerScreen.game_totems);
+        } else if (response.getString("type").equals("players")) {
+            MultiPlayerScreen.players_str = response.getString("message");
+            System.out.println(MultiPlayerScreen.players_str);
         }
         return false;
     }

@@ -7,16 +7,18 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
 
 public class Totem {
-    private float x,y,textX;
-    private int id, height,width;
+    private float x, y, textX;
+    private int id, height, width;
     private Texture image;
-    private String family,ocupacio;
+    private String family, ocupacio;
     private Rectangle textBox;
     private Sound sound;
     private Boolean correctTotem;
     private GlyphLayout glyphLayout;
+
     //Constructor
-    public Totem() { }
+    public Totem() {
+    }
 
     public Totem(int id, float x, float y, int height, int width, Texture image, String family, String ocupacio, Rectangle textBox, GlyphLayout glyphLayout, float textX, Sound sound, Boolean correctTotem) {
         this.id = id;
@@ -111,6 +113,7 @@ public class Totem {
     public String getOcupacio() {
         return ocupacio;
     }
+
     public void setOcupacio(String ocupacio) {
         this.ocupacio = ocupacio;
     }
@@ -126,6 +129,7 @@ public class Totem {
     public GlyphLayout getGlyphLayout() {
         return glyphLayout;
     }
+
     public void setGlyphLayout(GlyphLayout glyphLayout) {
         this.glyphLayout = glyphLayout;
     }

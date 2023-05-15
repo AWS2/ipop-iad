@@ -5,9 +5,9 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
-import com.mygdx.ipop_game.utils.ApiWs;
 import com.mygdx.ipop_game.IPOP;
 import com.mygdx.ipop_game.models.Record;
+import com.mygdx.ipop_game.utils.ApiWs;
 import com.mygdx.ipop_game.utils.WebServiceConstants;
 
 import org.json.JSONArray;
@@ -32,29 +32,29 @@ public class RankingsScreen implements Screen {
         itemBackground = new Texture(Gdx.files.internal("panel-background.png"));
 
         goBack = new Texture(Gdx.files.internal("back-button.png"));
-        goBackBtn = new Rectangle(200 , 400, 100, 100);
+        goBackBtn = new Rectangle(200, 400, 100, 100);
 
         goNext = new Texture(Gdx.files.internal("next-button.png"));
-        goNextBtn = new Rectangle(2000 , 400, 100, 100);
+        goNextBtn = new Rectangle(2000, 400, 100, 100);
 
         mainMenu = new Texture(Gdx.files.internal("menu_button.png"));
-        mainMenuBtn = new Rectangle(25 , 900, 100, 100);
+        mainMenuBtn = new Rectangle(25, 900, 100, 100);
 
-        rankings.add(new Record(1, 100,"Ivan"));
-        rankings.add(new Record(1, 100,"Ivan"));
-        rankings.add(new Record(1, 100,"Ivan"));
-        rankings.add(new Record(1, 100,"Ivan"));
-        rankings.add(new Record(1, 100,"Ivan"));
-        rankings.add(new Record(1, 100,"Ivan"));
-        rankings.add(new Record(1, 100,"Ivan"));
-        rankings.add(new Record(1, 100,"Ivan"));
-        rankings.add(new Record(1, 100,"Ivan"));
+        rankings.add(new Record(1, 100, "Ivan"));
+        rankings.add(new Record(1, 100, "Ivan"));
+        rankings.add(new Record(1, 100, "Ivan"));
+        rankings.add(new Record(1, 100, "Ivan"));
+        rankings.add(new Record(1, 100, "Ivan"));
+        rankings.add(new Record(1, 100, "Ivan"));
+        rankings.add(new Record(1, 100, "Ivan"));
+        rankings.add(new Record(1, 100, "Ivan"));
+        rankings.add(new Record(1, 100, "Ivan"));
 
         try {
             JSONObject json = new JSONObject();
             json.put("start", start);
             json.put("end", end);
-            StringBuffer stbr =  new ApiWs().sendPost(WebServiceConstants.api + "api/get_ranking", json);
+            StringBuffer stbr = new ApiWs().sendPost(WebServiceConstants.api + "api/get_ranking", json);
             JSONObject response = new JSONObject(stbr.toString());
             if (response.getString("status").equals("OK")) {
                 JSONArray message = new JSONArray(response.getString("message"));
@@ -78,18 +78,20 @@ public class RankingsScreen implements Screen {
     }
 
     @Override
-    public void show() {  }
+    public void show() {
+    }
 
 
     int x = 600;
     int start = 0, end = 5, maxRank = 5;
+
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         game.batch.begin();
         game.batch.draw(background, 0, 0, 2400, 1080);
-        game.batch.draw(mainMenu, 25 , 900, 100, 100);
+        game.batch.draw(mainMenu, 25, 900, 100, 100);
         game.batch.draw(itemBackground, 400, 100, 1500, 750);
         game.font.getData().setScale(5.0f);
         System.out.println(rankings.size());
@@ -182,7 +184,8 @@ public class RankingsScreen implements Screen {
 
             default:
                 break;
-        };
+        }
+        ;
 
         game.batch.draw(goBack, 200, 400, 100, 100);
         game.batch.draw(goNext, 2000, 400, 100, 100);
@@ -193,12 +196,12 @@ public class RankingsScreen implements Screen {
             float touchY = Gdx.graphics.getHeight() - Gdx.input.getY();
             if (goNextBtn.contains(touchX, touchY)) {
                 try {
-                    start+=maxRank;
-                    end+=maxRank;
+                    start += maxRank;
+                    end += maxRank;
                     JSONObject json = new JSONObject();
                     json.put("start", start);
                     json.put("end", end);
-                    StringBuffer stbr =  new ApiWs().sendPost(WebServiceConstants.api + "api/get_ranking", json);
+                    StringBuffer stbr = new ApiWs().sendPost(WebServiceConstants.api + "api/get_ranking", json);
                     JSONObject response = new JSONObject(stbr.toString());
                     if (response.getString("status").equals("OK")) {
                         JSONArray message = new JSONArray(response.getString("message"));
@@ -220,12 +223,12 @@ public class RankingsScreen implements Screen {
                 }
             } else if (goBackBtn.contains(touchX, touchY)) {
                 try {
-                    start-=maxRank;
-                    end-=maxRank;
+                    start -= maxRank;
+                    end -= maxRank;
                     JSONObject json = new JSONObject();
                     json.put("start", start);
                     json.put("end", end);
-                    StringBuffer stbr =  new ApiWs().sendPost(WebServiceConstants.api + "api/get_ranking", json);
+                    StringBuffer stbr = new ApiWs().sendPost(WebServiceConstants.api + "api/get_ranking", json);
                     JSONObject response = new JSONObject(stbr.toString());
                     if (response.getString("status").equals("OK")) {
                         JSONArray message = new JSONArray(response.getString("message"));
@@ -253,17 +256,22 @@ public class RankingsScreen implements Screen {
     }
 
     @Override
-    public void resize(int width, int height) {  }
+    public void resize(int width, int height) {
+    }
 
     @Override
-    public void pause() {  }
+    public void pause() {
+    }
 
     @Override
-    public void resume() {  }
+    public void resume() {
+    }
 
     @Override
-    public void hide() {  }
+    public void hide() {
+    }
 
     @Override
-    public void dispose() {  }
+    public void dispose() {
+    }
 }

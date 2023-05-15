@@ -30,7 +30,8 @@ public class IPOP extends Game {
         return instancia;
     }
 
-    public IPOP() {  }
+    public IPOP() {
+    }
 
     public void create() {
         batch = new SpriteBatch();

@@ -1,11 +1,11 @@
 package com.mygdx.ipop_game.ui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.TextInputListener;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.Input.TextInputListener;
 import com.mygdx.ipop_game.IPOP;
 import com.mygdx.ipop_game.models.Player;
 
@@ -51,7 +51,8 @@ public class MainMenuScreen implements Screen, TextInputListener {
     }
 
     @Override
-    public void show() {  }
+    public void show() {
+    }
 
     @Override
     public void render(float delta) {
@@ -59,35 +60,35 @@ public class MainMenuScreen implements Screen, TextInputListener {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         game.batch.begin();
 
-        game.batch.draw(background, 0,0, 2400,1080);
-        game.batch.draw(selectName,900 , 500, 500, 100);
-        game.batch.draw(selectCicle,900 , 390, 500, 100);
-        game.batch.draw(selectCharacter,900 , 280, 500, 100);
+        game.batch.draw(background, 0, 0, 2400, 1080);
+        game.batch.draw(selectName, 900, 500, 500, 100);
+        game.batch.draw(selectCicle, 900, 390, 500, 100);
+        game.batch.draw(selectCharacter, 900, 280, 500, 100);
 
         if (characterSelected && nameSelected && cicleSelected) {
-            game.batch.draw(singlePlayer,900 , 170, 500, 100);
-            game.batch.draw(multiPlayer,900 , 60, 500, 100);
+            game.batch.draw(singlePlayer, 900, 170, 500, 100);
+            game.batch.draw(multiPlayer, 900, 60, 500, 100);
         } else {
-            game.batch.draw(disabledSinglePlayer,900 , 170, 500, 100);
-            game.batch.draw(disabledMultiPlayer,900 , 60, 500, 100);
+            game.batch.draw(disabledSinglePlayer, 900, 170, 500, 100);
+            game.batch.draw(disabledMultiPlayer, 900, 60, 500, 100);
         }
 
-        game.batch.draw(rankings,2100, 800, 150, 150);
+        game.batch.draw(rankings, 2100, 800, 150, 150);
 
         game.font.getData().setScale(3f);
         if (characterSelected) {
-            game.font.draw(game.batch,"Character selected",100 , 300);
-            game.batch.draw(check, 25,250, 75,75);
+            game.font.draw(game.batch, "Character selected", 100, 300);
+            game.batch.draw(check, 25, 250, 75, 75);
         }
 
         if (nameSelected) {
-            game.font.draw(game.batch,"Name selected",100 , 200);
-            game.batch.draw(check, 25,150, 75,75);
+            game.font.draw(game.batch, "Name selected", 100, 200);
+            game.batch.draw(check, 25, 150, 75, 75);
         }
 
         if (cicleSelected) {
-            game.font.draw(game.batch,"Cicle selected",100 , 100);
-            game.batch.draw(check, 25,50, 75,75);
+            game.font.draw(game.batch, "Cicle selected", 100, 100);
+            game.batch.draw(check, 25, 50, 75, 75);
         }
 
 
@@ -101,8 +102,10 @@ public class MainMenuScreen implements Screen, TextInputListener {
                         Player.player_alias = text;
                         MainMenuScreen.nameSelected = true;
                     }
+
                     @Override
-                    public void canceled() { }
+                    public void canceled() {
+                    }
                 }, "Select name", "", "Username");
             } else if (selectCicleBtn.contains(touchX, touchY)) {
                 game.setScreen(new CicleSelectionScreen(game));
@@ -116,7 +119,7 @@ public class MainMenuScreen implements Screen, TextInputListener {
                 if (cicleSelected && nameSelected && characterSelected) {
                     game.setScreen(new MultiPlayerScreen(game));
                 }
-            }else if (rankingsBtn.contains(touchX, touchY)) {
+            } else if (rankingsBtn.contains(touchX, touchY)) {
                 game.setScreen(new RankingsScreen(game));
             }
         }
@@ -124,16 +127,20 @@ public class MainMenuScreen implements Screen, TextInputListener {
     }
 
     @Override
-    public void resize(int width, int height) {  }
+    public void resize(int width, int height) {
+    }
 
     @Override
-    public void pause() {  }
+    public void pause() {
+    }
 
     @Override
-    public void resume() {  }
+    public void resume() {
+    }
 
     @Override
-    public void hide() {  }
+    public void hide() {
+    }
 
     @Override
     public void dispose() {

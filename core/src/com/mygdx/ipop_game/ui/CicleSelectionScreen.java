@@ -35,18 +35,19 @@ public class CicleSelectionScreen implements Screen {
         fourthOcupationBtn = new Rectangle(0, 0, 0, 0);
 
         goBack = new Texture(Gdx.files.internal("back-button.png"));
-        goBackBtn = new Rectangle(200 , 400, 100, 100);
+        goBackBtn = new Rectangle(200, 400, 100, 100);
 
         goNext = new Texture(Gdx.files.internal("next-button.png"));
-        goNextBtn = new Rectangle(2000 , 400, 100, 100);
+        goNextBtn = new Rectangle(2000, 400, 100, 100);
 
         mainMenu = new Texture(Gdx.files.internal("menu_button.png"));
-        mainMenuBtn = new Rectangle(25 , 900, 100, 100);
+        mainMenuBtn = new Rectangle(25, 900, 100, 100);
 
     }
 
     @Override
-    public void show() {  }
+    public void show() {
+    }
 
     int startX = 600;
     int startY = 700;
@@ -58,9 +59,9 @@ public class CicleSelectionScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         game.batch.begin();
-        game.batch.draw(background, 0,0, 2400,1080);
-        game.batch.draw(itemBackground, 450,100, 1500,650);
-        game.batch.draw(mainMenu, 25 , 900, 100, 100);
+        game.batch.draw(background, 0, 0, 2400, 1080);
+        game.batch.draw(itemBackground, 450, 100, 1500, 650);
+        game.batch.draw(mainMenu, 25, 900, 100, 100);
         game.font.getData().setScale(3.0f);
 
         switch (IPOP.families.get(famIndex).getOcupations().size()) {
@@ -78,7 +79,7 @@ public class CicleSelectionScreen implements Screen {
                 break;
             case 3:
                 game.font.draw(game.batch, IPOP.families.get(famIndex).getOcupations().get(0).toUpperCase(), startX, (startY - (marginVertical)));
-                firstOcupationBtn = new Rectangle(startX, (startY - (marginVertical ) - 40), 1200, 50);
+                firstOcupationBtn = new Rectangle(startX, (startY - (marginVertical) - 40), 1200, 50);
 
                 game.font.draw(game.batch, IPOP.families.get(famIndex).getOcupations().get(1).toUpperCase(), startX, (startY - (marginVertical * 2)));
                 secondOcupationBtn = new Rectangle(startX, (startY - (marginVertical * 2) - 40), 1200, 50);
@@ -102,19 +103,25 @@ public class CicleSelectionScreen implements Screen {
                 break;
         }
 
-        game.batch.draw(goBack,200 , 400, 100, 100);
-        game.batch.draw(goNext,2000 , 400, 100, 100);
+        game.batch.draw(goBack, 200, 400, 100, 100);
+        game.batch.draw(goNext, 2000, 400, 100, 100);
 
 
         if (Gdx.input.justTouched()) {
             float touchX = Gdx.input.getX();
             float touchY = Gdx.graphics.getHeight() - Gdx.input.getY();
             if (goNextBtn.contains(touchX, touchY)) {
-                if (famIndex == IPOP.families.size() - 1) { famIndex = 0; }
-                else {famIndex++;}
+                if (famIndex == IPOP.families.size() - 1) {
+                    famIndex = 0;
+                } else {
+                    famIndex++;
+                }
             } else if (goBackBtn.contains(touchX, touchY)) {
-                if (famIndex == 0) { famIndex = IPOP.families.size() - 1; }
-                else { famIndex--; }
+                if (famIndex == 0) {
+                    famIndex = IPOP.families.size() - 1;
+                } else {
+                    famIndex--;
+                }
             } else if (firstOcupationBtn.contains(touchX, touchY)) {
                 Player.player_ocupation = IPOP.families.get(famIndex).getOcupations().get(0);
                 MainMenuScreen.cicleSelected = true;
@@ -139,16 +146,20 @@ public class CicleSelectionScreen implements Screen {
     }
 
     @Override
-    public void resize(int width, int height) {  }
+    public void resize(int width, int height) {
+    }
 
     @Override
-    public void pause() {  }
+    public void pause() {
+    }
 
     @Override
-    public void resume() {  }
+    public void resume() {
+    }
 
     @Override
-    public void hide() {  }
+    public void hide() {
+    }
 
     @Override
     public void dispose() {

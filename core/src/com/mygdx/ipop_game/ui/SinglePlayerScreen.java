@@ -75,12 +75,12 @@ public class SinglePlayerScreen implements Screen {
         camera.setToOrtho(false, screenWidth, screenHeight);
 
         //TouchPads
-        upPad = new Rectangle(0, screenHeight*2/3, screenWidth, screenHeight);
-        downPad = new Rectangle(0, 0, screenWidth, screenHeight/3);
-        leftPad = new Rectangle(0, 0, screenWidth/3, screenHeight);
-        rightPad = new Rectangle(screenWidth*2/3, 0, screenWidth/3, screenHeight);
+        upPad = new Rectangle(0, screenHeight * 2 / 3, screenWidth, screenHeight);
+        downPad = new Rectangle(0, 0, screenWidth, screenHeight / 3);
+        leftPad = new Rectangle(0, 0, screenWidth / 3, screenHeight);
+        rightPad = new Rectangle(screenWidth * 2 / 3, 0, screenWidth / 3, screenHeight);
 
-        homeBtn = new Rectangle(100,900,100,100);
+        homeBtn = new Rectangle(100, 900, 100, 100);
 
         font.getData().setScale(3);
         font.setColor(Color.RED);
@@ -115,12 +115,12 @@ public class SinglePlayerScreen implements Screen {
                 }
 
                 System.out.println(totemsCorrectes);
-                Totem totem = new Totem(1, MathUtils.random(screenWidth-300),MathUtils.random(screenHeight-300),192,192,totemSprite,"Informatica",ocupacio,totemBox,glyphLayout,textX,dropSound,false);
-                totemBox.setPosition(totem.getX(),totem.getY()+50);
+                Totem totem = new Totem(1, MathUtils.random(screenWidth - 300), MathUtils.random(screenHeight - 300), 192, 192, totemSprite, "Informatica", ocupacio, totemBox, glyphLayout, textX, dropSound, false);
+                totemBox.setPosition(totem.getX(), totem.getY() + 50);
                 totemBox.setWidth(300);
-                totem.setTextX(totemBox.getX()+totemBox.getWidth());
+                totem.setTextX(totemBox.getX() + totemBox.getWidth());
                 //Layout
-                glyphLayout.setText(font,ocupacio);
+                glyphLayout.setText(font, ocupacio);
                 for (int j = 0; j < totemsCorrectes.size(); j++) {
                     if (j < activeOnFieldTotems.size() && activeOnFieldTotems.get(j).getX() != totem.getX() && activeOnFieldTotems.get(j).getY() != totem.getY()) {
                         activeOnFieldTotems.add(totem);
@@ -134,11 +134,11 @@ public class SinglePlayerScreen implements Screen {
             } else {
                 String ocupacio = llistaOcupacions(Player.player_ocupation);
 
-                glyphLayout.setText(font,ocupacio);
-                Totem totem = new Totem(1, MathUtils.random(screenWidth-300),MathUtils.random(screenHeight-300),192,192    ,totemSprite,"Informatica",ocupacio,totemBox,glyphLayout,textX,cyndaquilSound,true);
-                totemBox.setPosition(totem.getX(),totem.getY()+50);
+                glyphLayout.setText(font, ocupacio);
+                Totem totem = new Totem(1, MathUtils.random(screenWidth - 300), MathUtils.random(screenHeight - 300), 192, 192, totemSprite, "Informatica", ocupacio, totemBox, glyphLayout, textX, cyndaquilSound, true);
+                totemBox.setPosition(totem.getX(), totem.getY() + 50);
                 totemBox.setWidth(300);
-                totem.setTextX(totemBox.getX()+totemBox.getWidth());
+                totem.setTextX(totemBox.getX() + totemBox.getWidth());
                 //Layout
                 activeOnFieldTotems.add(totem);
                 ocupacioInicial.add(activeOnFieldTotems.get(i).getOcupacio());
@@ -147,11 +147,11 @@ public class SinglePlayerScreen implements Screen {
         }
     }
 
-    private void drawTotems (ArrayList<Totem> activeOnFieldTotems) {
+    private void drawTotems(ArrayList<Totem> activeOnFieldTotems) {
         for (int i = 0; i < activeOnFieldTotems.size(); i++) {
             //Dibujar el Totem y la Imagen
-            batch.draw(activeOnFieldTotems.get(i).getImage(),activeOnFieldTotems.get(i).getX(),activeOnFieldTotems.get(i).getY());
-            font.draw(batch,activeOnFieldTotems.get(i).getGlyphLayout(),activeOnFieldTotems.get(i).getTextX(),activeOnFieldTotems.get(i).getTextBox().getY());
+            batch.draw(activeOnFieldTotems.get(i).getImage(), activeOnFieldTotems.get(i).getX(), activeOnFieldTotems.get(i).getY());
+            font.draw(batch, activeOnFieldTotems.get(i).getGlyphLayout(), activeOnFieldTotems.get(i).getTextX(), activeOnFieldTotems.get(i).getTextBox().getY());
             //batch.draw(activeOnFieldTotems.get(0).getImage(),activeOnFieldTotems.get(0).getX(),activeOnFieldTotems.get(0).getY());
             //font.draw(batch,glyphLayout,textX,textBox.getY());
             float newTextX = activeOnFieldTotems.get(i).getTextX() - (scrollSpeed * Gdx.graphics.getDeltaTime());
@@ -164,7 +164,7 @@ public class SinglePlayerScreen implements Screen {
             float updateInterval = 0.01f;
             //todo Revisar porque no me hace las pasadas del substring
             if (activeOnFieldTotems.get(i).getTextBox().x > activeOnFieldTotems.get(i).getTextX() + activeOnFieldTotems.get(i).getGlyphLayout().width) {
-                activeOnFieldTotems.get(i).setTextX(activeOnFieldTotems.get(i).getTextBox().x+activeOnFieldTotems.get(i).getTextBox().getWidth());
+                activeOnFieldTotems.get(i).setTextX(activeOnFieldTotems.get(i).getTextBox().x + activeOnFieldTotems.get(i).getTextBox().getWidth());
                 //Tornar a generar el String inicial
                 elapsedTime = 0f; // reiniciar el temporizador
                 activeOnFieldTotems.get(i).setOcupacio(ocupacioInicial.get(i));
@@ -173,18 +173,18 @@ public class SinglePlayerScreen implements Screen {
                 elapsedTime += Gdx.graphics.getDeltaTime();
                 if (elapsedTime >= updateInterval) {
                     if (activeOnFieldTotems.get(i).getOcupacio().length() > 1) {
-                        activeOnFieldTotems.get(i).getGlyphLayout().setText(font,activeOnFieldTotems.get(i).getOcupacio().substring(1));
+                        activeOnFieldTotems.get(i).getGlyphLayout().setText(font, activeOnFieldTotems.get(i).getOcupacio().substring(1));
                         if (activeOnFieldTotems.get(i).getTextBox().x > activeOnFieldTotems.get(i).getTextX() + activeOnFieldTotems.get(i).getGlyphLayout().width) {
 
                             String substring = activeOnFieldTotems.get(i).getOcupacio().substring(1);
                             activeOnFieldTotems.get(i).setOcupacio(substring);
                             substring = activeOnFieldTotems.get(i).getOcupacio().substring(1);
-                            activeOnFieldTotems.get(i).getGlyphLayout().setText(font,substring);
+                            activeOnFieldTotems.get(i).getGlyphLayout().setText(font, substring);
                             System.out.println(substring);
                             activeOnFieldTotems.get(i).setTextX(activeOnFieldTotems.get(i).getTextX() - scrollSpeed * Gdx.graphics.getDeltaTime());
                             elapsedTime = 0f; // reiniciar el temporizador
                         } else {
-                            activeOnFieldTotems.get(i).getGlyphLayout().setText(font,ocupacioInicial.get(i));
+                            activeOnFieldTotems.get(i).getGlyphLayout().setText(font, ocupacioInicial.get(i));
 
                         }
 
@@ -229,8 +229,10 @@ public class SinglePlayerScreen implements Screen {
 
         return ocupacions.get(pasada);
     }
+
     @Override
-    public void show() {  }
+    public void show() {
+    }
 
     @Override
     public void render(float delta) {
@@ -241,44 +243,44 @@ public class SinglePlayerScreen implements Screen {
 
         if (corTotems == TOTEMS_TO_REACH) {
             game.setScreen(new EndGameScreen(game, new GameRecord(
-                    corTotems,totalTotems, Player.player_ocupation, Player.player_alias, startPlaying, Instant.now()
+                    corTotems, totalTotems, Player.player_ocupation, Player.player_alias, startPlaying, Instant.now()
             )));
         }
 
-        if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             direction = "left";
             moving = true;
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.RIGHT))  {
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             direction = "right";
             moving = true;
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.UP)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
             direction = "up";
             moving = true;
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             direction = "down";
             moving = true;
         }
         currentDirection = direction;
         direction = virtual_joystick_control();
-        walkDirection(direction,moving);
+        walkDirection(direction, moving);
 
         //Limit screen movement
-        if(playerRectangle.x < 0) playerRectangle.x = 0;
-        if(playerRectangle.x > screenWidth - 150) playerRectangle.x = screenWidth - 150;
-        if(playerRectangle.y < 0) playerRectangle.y = 0;
-        if(playerRectangle.y > screenHeight - 150) playerRectangle.y = screenHeight - 150;
+        if (playerRectangle.x < 0) playerRectangle.x = 0;
+        if (playerRectangle.x > screenWidth - 150) playerRectangle.x = screenWidth - 150;
+        if (playerRectangle.y < 0) playerRectangle.y = 0;
+        if (playerRectangle.y > screenHeight - 150) playerRectangle.y = screenHeight - 150;
 
         //Revisar que no haya colision
         for (int i = 0; i < activeOnFieldTotems.size(); i++) {
             //Que la X no sea igual o menor + la width
 
             if ((playerRectangle.x >= activeOnFieldTotems.get(i).getX()) && playerRectangle.x <=
-                    activeOnFieldTotems.get(i).getX()+activeOnFieldTotems.get(i).getWidth()) {
+                    activeOnFieldTotems.get(i).getX() + activeOnFieldTotems.get(i).getWidth()) {
                 if ((playerRectangle.y >= activeOnFieldTotems.get(i).getY()) && playerRectangle.y <=
-                        activeOnFieldTotems.get(i).getY()+activeOnFieldTotems.get(i).getHeight()) {
+                        activeOnFieldTotems.get(i).getY() + activeOnFieldTotems.get(i).getHeight()) {
                     //Limita el sonido
                     if (!soundPlayed) {
                         activeOnFieldTotems.get(i).getSound().play();
@@ -305,24 +307,24 @@ public class SinglePlayerScreen implements Screen {
         }
 
         batch.begin();
-        batch.draw(background,0,0);
+        batch.draw(background, 0, 0);
         stateTime += Gdx.graphics.getDeltaTime(); // Accumulate elapsed animation time
-        TextureRegion frame = player.getKeyFrame(stateTime,true);
-        batch.draw(frame,playerRectangle.getX(),playerRectangle.getY(),Player.scale[0],Player.scale[1]);
-        batch.draw(home, 100,900,100,100);
-        if (corTotems > 0){
-            batch.draw(IPOP.score_bar[corTotems], 800,950,750,100);
+        TextureRegion frame = player.getKeyFrame(stateTime, true);
+        batch.draw(frame, playerRectangle.getX(), playerRectangle.getY(), Player.scale[0], Player.scale[1]);
+        batch.draw(home, 100, 900, 100, 100);
+        if (corTotems > 0) {
+            batch.draw(IPOP.score_bar[corTotems], 800, 950, 750, 100);
         } else {
             if (corTotems == 0) {
-                batch.draw(IPOP.score_bar[0], 800,900,750,100);
+                batch.draw(IPOP.score_bar[0], 800, 900, 750, 100);
             } else {
-                batch.draw(IPOP.wrong_score_bar[Math.abs(corTotems)], 800,900,750,100);
+                batch.draw(IPOP.wrong_score_bar[Math.abs(corTotems)], 800, 900, 750, 100);
             }
         }
 
         drawTotems(activeOnFieldTotems);
 
-        for(int i=0;i<10;i++)
+        for (int i = 0; i < 10; i++)
             if (Gdx.input.isTouched(i)) {
                 Vector3 touchPos = new Vector3();
                 touchPos.set(Gdx.input.getX(i), Gdx.input.getY(i), 0);
@@ -335,8 +337,9 @@ public class SinglePlayerScreen implements Screen {
 
         batch.end();
     }
+
     protected String virtual_joystick_control() {
-        for(int i=0;i<10;i++)
+        for (int i = 0; i < 10; i++)
             if (Gdx.input.isTouched(i)) {
                 Vector3 touchPos = new Vector3();
                 touchPos.set(Gdx.input.getX(i), Gdx.input.getY(i), 0);
@@ -358,21 +361,19 @@ public class SinglePlayerScreen implements Screen {
             }
         return currentDirection;
     }
+
     public void walkDirection(String direction, Boolean moving) {
         if (moving) {
             if (direction.equals("right")) {
                 player = new Animation<>(0.1f, Player.player_right.get(Player.player_character).getKeyFrames());
                 playerRectangle.x += 500 * Gdx.graphics.getDeltaTime();
-            }
-            else if (direction.equals("left")) {
+            } else if (direction.equals("left")) {
                 player = new Animation<>(0.1f, Player.player_left.get(Player.player_character).getKeyFrames());
                 playerRectangle.x -= 500 * Gdx.graphics.getDeltaTime();
-            }
-            else if (direction.equals("up")) {
+            } else if (direction.equals("up")) {
                 player = new Animation<>(0.1f, Player.player_up.get(Player.player_character).getKeyFrames());
                 playerRectangle.y += 500 * Gdx.graphics.getDeltaTime();
-            }
-            else if (direction.equals("down")) {
+            } else if (direction.equals("down")) {
                 player = new Animation<>(0.1f, Player.player_down.get(Player.player_character).getKeyFrames());
                 playerRectangle.y -= 500 * Gdx.graphics.getDeltaTime();
             }
@@ -382,16 +383,20 @@ public class SinglePlayerScreen implements Screen {
     }
 
     @Override
-    public void resize(int width, int height) {  }
+    public void resize(int width, int height) {
+    }
 
     @Override
-    public void pause() {  }
+    public void pause() {
+    }
 
     @Override
-    public void resume() {  }
+    public void resume() {
+    }
 
     @Override
-    public void hide() {  }
+    public void hide() {
+    }
 
     @Override
     public void dispose() {

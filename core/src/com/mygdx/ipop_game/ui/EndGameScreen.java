@@ -1,16 +1,12 @@
 package com.mygdx.ipop_game.ui;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Json;
 import com.mygdx.ipop_game.IPOP;
 import com.mygdx.ipop_game.models.GameRecord;
-import com.mygdx.ipop_game.models.Player;
 import com.mygdx.ipop_game.models.Record;
 import com.mygdx.ipop_game.utils.ApiWs;
 import com.mygdx.ipop_game.utils.WebServiceConstants;
@@ -46,14 +42,16 @@ public class EndGameScreen implements Screen {
             saveScore = new Texture(Gdx.files.internal("go_to_menu.png"));
             playerWon = false;
         }
-        saveScoreBtn = new Rectangle(920 , 50, 450, 125);
+        saveScoreBtn = new Rectangle(920, 50, 450, 125);
 
     }
 
     @Override
-    public void show() {  }
+    public void show() {
+    }
 
     int x = 600;
+
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -61,7 +59,7 @@ public class EndGameScreen implements Screen {
         game.batch.begin();
         game.batch.draw(background, 0, 0, 2400, 1080);
         game.batch.draw(itemBackground, 400, 100, 1500, 750);
-        game.batch.draw(saveScore, 920 , 50, 450, 125);
+        game.batch.draw(saveScore, 920, 50, 450, 125);
         game.font.getData().setScale(5.0f);
         long segundos = Duration.between(gr.timeStart, gr.timeEnd).getSeconds();
         game.font.draw(
@@ -69,7 +67,7 @@ public class EndGameScreen implements Screen {
                 "Username: " + gr.aliasPlayer,
                 x, 700
         );
-        int score = calcularPuntuacion(gr.correctTotems, (gr.totalTotems-gr.correctTotems), (int) segundos);
+        int score = calcularPuntuacion(gr.correctTotems, (gr.totalTotems - gr.correctTotems), (int) segundos);
         game.font.draw(
                 game.batch,
                 "Score:  " + score,
@@ -100,7 +98,7 @@ public class EndGameScreen implements Screen {
                         json.put("wrongTotems", gr.totalTotems - gr.correctTotems);
                         json.put("nameCycle", gr.playerOcupation);
                         System.out.println(json);
-                        StringBuffer stb = new ApiWs().sendPost(WebServiceConstants.api + "api/set_ranking",json);
+                        StringBuffer stb = new ApiWs().sendPost(WebServiceConstants.api + "api/set_ranking", json);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -128,17 +126,22 @@ public class EndGameScreen implements Screen {
     }
 
     @Override
-    public void resize(int width, int height) {  }
+    public void resize(int width, int height) {
+    }
 
     @Override
-    public void pause() {  }
+    public void pause() {
+    }
 
     @Override
-    public void resume() {  }
+    public void resume() {
+    }
 
     @Override
-    public void hide() {  }
+    public void hide() {
+    }
 
     @Override
-    public void dispose() {  }
+    public void dispose() {
+    }
 }

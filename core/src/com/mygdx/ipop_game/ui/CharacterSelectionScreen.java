@@ -11,7 +11,7 @@ import com.mygdx.ipop_game.models.Player;
 
 public class CharacterSelectionScreen implements Screen {
 
-    private Texture mainMenu,background, itemBackground, goBack, goNext, select;
+    private Texture mainMenu, background, itemBackground, goBack, goNext, select;
 
     private Rectangle mainMenuBtn, goBackBtn, goNextBtn, selectBtn;
     final IPOP game;
@@ -24,13 +24,13 @@ public class CharacterSelectionScreen implements Screen {
         itemBackground = new Texture(Gdx.files.internal("panel-background.png"));
 
         goBack = new Texture(Gdx.files.internal("back-button.png"));
-        goBackBtn = new Rectangle(200 , 400, 100, 100);
+        goBackBtn = new Rectangle(200, 400, 100, 100);
 
         goNext = new Texture(Gdx.files.internal("next-button.png"));
-        goNextBtn = new Rectangle(2000 , 400, 100, 100);
+        goNextBtn = new Rectangle(2000, 400, 100, 100);
 
         mainMenu = new Texture(Gdx.files.internal("menu_button.png"));
-        mainMenuBtn = new Rectangle(25 , 900, 100, 100);
+        mainMenuBtn = new Rectangle(25, 900, 100, 100);
 
         select = new Texture(Gdx.files.internal("select_button.png"));
         selectBtn = new Rectangle(850, 70, 600, 115);
@@ -38,7 +38,8 @@ public class CharacterSelectionScreen implements Screen {
     }
 
     @Override
-    public void show() {  }
+    public void show() {
+    }
 
     @Override
     public void render(float delta) {
@@ -48,7 +49,7 @@ public class CharacterSelectionScreen implements Screen {
         stateTime += Gdx.graphics.getDeltaTime();
         TextureRegion frame = Player.player_show_room.get(Player.player_character).getKeyFrame(stateTime, true);
         game.batch.draw(background, 0, 0, 2400, 1080);
-        game.batch.draw(mainMenu, 25 , 900, 100, 100);
+        game.batch.draw(mainMenu, 25, 900, 100, 100);
         game.batch.draw(itemBackground, 400, 100, 1500, 650);
         game.batch.draw(select, 850, 70, 600, 115);
         game.font.getData().setScale(3.0f);
@@ -69,11 +70,15 @@ public class CharacterSelectionScreen implements Screen {
             if (goNextBtn.contains(touchX, touchY)) {
                 if (Player.player_character == Player.player_show_room.size() - 1) {
                     Player.player_character = 0;
-                } else { Player.player_character++;}
+                } else {
+                    Player.player_character++;
+                }
             } else if (goBackBtn.contains(touchX, touchY)) {
                 if (Player.player_character == 0) {
                     Player.player_character = Player.player_show_room.size() - 1;
-                } else { Player.player_character--;}
+                } else {
+                    Player.player_character--;
+                }
             } else if (mainMenuBtn.contains(touchX, touchY)) {
                 game.setScreen(new MainMenuScreen(game));
             } else if (selectBtn.contains(touchX, touchY)) {
@@ -85,17 +90,22 @@ public class CharacterSelectionScreen implements Screen {
     }
 
     @Override
-    public void resize(int width, int height) {  }
+    public void resize(int width, int height) {
+    }
 
     @Override
-    public void pause() {  }
+    public void pause() {
+    }
 
     @Override
-    public void resume() {  }
+    public void resume() {
+    }
 
     @Override
-    public void hide() {  }
+    public void hide() {
+    }
 
     @Override
-    public void dispose() {  }
+    public void dispose() {
+    }
 }

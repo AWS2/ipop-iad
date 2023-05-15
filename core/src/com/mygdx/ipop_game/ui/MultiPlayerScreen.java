@@ -121,8 +121,7 @@ public class MultiPlayerScreen implements Screen {
         ballon_exclamation[7] = new TextureRegion(ballons, 329, 0, 47, 50);
         exclamation = new Animation<>(0.2f,ballon_exclamation);
         players = new ArrayList<>();
-        players.add(new Player("Manolo",0, new int[]{1050, 350}));
-        players.add(new Player("Ramon",0, new int[]{100, 100}));
+        players.add(new Player("Manolo",1, new int[]{1050, 350}));
         if (Gdx.app.getType() == Application.ApplicationType.Android)
             // en Android el host és accessible per 10.0.2.2
             address = "10.0.2.2";
@@ -456,10 +455,12 @@ public class MultiPlayerScreen implements Screen {
                 //batch.draw(playerArray.);
                 playerArray.players_character = 1;
                 Player.player_down.get(0).getKeyFrameIndex(1);
-                batch.draw(Player.player_down.get(0).getKeyFrames()[1],Player.scale[0],Player.scale[1],playerArray.players_transform[0],playerArray.players_transform[1]);
+                batch.draw(Player.player_down.get(0).getKeyFrames()[1],playerArray.players_transform[0],playerArray.players_transform[1],Player.scale[0],Player.scale[1]);
+                characterFont.draw(batch,playerArray.players_alias,100,100);
+
             } else {
                 playerArray.players_character = 0;
-                batch.draw(Player.player_down.get(1).getKeyFrames()[1],Player.scale[0],Player.scale[1],playerArray.players_transform[0],playerArray.players_transform[1]);
+                batch.draw(Player.player_down.get(1).getKeyFrames()[1],playerArray.players_transform[0],playerArray.players_transform[1],Player.scale[0],Player.scale[1]);
 
             }
 
@@ -617,6 +618,7 @@ class MyWSListener implements WebSocketListener {
         } else if (response.getString("type").equals("game_totems")) {
             //PARA HACER PRUEBAS -> MultiPlayerScreen.game_totems = "{\"status\":\"ok\",\"message\":{\"totems\":[{\"idTotem\":1,\"text\":\"Totem 1\",\"cycleLabel\":\"Cycle 1\",\"posX\":100,\"posY\":200,\"width\":50,\"height\":50},{\"idTotem\":2,\"text\":\"Totem 2\",\"cycleLabel\":\"Cycle 2\",\"posX\":150,\"posY\":250,\"width\":60,\"height\":60},{\"idTotem\":3,\"text\":\"Totem 3\",\"cycleLabel\":\"Cycle 3\",\"posX\":200,\"posY\":300,\"width\":70,\"height\":70},{\"idTotem\":4,\"text\":\"Totem 4\",\"cycleLabel\":\"Cycle 4\",\"posX\":250,\"posY\":350,\"width\":80,\"height\":80},{\"idTotem\":5,\"text\":\"Totem 5\",\"cycleLabel\":\"Cycle 5\",\"posX\":300,\"posY\":400,\"width\":90,\"height\":90},{\"idTotem\":6,\"text\":\"Totem 6\",\"cycleLabel\":\"Cycle 6\",\"posX\":350,\"posY\":450,\"width\":100,\"height\":100},{\"idTotem\":7,\"text\":\"Totem 7\",\"cycleLabel\":\"Cycle 7\",\"posX\":400,\"posY\":500,\"width\":110,\"height\":110},{\"idTotem\":8,\"text\":\"Totem 8\",\"cycleLabel\":\"Cycle 8\",\"posX\":450,\"posY\":550,\"width\":120,\"height\":120},{\"idTotem\":9,\"text\":\"Totem 9\",\"cycleLabel\":\"Cycle 9\",\"posX\":500,\"posY\":600,\"width\":130,\"height\":130},{\"idTotem\":10,\"text\":\"Totem 10\",\"cycleLabel\":\"Cycle 10\",\"posX\":550,\"posY\":650,\"width\":140,\"height\":140}]}}\n";
             MultiPlayerScreen.game_totems = response.getString("message");
+            System.out.println(MultiPlayerScreen.game_totems);
         }
         return false;
     }

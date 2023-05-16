@@ -110,6 +110,7 @@ public class MultiPlayerScreen implements Screen {
         scoreFont.getData().setLineHeight(3);
         scoreFont.setColor(Color.WHITE);
 
+        //TextureRegion de la animacion de la exclamacion
         ballon_exclamation[0] = new TextureRegion(ballons, 0, 0, 47, 50);
         ballon_exclamation[1] = new TextureRegion(ballons, 47, 0, 47, 50);
         ballon_exclamation[2] = new TextureRegion(ballons, 94, 0, 47, 50);
@@ -120,6 +121,8 @@ public class MultiPlayerScreen implements Screen {
         ballon_exclamation[7] = new TextureRegion(ballons, 329, 0, 47, 50);
         exclamation = new Animation<>(0.2f,ballon_exclamation);
         players = new ArrayList<>();
+
+        //Totems que estaran en el campo
         activeOnFieldTotems = new ArrayList<>();
         if (Gdx.app.getType() == Application.ApplicationType.Android)
             // en Android el host és accessible per 10.0.2.2
@@ -144,6 +147,7 @@ public class MultiPlayerScreen implements Screen {
     }
 
     public void updateTotemFromServer() {
+        //Coge los totems desde el servidor en caso de no tener totems
         if (MultiPlayerScreen.game_totems == null) { return; }
         JSONObject response = new JSONObject(MultiPlayerScreen.game_totems);
         JSONArray totemsArray = response.getJSONObject("message").getJSONArray("totems");
@@ -167,12 +171,14 @@ public class MultiPlayerScreen implements Screen {
             totem.setTextX(totemBox.getX()+totemBox.getWidth());
             totemsList.add(totem);
         }
+        //Limpia los que hubiera y genera los proporcionados por el servidor
         activeOnFieldTotems.clear();
         activeOnFieldTotems = totemsList;
 
     }
 
     public void updatePlayersFromServer() {
+        //Los jugadores tambien busca sus posiciones desde el servidor
         if (MultiPlayerScreen.players_str == null) { return; }
         JSONObject response = new JSONObject(MultiPlayerScreen.players_str);
         JSONArray playersArray = response.getJSONObject("message").getJSONArray("players");
@@ -182,7 +188,7 @@ public class MultiPlayerScreen implements Screen {
             JSONObject playerObject = playersArray.getJSONObject(i);
             String player_alias = playerObject.getString("name");
             int player_character = playerObject.getInt("spriteSelected");
-            int[] player_transform = new int[]{playerObject.getInt("posZ"), playerObject.getInt("posY")};
+            int[] player_transform = new int[]{playerObject.getInt("posX"), playerObject.getInt("posY")};
             playersList.add(new Player(
                     player_alias,
                     player_character,
@@ -193,7 +199,7 @@ public class MultiPlayerScreen implements Screen {
         players = playersList;
     }
 
-    //Metodo que llamaremos cada vez que el usuario colisione contra el Totem correcto hasta 5 veces
+    //Generacion totem Local
     private void generacioTotems() {
         for (int i = 0; i < 2; i++) {
 
@@ -205,22 +211,28 @@ public class MultiPlayerScreen implements Screen {
                     Rectangle totemBox = new Rectangle();
                     GlyphLayout glyphLayout = new GlyphLayout();
                     String ocupacio = llistaOcupacions(Player.player_ocupation);
-
+                    //Para saber el tamaño del texto y asignarle ya un color
                     glyphLayout.setText(font,ocupacio);
+                    //Calcular la X y la Y del Totem random
                     Vector2 totemPosition = new Vector2(MathUtils.random((background.getWidth())-300),MathUtils.random((background.getHeight())-300));
+                    //Constructor
                     Totem totem = new Totem(i+j,totemPosition.x,totemPosition.y,192,192,totemSprite,"Informatica",ocupacio,totemBox,glyphLayout,textX,cyndaquilSound,true);
+                    //TotemBox es la caja donde añadiremos el texto
                     totemBox.setPosition(totem.getX(),totem.getY()+50);
                     totemBox.setWidth(300);
                     totem.setTextX(totemBox.getX()+totemBox.getWidth());
                     //Layout
+                    //Añadimos el Totem al Array de Totems activos
                     activeOnFieldTotems.add(totem);
                     ocupacioInicial.add(activeOnFieldTotems.get(j).getOcupacio());
                     //totemsCorrectes.add(totem);
+
+                    //Cambiamos el valor del texto del siguiente totem
                     pasada++;
                 }
             } else {
                 for (int j = 0; j < 5; j++) {
-
+                    //Totem incorrectes
                     Rectangle totemBox = new Rectangle();
                     GlyphLayout glyphLayout = new GlyphLayout();
                     String ocupacio = "";
@@ -251,59 +263,60 @@ public class MultiPlayerScreen implements Screen {
     }
 
     private void drawTotems (ArrayList<Totem> activeOnFieldTotems) {
-        for (int i = 0; i < activeOnFieldTotems.size(); i++) {
-            //Dibujar el Totem y la Imagen
-            batch.draw(activeOnFieldTotems.get(i).getImage(),activeOnFieldTotems.get(i).getX(),activeOnFieldTotems.get(i).getY());
-            font.draw(batch,activeOnFieldTotems.get(i).getGlyphLayout(),activeOnFieldTotems.get(i).getTextX(),activeOnFieldTotems.get(i).getTextBox().getY());
-            //batch.draw(activeOnFieldTotems.get(0).getImage(),activeOnFieldTotems.get(0).getX(),activeOnFieldTotems.get(0).getY());
-            //font.draw(batch,glyphLayout,textX,textBox.getY());
-            float newTextX = activeOnFieldTotems.get(i).getTextX() - (scrollSpeed * Gdx.graphics.getDeltaTime());
-            activeOnFieldTotems.get(i).setTextX(newTextX);
-            //activeOnFieldTotems.get(i).setTextX(activeOnFieldTotems.get(i).getTextX() -= scrollSpeed * Gdx.graphics.getDeltaTime()) ;
+        //Recorremos los totems que nos hayan pasado
+        for (Totem totem : activeOnFieldTotems) {
+            // Dibujar el Totem y su Texto
+            batch.draw(totem.getImage(), totem.getX(), totem.getY());
+            font.draw(batch, totem.getGlyphLayout(), totem.getTextX(), totem.getTextBox().getY());
 
+            // Esta variable es la que calcula el desplazamiento del Texto
+            float newTextX = totem.getTextX() - (scrollSpeed * Gdx.graphics.getDeltaTime());
+            totem.setTextX(newTextX);
 
+            // Parámetros que calculan el tiempo
             float elapsedTime = 0f;
-            //Revisar aixo i quan es va actualitzant realment
             float updateInterval = 0.01f;
-            //todo Revisar porque no me hace las pasadas del substring
-            if (activeOnFieldTotems.get(i).getTextBox().x > activeOnFieldTotems.get(i).getTextX() + activeOnFieldTotems.get(i).getGlyphLayout().width) {
-                activeOnFieldTotems.get(i).setTextX(activeOnFieldTotems.get(i).getTextBox().x+activeOnFieldTotems.get(i).getTextBox().getWidth());
-                //Tornar a generar el String inicial
-                elapsedTime = 0f; // reiniciar el temporizador
-                activeOnFieldTotems.get(i).setOcupacio(ocupacioInicial.get(i));
+
+            if (totem.getTextBox().x > totem.getTextX() + totem.getGlyphLayout().width) {
+                // Si el Texto ha salido completamente de la caja de texto, lo reiniciamos al inicio
+                //Basicamente el efecto de volver a empezar
+                totem.setTextX(totem.getTextBox().x + totem.getTextBox().getWidth());
+                elapsedTime = 0f; // Reiniciar el temporizador
+                totem.setOcupacio(ocupacioInicial.get(activeOnFieldTotems.indexOf(totem)));
             } else {
-                // actualizar solo si ha pasado suficiente tiempo
                 elapsedTime += Gdx.graphics.getDeltaTime();
+                //Cada 0.1 segundos se hace el siguiente calculo
                 if (elapsedTime >= updateInterval) {
-                    if (activeOnFieldTotems.get(i).getOcupacio().length() > 1) {
-                        activeOnFieldTotems.get(i).getGlyphLayout().setText(font,activeOnFieldTotems.get(i).getOcupacio().substring(1));
-                        if (activeOnFieldTotems.get(i).getTextBox().x > activeOnFieldTotems.get(i).getTextX() + activeOnFieldTotems.get(i).getGlyphLayout().width) {
-
-                            String substring = activeOnFieldTotems.get(i).getOcupacio().substring(1);
-                            activeOnFieldTotems.get(i).setOcupacio(substring);
-                            substring = activeOnFieldTotems.get(i).getOcupacio().substring(1);
-                            activeOnFieldTotems.get(i).getGlyphLayout().setText(font,substring);
-
-                            activeOnFieldTotems.get(i).setTextX(activeOnFieldTotems.get(i).getTextX() - scrollSpeed * Gdx.graphics.getDeltaTime());
-                            elapsedTime = 0f; // reiniciar el temporizador
+                    if (totem.getOcupacio().length() > 1) {
+                        // Actualizar el Texto eliminando el primer carácter
+                        totem.getGlyphLayout().setText(font, totem.getOcupacio().substring(1));
+                        if (totem.getTextBox().x > totem.getTextX() + totem.getGlyphLayout().width) {
+                            // Si el Texto ha salido completamente de la caja de texto después de la actualización, continuar con el siguiente carácter
+                            String substring = totem.getOcupacio().substring(1);
+                            totem.setOcupacio(substring);
+                            substring = totem.getOcupacio().substring(1);
+                            totem.getGlyphLayout().setText(font, substring);
+                            totem.setTextX(totem.getTextX() - scrollSpeed * Gdx.graphics.getDeltaTime());
+                            elapsedTime = 0f; // Reiniciar el temporizador
                         } else {
-                            activeOnFieldTotems.get(i).getGlyphLayout().setText(font,ocupacioInicial.get(i));
-
+                            // Si el Texto no ha salido de la caja de texto, restaurar el Texto original
+                            totem.getGlyphLayout().setText(font, ocupacioInicial.get(activeOnFieldTotems.indexOf(totem)));
                         }
-
                     }
-
                 }
             }
         }
+
     }
 
     private String llistaOcupacions(String cicle) {
+        //Vamos haciendo una pasada por cada iteracion de generar un Totem
+        //Asi que en caso de llegar al final volveriamos a empezar desde el principio
         if (pasada > 4) {
             pasada = 0;
         }
         ArrayList<String> ocupacions = new ArrayList<>();
-
+        //Las ocupaciones que tendremos segun el ciclo elegido
         if (cicle.equals("Sistemes microinformatics i xarxes")) {
             ocupacions.add("Personal tècnic instal·lador-reparador d equips informàtics");
             ocupacions.add("Personal tècnic de suport informàtic.");
@@ -337,7 +350,10 @@ public class MultiPlayerScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        //Mientras haya totems en el campo ejecutar el render
         if (activeOnFieldTotems == null || activeOnFieldTotems.size() == 0) {
+
+            //Mover los rectangulos para desplazarnos segun se va moviendo la camara con el jugador
             upPad.setPosition(camera.position.x - screenWidth/2, camera.position.y - screenHeight/2 + screenHeight*2/3);
             downPad.setPosition(camera.position.x - screenWidth/2, camera.position.y - screenHeight/2);
             leftPad.setPosition(camera.position.x - screenWidth/2, camera.position.y - screenHeight/2);
@@ -346,6 +362,7 @@ public class MultiPlayerScreen implements Screen {
             // Obtener las coordenadas de la cámara
             float cameraX = camera.position.x - camera.viewportWidth / 2;
             float cameraY = camera.position.y - camera.viewportHeight / 2;
+            //Coordenada relativa a la posicion actual de la camara
             homeBtn.setPosition(100 + cameraX, 900 + cameraY);
 
             batch.setProjectionMatrix(camera.combined);
@@ -364,6 +381,7 @@ public class MultiPlayerScreen implements Screen {
 
                 socket.send(json.toString());
             }
+            //Generar los Totems y Players desde el Servidor
             updateTotemFromServer();
             updatePlayersFromServer();
 
@@ -383,6 +401,7 @@ public class MultiPlayerScreen implements Screen {
                                         startPlaying,
                                         Instant.now()
                                 )));
+                //Si no quedan mas totems enviar el siguiente Json
             } else if (corTotems == TOTEMS_TO_REACH || Player.totemsLeft == 0) {
                 JSONObject json = new JSONObject();
                 json.put("game_status", "finish");
@@ -401,6 +420,7 @@ public class MultiPlayerScreen implements Screen {
                                 )));
             }
 
+            //Mover las direcciones segun las flechas del Teclado
             if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
                 direction = "left";
                 moving = true;
@@ -418,7 +438,9 @@ public class MultiPlayerScreen implements Screen {
                 moving = true;
             }
             currentDirection = direction;
+            //Revisar si se esta eligiendo una posicion tambien segun el TouchPad
             direction = virtual_joystick_control();
+            //Si se esta presionando para moverse entonces se movera en la direccion especificada
             walkDirection(direction,moving);
 
             //Limit screen movement
@@ -430,24 +452,33 @@ public class MultiPlayerScreen implements Screen {
             //Revisar que no haya colision
             for (int i = activeOnFieldTotems.size() - 1; i >= 0; i--) {
                 Totem totem = activeOnFieldTotems.get(i);
+                //Si la posicion X del jugador esta dentro de la X y la anchura del Totem pasamos al siguiente If
                 if (playerRectangle.x >= totem.getX() && playerRectangle.x <= totem.getX() + totem.getWidth()
+                        //Si la posicion Y del jugador esta dentro de la Y del Totem y menor a la altura
                         && playerRectangle.y >= totem.getY() && playerRectangle.y <= totem.getY() + totem.getHeight()) {
+                    //Entonces es cuando se recoge el totem y tenemos una variable para solo emitir el sonido 1 vez
                     if (!soundPlayed) {
                         totem.getSound().play();
+                        //Luego de emitir el sonido se comprueba si el totem es correcto o incorrecto
                         if (totem.getCorrectTotem()) {
+                            //Si es correcto se suma de los totems correctos y los totems totales
                             corTotems++;
                             totalTotems++;
+                            //Eliminamos el totem del campo y marcamos que al jugador le queda uno menos
                             activeOnFieldTotems.remove(i);
                             Player.totemsLeft --;
                             sendTotemToServer(totem);
+                            //Variable de prueba que se tendrá que poner para cuando un nuevo jugador se una
                             playerJoined = true;
-                            //Calculos para dibujar en caso de que se una un nuevo jugador
-                            // Actualizar el tiempo transcurrido
+
 
                         } else {
+                            //Eliminar de totems correctos
                             corTotems--;
                             totalTotems++;
+                            //Enviar totem al server
                             sendTotemToServer(totem);
+                            //Eliminar del campo
                             activeOnFieldTotems.remove(i);
                         }
                     }
@@ -459,25 +490,29 @@ public class MultiPlayerScreen implements Screen {
 
             // Mover la cámara junto al jugador
             camera.position.set(playerRectangle.x, playerRectangle.y, 0);
+            //Ir actualizando la posicion de la camara todoo el rato para que siga al player
             camera.update();
 
             batch.begin();
+            //Pintamos el mapa desde el principio
             batch.draw(background,0,0,background.getWidth(),background.getHeight());
             stateTime += Gdx.graphics.getDeltaTime(); // Accumulate elapsed animation time
+            //Hacemos que ambas animaciones (movimiento player y exclamacion de nuevo player) esten en loop
             TextureRegion frame = player.getKeyFrame(stateTime,true);
             TextureRegion ballon = exclamation.getKeyFrame(stateTime,true);
-            //Player
+            //Dibujamos la animacion del player y asignamos que su nombre le vaya siguiendo la posicion
             batch.draw(frame,playerRectangle.getX(),playerRectangle.getY(),Player.scale[0],Player.scale[1]);
             characterFont.draw(batch,Player.player_alias,playerRectangle.getX(),playerRectangle.getY()+playerRectangle.getHeight());
 
             //Dibujar otros players
             for (Player playerArray: players) {
                 Texture sprite;
-
+                //todo Verificar Sprite del player principal para asignar a los demas el contrario
                 if (Player.player_character == 0) {
                     //batch.draw(playerArray.);
                     playerArray.players_character = 1;
                     Player.player_down.get(0).getKeyFrameIndex(1);
+                    //Pintar la posicion idle en los otros
                     batch.draw(Player.player_down.get(0).getKeyFrames()[1],playerArray.players_transform[0],playerArray.players_transform[1],Player.scale[0],Player.scale[1]);
                     characterFont.draw(batch,playerArray.players_alias,playerArray.players_transform[0],playerArray.players_transform[1]);
 
@@ -489,6 +524,7 @@ public class MultiPlayerScreen implements Screen {
 
             }
 
+            //Si se une un usuario entonces se mostrara el texto y animacion durante duration (3 segundos)
             if (playerJoined) {
                 elapsedTimeNewPlayer += delta;
                 if (elapsedTimeNewPlayer >= duration) {
@@ -496,13 +532,15 @@ public class MultiPlayerScreen implements Screen {
                     elapsedTimeNewPlayer = 0f;
                 }
 
-                //Ambos PlayerScale son de 128px
+                //Dibujar el nombre del Player que se haya unido todo(se tendra que añadir al Array de players)
                 scoreFont.draw(batch,"Peter de Sistemes Microinformatics i Xarxes s ha unit",cameraX+Player.scale[0]+Player.scale[1],cameraY+screenHeight-100);
                 batch.draw(ballon,cameraX,cameraY+screenHeight-164,Player.scale[0],Player.scale[1]);
             }
 
             //batch.draw(frame,(screenWidth)/2,(screenHeight)/2,Player.scale[0],Player.scale[1]);
+            //Pintar el dibujo del boton Home
             batch.draw(home, 100 + cameraX, 900 + cameraY, 100, 100);
+            //Seguin los Totems correctos se dibujara un grafico de puntos o otro
             if (corTotems > 0) {
                 batch.draw(IPOP.score_bar[corTotems], 800 + cameraX, 950 + cameraY, 750, 100);
             } else {
@@ -519,8 +557,10 @@ public class MultiPlayerScreen implements Screen {
                 }
             }
 
+            //Llamar al metodo que dibujara los totems del Array que se le pase
             drawTotems(activeOnFieldTotems);
 
+            //Calcular si se ha presionado el Home
             for(int i=0;i<10;i++)
                 if (Gdx.input.isTouched(i)) {
                     Vector3 touchPos = new Vector3();
@@ -551,6 +591,7 @@ public class MultiPlayerScreen implements Screen {
         socket.send(json.toString());
     }
 
+    //Calcular la direccion que se ha presionado
     protected String virtual_joystick_control() {
         for(int i=0;i<10;i++)
             if (Gdx.input.isTouched(i)) {
@@ -575,9 +616,11 @@ public class MultiPlayerScreen implements Screen {
         return currentDirection;
     }
     public void walkDirection(String direction, Boolean moving) {
+        //Velocidad del player
         double speed = 15000 * Gdx.graphics.getDeltaTime();
         if (moving) {
             switch (direction) {
+                //Segun cada direccion se animara el player y se movera X posiciones tambien se pasaran los parametros del jugador a su objeto
                 case "right":
                     player = new Animation<>(0.1f, Player.player_right.get(Player.player_character).getKeyFrames());
                     playerRectangle.x += speed * Gdx.graphics.getDeltaTime();
@@ -605,6 +648,7 @@ public class MultiPlayerScreen implements Screen {
                     break;
             }
         } else {
+            //Se crea la animacion de Exclamation y el Idle de player
             exclamation = new Animation<>(0.2f,ballon_exclamation);
 
             player = new Animation<>(9999f, Player.player_down.get(Player.player_character).getKeyFrames());

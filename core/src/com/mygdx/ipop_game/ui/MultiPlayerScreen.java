@@ -32,8 +32,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.w3c.dom.css.Rect;
 
+
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class MultiPlayerScreen implements Screen {
 
@@ -65,7 +67,7 @@ public class MultiPlayerScreen implements Screen {
     Instant startPlaying;
     ArrayList<Totem> activeOnFieldTotems = new ArrayList<>();
     ArrayList<String> ocupacioInicial = new ArrayList<>();
-    ArrayList<Player> players;
+    ArrayList<Player> players = new ArrayList<>();
     Sound dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
     Sound cyndaquilSound = Gdx.audio.newSound(Gdx.files.internal("CYNDAQUIL.wav"));
     int TOTEMS_TO_REACH = 5;
@@ -140,9 +142,19 @@ public class MultiPlayerScreen implements Screen {
 
         socket.send(json.toString());
 
-
         //generacioTotems();
         startPlaying = Instant.now();
+
+        lastSend = (int) stateTime;
+        json = new JSONObject();
+        json.put("nameCycle", Player.player_ocupation);
+        json.put("player_alias", Player.player_alias);
+        json.put("player_sprite", Player.player_character);
+        json.put("player_x", Player.transform[0]);
+        json.put("player_y", Player.transform[1]);
+
+        socket.send(json.toString());
+
         this.render(Gdx.graphics.getDeltaTime());
     }
 
@@ -151,7 +163,6 @@ public class MultiPlayerScreen implements Screen {
         if (MultiPlayerScreen.game_totems == null) { return; }
         JSONObject response = new JSONObject(MultiPlayerScreen.game_totems);
         JSONArray totemsArray = response.getJSONObject("message").getJSONArray("totems");
-
         ArrayList<Totem> totemsList = new ArrayList<>();
         for (int i = 0; i < totemsArray.length(); i++) {
             JSONObject totemObject = totemsArray.getJSONObject(i);
@@ -164,7 +175,7 @@ public class MultiPlayerScreen implements Screen {
             int height = totemObject.getInt("height");
             Rectangle totemBox = new Rectangle(posX, posY, width, height);
             GlyphLayout glyphLayout = new GlyphLayout();
-            glyphLayout.setText(font, text);
+            //glyphLayout.setText(font, text);
             Totem totem = new Totem(idTotem, posX, posY, width, height, totemSprite, cycleLabel, text, totemBox, glyphLayout, 0, dropSound);
             totemBox.setPosition(totem.getX(),totem.getY()+50);
             totemBox.setWidth(300);
@@ -173,8 +184,8 @@ public class MultiPlayerScreen implements Screen {
         }
         //Limpia los que hubiera y genera los proporcionados por el servidor
         activeOnFieldTotems.clear();
-        activeOnFieldTotems = totemsList;
-
+        activeOnFieldTotems.addAll(totemsList);
+        int i = 0;
     }
 
     public void updatePlayersFromServer() {
@@ -196,7 +207,8 @@ public class MultiPlayerScreen implements Screen {
             ));
         }
         players.clear();
-        players = playersList;
+        players.addAll(playersList);
+        int i = 1;
     }
 
     //Generacion totem Local
@@ -226,7 +238,6 @@ public class MultiPlayerScreen implements Screen {
                     activeOnFieldTotems.add(totem);
                     ocupacioInicial.add(activeOnFieldTotems.get(j).getOcupacio());
                     //totemsCorrectes.add(totem);
-
                     //Cambiamos el valor del texto del siguiente totem
                     pasada++;
                 }
@@ -251,20 +262,19 @@ public class MultiPlayerScreen implements Screen {
                             pasada++;
                             break;
                         }
-
                     }
                 }
-
-
-
-
             }
         }
     }
 
     private void drawTotems (ArrayList<Totem> activeOnFieldTotems) {
         //Recorremos los totems que nos hayan pasado
+        if (activeOnFieldTotems.size() == 0) {
+            return;
+        }
         for (Totem totem : activeOnFieldTotems) {
+            System.out.println(totem.toString());
             // Dibujar el Totem y su Texto
             batch.draw(totem.getImage(), totem.getX(), totem.getY());
             font.draw(batch, totem.getGlyphLayout(), totem.getTextX(), totem.getTextBox().getY());
@@ -278,30 +288,28 @@ public class MultiPlayerScreen implements Screen {
             float updateInterval = 0.01f;
 
             if (totem.getTextBox().x > totem.getTextX() + totem.getGlyphLayout().width) {
-                // Si el Texto ha salido completamente de la caja de texto, lo reiniciamos al inicio
-                //Basicamente el efecto de volver a empezar
+                // Si el Texto ha salido  de la caja de texto, lo reiniciamos al inicio
+                // Basicamente el efecto de volvcompletamenteer a empezar
                 totem.setTextX(totem.getTextBox().x + totem.getTextBox().getWidth());
                 elapsedTime = 0f; // Reiniciar el temporizador
                 totem.setOcupacio(ocupacioInicial.get(activeOnFieldTotems.indexOf(totem)));
             } else {
                 elapsedTime += Gdx.graphics.getDeltaTime();
                 //Cada 0.1 segundos se hace el siguiente calculo
-                if (elapsedTime >= updateInterval) {
-                    if (totem.getOcupacio().length() > 1) {
-                        // Actualizar el Texto eliminando el primer carácter
-                        totem.getGlyphLayout().setText(font, totem.getOcupacio().substring(1));
-                        if (totem.getTextBox().x > totem.getTextX() + totem.getGlyphLayout().width) {
-                            // Si el Texto ha salido completamente de la caja de texto después de la actualización, continuar con el siguiente carácter
-                            String substring = totem.getOcupacio().substring(1);
-                            totem.setOcupacio(substring);
-                            substring = totem.getOcupacio().substring(1);
-                            totem.getGlyphLayout().setText(font, substring);
-                            totem.setTextX(totem.getTextX() - scrollSpeed * Gdx.graphics.getDeltaTime());
-                            elapsedTime = 0f; // Reiniciar el temporizador
-                        } else {
-                            // Si el Texto no ha salido de la caja de texto, restaurar el Texto original
-                            totem.getGlyphLayout().setText(font, ocupacioInicial.get(activeOnFieldTotems.indexOf(totem)));
-                        }
+                if (totem.getOcupacio().length() > 1) {
+                    // Actualizar el Texto eliminando el primer carácter
+                    totem.getGlyphLayout().setText(font, totem.getOcupacio().substring(1));
+                    if (totem.getTextBox().x > totem.getTextX() + totem.getGlyphLayout().width) {
+                        // Si el Texto ha salido completamente de la caja de texto después de la actualización, continuar con el siguiente carácter
+                        String substring = totem.getOcupacio().substring(1);
+                        totem.setOcupacio(substring);
+                        substring = totem.getOcupacio().substring(1);
+                        totem.getGlyphLayout().setText(font, substring);
+                        totem.setTextX(totem.getTextX() - scrollSpeed * Gdx.graphics.getDeltaTime());
+                        elapsedTime = 0f; // Reiniciar el temporizador
+                    } else {
+                        // Si el Texto no ha salido de la caja de texto, restaurar el Texto original
+                        //totem.getGlyphLayout().setText(font, ocupacioInicial.get(activeOnFieldTotems.indexOf(totem)));
                     }
                 }
             }
@@ -351,7 +359,8 @@ public class MultiPlayerScreen implements Screen {
     @Override
     public void render(float delta) {
         //Mientras haya totems en el campo ejecutar el render
-        if (activeOnFieldTotems == null || activeOnFieldTotems.size() == 0) {
+        updatePlayersFromServer();
+        updateTotemFromServer();
 
             //Mover los rectangulos para desplazarnos segun se va moviendo la camara con el jugador
             upPad.setPosition(camera.position.x - screenWidth/2, camera.position.y - screenHeight/2 + screenHeight*2/3);
@@ -458,29 +467,32 @@ public class MultiPlayerScreen implements Screen {
                         && playerRectangle.y >= totem.getY() && playerRectangle.y <= totem.getY() + totem.getHeight()) {
                     //Entonces es cuando se recoge el totem y tenemos una variable para solo emitir el sonido 1 vez
                     if (!soundPlayed) {
-                        totem.getSound().play();
-                        //Luego de emitir el sonido se comprueba si el totem es correcto o incorrecto
-                        if (totem.getCorrectTotem()) {
-                            //Si es correcto se suma de los totems correctos y los totems totales
-                            corTotems++;
-                            totalTotems++;
-                            //Eliminamos el totem del campo y marcamos que al jugador le queda uno menos
-                            activeOnFieldTotems.remove(i);
-                            Player.totemsLeft --;
-                            sendTotemToServer(totem);
-                            //Variable de prueba que se tendrá que poner para cuando un nuevo jugador se una
-                            playerJoined = true;
+                        if (totem.getSound() != null) {
+                            totem.getSound().play();
+                            //Luego de emitir el sonido se comprueba si el totem es correcto o incorrecto
+                            if (totem.getCorrectTotem()) {
+                                //Si es correcto se suma de los totems correctos y los totems totales
+                                corTotems++;
+                                totalTotems++;
+                                //Eliminamos el totem del campo y marcamos que al jugador le queda uno menos
+                                activeOnFieldTotems.remove(i);
+                                Player.totemsLeft --;
+                                sendTotemToServer(totem);
+                                //Variable de prueba que se tendrá que poner para cuando un nuevo jugador se una
+                                playerJoined = true;
 
 
-                        } else {
-                            //Eliminar de totems correctos
-                            corTotems--;
-                            totalTotems++;
-                            //Enviar totem al server
-                            sendTotemToServer(totem);
-                            //Eliminar del campo
-                            activeOnFieldTotems.remove(i);
+                            } else {
+                                //Eliminar de totems correctos
+                                corTotems--;
+                                totalTotems++;
+                                //Enviar totem al server
+                                sendTotemToServer(totem);
+                                //Eliminar del campo
+                                activeOnFieldTotems.remove(i);
+                            }
                         }
+
                     }
                 }
             }
@@ -505,23 +517,24 @@ public class MultiPlayerScreen implements Screen {
             characterFont.draw(batch,Player.player_alias,playerRectangle.getX(),playerRectangle.getY()+playerRectangle.getHeight());
 
             //Dibujar otros players
-            for (Player playerArray: players) {
+            for (Player player: players) {
                 Texture sprite;
-                //todo Verificar Sprite del player principal para asignar a los demas el contrario
-                if (Player.player_character == 0) {
-                    //batch.draw(playerArray.);
-                    playerArray.players_character = 1;
-                    Player.player_down.get(0).getKeyFrameIndex(1);
-                    //Pintar la posicion idle en los otros
-                    batch.draw(Player.player_down.get(0).getKeyFrames()[1],playerArray.players_transform[0],playerArray.players_transform[1],Player.scale[0],Player.scale[1]);
-                    characterFont.draw(batch,playerArray.players_alias,playerArray.players_transform[0],playerArray.players_transform[1]);
-
-                } else {
-                    playerArray.players_character = 0;
-                    batch.draw(Player.player_down.get(1).getKeyFrames()[1],playerArray.players_transform[0],playerArray.players_transform[1],Player.scale[0],Player.scale[1]);
-
+                if (!Objects.equals(player.players_alias, Player.player_alias)) {
+                    //todo Verificar Sprite del player principal para asignar a los demas el contrario
+                    if (Player.player_character == 0) {
+                        //batch.draw(playerArray.);
+                        player.players_character = 1;
+                        Player.player_down.get(1).getKeyFrameIndex(1);
+                        //Pintar la posicion idle en los otros
+                    } else {
+                        //batch.draw(playerArray.);
+                        player.players_character = 0;
+                        Player.player_down.get(0).getKeyFrameIndex(1);
+                        //Pintar la posicion idle en los otros
+                    }
+                    batch.draw(Player.player_down.get(0).getKeyFrames()[1],player.players_transform[0],player.players_transform[1],Player.scale[0],Player.scale[1]);
+                    characterFont.draw(batch,player.players_alias,player.players_transform[0],player.players_transform[1]);
                 }
-
             }
 
             //Si se une un usuario entonces se mostrara el texto y animacion durante duration (3 segundos)
@@ -574,7 +587,7 @@ public class MultiPlayerScreen implements Screen {
 
             batch.end();
         }
-    }
+
 
     private void sendTotemToServer(Totem totem) {
         JSONObject json = new JSONObject();
@@ -586,7 +599,6 @@ public class MultiPlayerScreen implements Screen {
         json.put("height",String.valueOf(totem.getHeight()));
         json.put("cycleLabel",String.valueOf(totem.getOcupacio()));
         json.put("correct",String.valueOf(totem.getCorrectTotem()));
-
 
         socket.send(json.toString());
     }
@@ -691,15 +703,19 @@ class MyWSListener implements WebSocketListener {
     @Override
     public boolean onMessage(WebSocket webSocket, String packet) {
         JSONObject response = new JSONObject(packet);
-        System.out.println(response.toString());
-        if (response.getString("game_status").equals("finish")) {
+        String type = response.getString("type");
+        if (type.equals("finish")) {
             MultiPlayerScreen.game_status = "finish";
-        } else if (response.getString("type").equals("game_totems")) {
-            MultiPlayerScreen.game_totems = response.getString("message");
-            System.out.println(MultiPlayerScreen.game_totems);
-        } else if (response.getString("type").equals("players")) {
-            MultiPlayerScreen.players_str = response.getString("message");
+            return true;
+        }
+        if (type.equals("game_totems")) {
+            MultiPlayerScreen.game_totems = response.toString();
+            return true;
+        }
+        if (type.equals("players")) {
+            MultiPlayerScreen.players_str = packet;
             System.out.println(MultiPlayerScreen.players_str);
+            return true;
         }
         return false;
     }

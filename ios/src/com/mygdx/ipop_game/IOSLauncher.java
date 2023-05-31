@@ -12,7 +12,11 @@ public class IOSLauncher extends IOSApplication.Delegate {
     protected IOSApplication createApplication() {
         IOSApplicationConfiguration config = new IOSApplicationConfiguration();
         CommonWebSockets.initiate();
+<<<<<<< HEAD
         return new IOSApplication(new GameScreen(), config);
+=======
+        return new IOSApplication(new IPOP(), config);
+>>>>>>> david_3
     }
 
     public static void main(String[] argv) {

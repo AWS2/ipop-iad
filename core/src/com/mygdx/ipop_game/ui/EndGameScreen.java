@@ -102,7 +102,8 @@ public class EndGameScreen implements Screen {
                         System.out.println(json);
                         StringBuffer stb = new ApiWs().sendPost(WebServiceConstants.api + "api/set_ranking",json);
                     } catch (IOException e) {
-                        throw new RuntimeException(e);
+                        e.printStackTrace();
+                        //throw new RuntimeException(e);
                     }
                     game.setScreen(new MainMenuScreen(game));
                 }
